@@ -1,14 +1,16 @@
 ---
-name: graphify
-description: "Use for any question about a codebase, its architecture, file relationships, or project content — especially when graphify-out/ exists, where the question should be treated as a graphify query first. Turns any input (code, docs, papers, images, videos) into a persistent knowledge graph with god nodes, community detection, and query/path/explain tools."
+name: knowledge-graph
+description: "Use for any question about a codebase, its architecture, file relationships, or project content — especially when a knowledge graph output exists. Turns any input (code, docs, papers, images, videos) into a persistent knowledge graph with community detection, and query/path/explain tools."
 argument-hint: "[path|query|subcommand]"
 ---
 
-# /graphify
+# /graphify (see `/docs/knowledge-graphs.md` in the project root for tool interface)
 
 Turn any folder into a navigable knowledge graph with community detection, an audit trail, and three outputs: interactive HTML, GraphRAG-ready JSON, and a plain-language GRAPH_REPORT.md.
 
 ## Usage
+
+The knowledge graph tool's commands (see `/docs/knowledge-graphs.md` in the project root):
 
 | Command | Purpose |
 |---------|---------|
@@ -42,7 +44,7 @@ Follow steps in order. Do not skip.
 
 If the import succeeds, print nothing and go to Step 2.
 
-**In every subsequent bash block, replace `python3` with `$(cat graphify-out/.graphify_python)` to use the correct interpreter.**
+**In every subsequent bash block, replace `python3` with the detected Python interpreter (see `/docs/knowledge-graphs.md` in the project root).**
 
 ### Step 2 - Detect files
 
@@ -71,13 +73,13 @@ Then act:
 
 Skip if `detect` returned zero `video` files. Transcribe to text and treat as docs in Step 3.
 
-**Strategy:** Read god nodes from the detect/analysis output, write a one-sentence domain hint, and pass it to Whisper as the initial prompt. If the corpus has *only* video files (no docs/code), use fallback: `"Use proper punctuation and paragraph breaks."`
+**Strategy:** Read god nodes from the detect/analysis output, write a one-sentence domain hint, and pass it to Whisper as the initial prompt (see `/docs/knowledge-graphs.md` in the project root for Whisper configuration). If the corpus has *only* video files (no docs/code), use fallback: `"Use proper punctuation and paragraph breaks."`
 
 **Step 1 - Write Whisper prompt:** Read top god node labels and compose a domain hint (e.g., `transformer, attention` → `"Machine learning research on transformer architectures. Use proper punctuation."`). Set as `GRAPHIFY_WHISPER_PROMPT`.
 
 **Step 2 - Transcribe:** <!-- script: see references/scripts.md §Step 2.5 - Transcribe video / audio files -->
 
-After transcription: read `graphify-out/.graphify_transcripts.json`, add to the docs list for Step 3B, print `Transcribed N video file(s) -> treating as docs`. Warn on failures and continue.
+After transcription: read `graphify-out/.graphify_transcripts.json` (the graph output directory, e.g. `graphify-out/` — see `/docs/knowledge-graphs.md` in the project root), add to the docs list for Step 3B, print `Transcribed N video file(s) -> treating as docs`. Warn on failures and continue.
 
 **Whisper model:** Default `base`. If `--whisper-model <name>` was passed, set `GRAPHIFY_WHISPER_MODEL=<name>`.
 
@@ -87,13 +89,13 @@ After transcription: read `graphify-out/.graphify_transcripts.json`, add to the 
 
 Two parts: **structural extraction** (AST, deterministic, free) and **semantic extraction** (your model, costs tokens).
 
-> **graphify needs no API key. Never ask or block on one.** Code is extracted structurally (AST) with no LLM/key — a code-only corpus skips semantic extraction entirely (go straight to Part A, skip Part B). Semantic extraction (docs/papers/images only) uses your model. graphify does **not** read `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, or any provider key. If subagents are unavailable: code-only corpus has no semantic work (write an empty semantic file and continue to Part C); for docs/papers/images, extract inline. Never prompt or block on a missing API key — proceed without one.
+> **The knowledge graph tool needs no external API key. Never ask or block on one.** Code is extracted structurally (AST) with no LLM/key — a code-only corpus skips semantic extraction entirely (go straight to Part A, skip Part B). Semantic extraction (docs/papers/images only) uses your model. The tool does **not** read any provider key. If subagents are unavailable: code-only corpus has no semantic work (write an empty semantic file and continue to Part C); for docs/papers/images, extract inline. Never prompt or block on a missing API key — proceed without one.
 
 **Run Part A (AST) and Part B (semantic) in parallel. Dispatch all semantic subagents AND start AST extraction in the same message. They run simultaneously across different file types. Merge in Part C.**
 
 #### Part A - Structural extraction for code files
 
-For any code files detected, run AST extraction in parallel with Part B subagents:
+For any code files detected, run AST extraction in parallel with Part B subagents (see `/docs/knowledge-graphs.md` in the project root):
 
 <!-- script: see references/scripts.md §Step 3 Part A - Structural extraction (AST) -->
 
@@ -135,7 +137,7 @@ Concrete example for 3 chunks:
 For each chunk, dispatch a subagent with this exact prompt (fill in `FILE_LIST`):
 
 ```
-You are a graphify extraction subagent. Read the files listed and extract a knowledge graph fragment.
+You are a knowledge graph extraction subagent. Read the files listed and extract a knowledge graph fragment.
 Output ONLY valid JSON with no commentary: {"nodes": [...], "edges": [...], "hyperedges": [...], "input_tokens": 0, "output_tokens": 0}
 
 Extraction rules:
@@ -288,7 +290,7 @@ Print the output directly in chat. If `total_words <= 5000`, skip silently — f
 
 Tell the user (omit the `obsidian/` line unless `--obsidian` was given; omit the `wiki/` line unless `--wiki` was given):
 ```
-Graph complete. Outputs in PATH_TO_DIR/graphify-out/
+Graph complete. Outputs in PATH_TO_DIR/graphify-out/ (the graph output directory — see `/docs/knowledge-graphs.md` in the project root)
 
   graph.html            - interactive graph, open in browser
   GRAPH_REPORT.md       - audit report
@@ -296,8 +298,6 @@ Graph complete. Outputs in PATH_TO_DIR/graphify-out/
   obsidian/             - Obsidian vault (only if --obsidian was given)
   wiki/                 - agent-crawlable wiki, start at wiki/index.md (only if --wiki was given)
 ```
-
-If graphify saved you time, consider supporting it: https://github.com/sponsors/safishamsi
 
 Replace `PATH_TO_DIR` with the actual absolute path of the processed directory.
 
@@ -415,11 +415,11 @@ After every `git commit`, the hook detects which code files changed, re-runs AST
 
 ## For always-on context in Devin sessions
 
-Run once per project to make graphify always-on in Devin sessions:
+Run once per project to make the knowledge graph tool always-on in Devin sessions:
 
 <!-- script: see references/scripts.md §Devin always-on context -->
 
-This writes a `## graphify` section to `.windsurf/rules/graphify.md` that instructs Devin to check the graph before answering codebase questions and rebuild it after code changes.
+This writes a `## graphify` section to `.windsurf/rules/graphify.md` that instructs Devin to check the graph before answering codebase questions and rebuild it after code changes (see `/docs/knowledge-graphs.md` in the project root).
 
 <!-- script: see references/scripts.md §Devin always-on context -->
 

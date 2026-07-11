@@ -1,47 +1,45 @@
 ---
-name: aside-browser
-description: Read when you need a browser automation (QA, element interaction, screencapture/snapshot, network capture, so on), or have to work across user's logged-in accounts, apps (e.g. Slack, X, LinkedIn, etc.), memory, and browsing history.
+name: browser-automation
+description: Use when you need browser automation (QA, element interaction, screencapture/snapshot, network capture), or have to work across user's logged-in accounts, apps, memory, and browsing history.
 ---
 
-# Aside Browser
+# Browser Automation
 
-Aside is an AI browser. Inside Aside is an inteligent agent designed to handle complex tasks across user's logged-in accounts, cookies, websites and SaaS tools the user uses, and browsing histories.
-Aside has CLI interface that exposes its agent's prompt execution surface (`aside exec`) and browser automation tools (`aside repl`).
+Browser automation tools provide agent-driven and REPL-driven browser control (see `/docs/browser-automation.md` in the project root). They are designed to handle complex tasks across user's logged-in accounts, cookies, websites and SaaS tools the user uses, and browsing histories.
+The CLI interface exposes an agent's prompt execution surface (browser exec, autonomous agent) and browser automation tools (browser REPL, direct control).
 
-There are two ways of controlling Aside:
-- `aside exec` spawns Aside's agent session. think of it like spawning subagent. Use when you need to work across user's logged-in accounts, apps (e.g. Slack, X, LinkedIn, etc.), memory, and browsing history.
-- `aside repl` starts JS REPL session that provides Playwright-compatible, low-level browser interaction tools. Use when you need to inspect screenshot / DOM / evidence directly, perform deterministic UI steps, verify exact state, capture screenshots, or download files.
+There are two ways of controlling the browser automation tool:
+- Browser exec (autonomous agent) spawns an agent session. think of it like spawning subagent. Use when you need to work across user's logged-in accounts, apps, memory, and browsing history.
+- Browser REPL starts JS REPL session that provides Playwright-compatible, low-level browser interaction tools. Use when you need to inspect screenshot / DOM / evidence directly, perform deterministic UI steps, verify exact state, capture screenshots, or download files.
 
 ## Choose the Surface
 
-- Whole-task delegation to Aside's autonomous browser agent: `aside exec`.
-- Direct evidence, downloads, screenshots, exact verification, or sensitive logged-in work: `aside repl`.
+- Whole-task delegation to the autonomous browser agent: browser exec.
+- Direct evidence, downloads, screenshots, exact verification, or sensitive logged-in work: browser REPL.
 
-Before using the CLI, inspect current usage instead of relying on memorized options:
+Before using the CLI, inspect current usage instead of relying on memorized options (see `/docs/browser-automation.md` in the project root):
 
 ```bash
-aside --help
-aside exec --help
-aside repl --help
+# inspect current CLI usage per /docs/browser-automation.md in the project root
 ```
 
-both `aside exec` and `aside repl` opens new ephemeral session that keeps context and state.
-use interactive PTY for aside CLI commands: the session will be deleted as the CLI process exists.
+both browser exec and browser repl open new ephemeral session that keeps context and state.
+use interactive PTY for browser automation CLI commands: the session will be deleted as the CLI process exists.
 
 # exec usages
 
-Think using Aside agent as `aside exec` like using browser-special subagent. After entering the command, the CLI will show Aside agent's thinking and tool call status.
-poll it and watch it. give user status update around every 60 seconds. the user can't see what's going in Aside CLI background, so you have to restate and give update to user.
+Think using the browser automation tool's exec mode like using browser-special subagent. After entering the command, the CLI will show the agent's thinking and tool call status.
+poll it and watch it. give user status update around every 60 seconds. the user can't see what's going in the browser automation CLI background, so you have to restate and give update to user.
 
 # REPL Usages
 
-The REPL is a persistent ES2023+ JavaScript environment within one live REPL session. Top-level `const` and `let` bindings persist, so use fresh variable names.
+The browser automation REPL is a persistent ES2023+ JavaScript environment within one live REPL session. Top-level `const` and `let` bindings persist, so use fresh variable names.
 
-Available globals:
+Available globals (see `/docs/browser-automation.md` in the project root for the full API):
 
 - `page`: current Playwright-like `Page`.
 - `tabs`: open pages in this REPL session.
-- `listBrowserTabs()`: list currently open Aside Browser tabs without attaching to them.
+- `listBrowserTabs()`: list currently open browser tabs without attaching to them.
 - `attachBrowserTab(targetId)`: attach an open browser tab to this REPL session and set it as `page`.
 - `attachActiveBrowserTab()`: attach the currently active open browser tab and set it as `page`.
 - `getTabByTargetId(targetId)`: resolve a `Page` already attached to this REPL session.
@@ -60,7 +58,7 @@ Always use `console.log()` to return values to yourself.
 
 ### Open browser tabs
 
-`aside repl` starts as a neutral session. Do not assume `page` is the user's current tab.
+`browser repl` starts as a neutral session. Do not assume `page` is the user's current tab.
 
 When the user mentions the current page, an already-open page, or a specific tab/site that may already be open, inspect open tabs first:
 
@@ -160,6 +158,6 @@ console.log({
 });
 ```
 
-`fs` cannot browse the real `~/Downloads` directory. After `download.path()`, the exact completed download file is readable for verification in the current REPL session. In one-shot `aside repl "..." `, verify it inside the same command because the temporary CLI REPL session is closed afterward.
+`fs` cannot browse the real `~/Downloads` directory. After `download.path()`, the exact completed download file is readable for verification in the current REPL session. In one-shot `browser repl "..." `, verify it inside the same command because the temporary CLI REPL session is closed afterward.
 
 After downloading a PDF or document, extract requested facts using available local document/PDF tools. Report only facts found in the file or confirmed on the page.

@@ -2,15 +2,16 @@
 name: memory-usage
 description: >
   Use when reading or writing persistent project memory before, during, or after
-  non-trivial work. Always pair with the active memory-provider skill for
-  driver-specific tool mechanics.
+  non-trivial work. Always pair with the active memory-provider skill (see
+  `/docs/memory-providers.md` in the project root) for driver-specific tool
+  mechanics.
 ---
 
 Persistent memory holds facts that are expensive to re-derive and survive across sessions.
 
 ## Delegation First (MANDATORY before inline reads)
 
-Before listing or reading memories inline, check the dispatch gate. Delegate any read trigger to a subagent. Run inline only if the subagent is unavailable or returns `BLOCKED`. Write operations (`write_memory`, `edit_memory`, etc.) are never delegated — the parent owns persistence.
+Before listing or reading memories inline, check the dispatch gate. Delegate any read trigger to a subagent. Run inline only if the subagent is unavailable or returns `BLOCKED`. Write operations (write, edit memory operations, etc., see `/docs/memory-providers.md` in the project root) are never delegated — the parent owns persistence.
 
 ## When to Use Memory
 
@@ -60,7 +61,7 @@ Use slash-separated topic paths. Be specific, not generic.
 
 ## Generic Memory Operations
 
-All memory drivers expose roughly the same lifecycle. Use the active driver's skill for exact tool names and arguments.
+All memory drivers expose roughly the same lifecycle (see `/docs/memory-providers.md` in the project root for exact tool names and arguments).
 
 | Operation | Purpose |
 | --- | --- |

@@ -7,9 +7,9 @@ description: "Creates a pull request for the current branch."
 
 MCP tools take business-level inputs (title, body, base, head). Never use CLI flags. Skip `--body-file` temp-file steps when using MCP.
 
-Operations: detect branch+default base (`change_scan` → `git branch --show-current` + `git remote show origin | grep "HEAD branch"`), check uncommitted (`change_scan` → `git status --short`), fetch base+compute diff (`pr_diff` → `git fetch origin <base>` + `git log` + `git diff --stat` + `git diff`), push branch (`push` → `git push -u origin <branch>`), create issue (`gh_issue_create` → `gh issue create`), create PR (`gh_pr_create` → `gh pr create`), view PR (`gh_pr_view` → `gh pr view`), check auth (`gh_auth_status` → `gh auth status`).
+Operations: detect branch+default base, check uncommitted, fetch base+compute diff, push branch, create issue, create PR, view PR, check auth — all git host operations (see `/docs/git-hosts.md` in the project root). CLI fallback per `/docs/git-hosts.md` for each operation.
 
-Follow AGENTS.md Git Conventions for all git/gh operations.
+Follow `/docs/git-hosts.md` in the project root for all git/gh operations.
 
 Delegate metadata generation to a subagent. Inline on `BLOCKED` or `NOTHING_TO_SHIP`. The parent owns Steps 1-3, 5, and 7-10. On `NOTHING_TO_SHIP`, proceed to Step 3 blockers.
 
@@ -19,7 +19,7 @@ Delegate metadata generation to a subagent. Inline on `BLOCKED` or `NOTHING_TO_S
 
 ### 2. Load & Analyze Changes
 
-Step 1: Determine context. Get the current branch via `git branch --show-current`. If `<base>` is not provided, detect the default via `git remote show origin | grep "HEAD branch" | awk '{print $NF}'`.
+Step 1: Determine context. Get the current branch via `git branch --show-current` (per `/docs/git-hosts.md` in the project root). If `<base>` is not provided, detect the default via `git remote show origin | grep "HEAD branch" | awk '{print $NF}'` (per `/docs/git-hosts.md` in the project root).
 Store `<current-branch>` and `<resolved-base>` (user `<base>` or detected default; strip `origin/` prefix). Use `<remote-base>` = `origin/<resolved-base>` for all comparisons; the local base is often stale.
 
 Step 2: Load changes. Run `git status --short` and `git fetch origin <resolved-base>`. Then diff against `<remote-base>` using **three-dot syntax** (`...`) to exclude base-branch-only changes: ahead log, `git diff --stat`, `git diff`. Store as `<changes>`. Three-dot is mandatory.
@@ -43,23 +43,23 @@ Spawn a subagent with `<resolved-base>`, `<ticket-mode>`, `<ticket-url>` (when `
 
 ### 6i. Prepare Ticket Reference (inline fallback)
 
-When `<ticket-mode>` = `auto`: reuse `<change-summary>` themes based on actual commits/diff. Title (max 70 chars) reflecting the delivered outcome. Description: what and why. Checklists: 2-4 functional sections plus a final `Validation` section (reviewer-facing: "Verify that...", "Confirm that..."). Create via `gh_issue_create` MCP (title, body, assignee `@me`) or CLI fallback with a temp file. No attribution lines. Store the issue URL as `<ticket-url>`.
+When `<ticket-mode>` = `auto`: reuse `<change-summary>` themes based on actual commits/diff. Title (max 70 chars) reflecting the delivered outcome. Description: what and why. Checklists: 2-4 functional sections plus a final `Validation` section (reviewer-facing: "Verify that...", "Confirm that..."). Create via git host create issue (see `/docs/git-hosts.md` in the project root, title, body, assignee `@me`) or CLI fallback per `/docs/git-hosts.md` with a temp file. No attribution lines. Store the issue URL as `<ticket-url>`.
 
 Otherwise: `provided` → use provided value; `skip` → `SKIPPED`.
 
 ### 6p. Create Ticket from Delegated Metadata (primary path)
 
-When `<ticket-mode>` = `auto`: create via `gh_issue_create` MCP (title=`<ticket-title>`, body=`<ticket-body>`, assignee `@me`) or CLI fallback with a temp file. No attribution lines. Store the issue URL as `<ticket-url>`.
+When `<ticket-mode>` = `auto`: create via git host create issue (see `/docs/git-hosts.md` in the project root, title=`<ticket-title>`, body=`<ticket-body>`, assignee `@me`) or CLI fallback per `/docs/git-hosts.md` with a temp file. No attribution lines. Store the issue URL as `<ticket-url>`.
 
 Otherwise: `provided` → use provided value; `skip` → `SKIPPED`.
 
 ### 7. Push Branch
 
-Push with upstream via MCP `push` or `git push -u origin <current-branch>`. Report `Push: yes/no` (report `no` if "Everything up-to-date"). Store `<push-status>` and `<pushed-line>`.
+Push with upstream via git host push (see `/docs/git-hosts.md` in the project root) or `git push -u origin <current-branch>` per `/docs/git-hosts.md`. Report `Push: yes/no` (report `no` if "Everything up-to-date"). Store `<push-status>` and `<pushed-line>`.
 
 ### 8. Load PR Template
 
-Before composing the body, check the repo for a GitHub PR template. Globs: `.github/PULL_REQUEST_TEMPLATE*.md`, `.github/pull_request_template*.md`, `docs/PULL_REQUEST_TEMPLATE*.md`, `PULL_REQUEST_TEMPLATE*.md`. Detect it with `find_file_by_name` or `git-ops`/CLI `git ls-files`. If multiple match, prefer one matching the `<current-branch>` prefix (e.g., `PULL_REQUEST_TEMPLATE_feature.md` for `feature/*`); otherwise use the default template.
+Before composing the body, check the repo for a GitHub PR template. Globs: `.github/PULL_REQUEST_TEMPLATE*.md`, `.github/pull_request_template*.md`, `docs/PULL_REQUEST_TEMPLATE*.md`, `PULL_REQUEST_TEMPLATE*.md`. Detect it with `find_file_by_name` or git host file listing (see `/docs/git-hosts.md` in the project root) / `git ls-files` per `/docs/git-hosts.md`. If multiple match, prefer one matching the `<current-branch>` prefix (e.g., `PULL_REQUEST_TEMPLATE_feature.md` for `feature/*`); otherwise use the default template.
 
 If a template is found, store it as `<pr-template>` and use it verbatim as the body skeleton. Fill placeholders/sections (e.g., `## Ticket`, `## Description`, `## Checklist`) with content derived from `<changes>` and `<ticket-url>`. Preserve template structure, headings, and required reviewer checkboxes verbatim — only fill content, don't restructure. Skip the hardcoded body in §9 Step 1; use the filled template instead.
 
@@ -79,5 +79,5 @@ Primary path (when `<pr-writer-output>` is available): use `<pr-title>` and `<pr
 ## Checklist
 <checklist-items>
 ```
-When `<pr-template>` ≠ `none`, use the filled template from §8 as the body. No attribution lines. Preserve markdown newlines (single-line strings render `\n` literally). Prefer `gh_pr_create` MCP (title, body, base, head, assignee `@me`). CLI fallback: write the body to a temp file, then run `gh pr create --title "<pr-title>" --body-file /tmp/pr-body.md --base "<resolved-base>" --head "<current-branch>" --assignee "@me"`. If the PR exists, use `gh_pr_view` (pr_ref=`<current-branch>`, fields=`url,number`) or `gh pr view <current-branch> --json url,number`. Store the URL as `<pr-url>`. Verify the rendered body via `gh_pr_view` (fields=`body`) or `gh pr view <current-branch> --json body | jq -r '.body'`; re-edit if needed. Output the PR URL when created or if it already exists.
+When `<pr-template>` ≠ `none`, use the filled template from §8 as the body. No attribution lines. Preserve markdown newlines (single-line strings render `\n` literally). Prefer git host create PR (see `/docs/git-hosts.md` in the project root, title, body, base, head, assignee `@me`). CLI fallback per `/docs/git-hosts.md`: write the body to a temp file, then run `gh pr create --title "<pr-title>" --body-file /tmp/pr-body.md --base "<resolved-base>" --head "<current-branch>" --assignee "@me"`. If the PR exists, use git host view PR (see `/docs/git-hosts.md` in the project root, pr_ref=`<current-branch>`, fields=`url,number`) or `gh pr view <current-branch> --json url,number` per `/docs/git-hosts.md`. Store the URL as `<pr-url>`. Verify the rendered body via git host view PR (fields=`body`) or `gh pr view <current-branch> --json body | jq -r '.body'` per `/docs/git-hosts.md`; re-edit if needed. Output the PR URL when created or if it already exists.
 

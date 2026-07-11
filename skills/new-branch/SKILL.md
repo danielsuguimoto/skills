@@ -9,12 +9,12 @@ Create and switch to a categorized branch summarizing current uncommitted work.
 
 ## MCP Operations
 
-| Operation | Preferred MCP | CLI fallback |
+| Operation | Preferred MCP | CLI fallback per `/docs/git-hosts.md` |
 |-----------|--------------|--------------|
-| Load change state | `change_scan` | `git branch --show-current` + `git status --short` + `git diff --cached --stat` + `git diff --stat` + `git log origin/<branch>..<branch> --oneline` |
-| Pull, create, publish | `branch_create` (with `branch_name`) | `git pull origin <branch>` + `git checkout -b <cat>/<slug>` + `git push -u origin <new-branch>` |
+| Load change state | git host change scan (see `/docs/git-hosts.md` in the project root) | `git branch --show-current` + `git status --short` + `git diff --cached --stat` + `git diff --stat` + `git log origin/<branch>..<branch> --oneline` |
+| Pull, create, publish | git host branch create (see `/docs/git-hosts.md` in the project root, with `branch_name`) | `git pull origin <branch>` + `git checkout -b <cat>/<slug>` + `git push -u origin <new-branch>` |
 
-Follow AGENTS.md Git Conventions for all git/gh operations.
+Follow `/docs/git-hosts.md` in the project root for all git/gh operations.
 
 ### 1. Interpret Arguments
 
@@ -62,9 +62,9 @@ Pull `origin/<current-branch>` via MCP or CLI. If the pull fails (diverged histo
 
 ### 6. Create and Checkout Branch
 
-Create `<branch-category>/<branch-slug>` via MCP `branch_create` or `git checkout -b`. If the branch exists, retry once with a numeric suffix (`-2`). Store as `<new-branch>`.
+Create `<branch-category>/<branch-slug>` via git host branch create (see `/docs/git-hosts.md` in the project root) or `git checkout -b` per `/docs/git-hosts.md`. If the branch exists, retry once with a numeric suffix (`-2`). Store as `<new-branch>`.
 
 ### 7. Publish Branch to Remote
 
-Push with upstream via MCP `branch_create` or `git push -u origin <new-branch>`. `git push` only pushes committed changes; uncommitted changes stay local. Store `<published>` as `true` or `false`. Output the new branch name when created.
+Push with upstream via git host branch create (see `/docs/git-hosts.md` in the project root) or `git push -u origin <new-branch>` per `/docs/git-hosts.md`. `git push` only pushes committed changes; uncommitted changes stay local. Store `<published>` as `true` or `false`. Output the new branch name when created.
 

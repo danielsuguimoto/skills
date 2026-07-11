@@ -2,8 +2,8 @@
 name: code-work
 description: >
   Code reading and editing conventions. Activate when reading, writing, or editing
-  code — scoped reads, minimal edits, no comments. Invoke alongside using-serena
-  for any code change task.
+  code — scoped reads, minimal edits, no comments. Invoke alongside
+  using-code-navigation for any code change task.
 ---
 
 ## 1. Think Before Coding
@@ -59,10 +59,10 @@ For multi-step tasks, state a brief plan:
 ## Code Reading
 
 - Delegate to a subagent when edits span >1 module or >3 file reads.
-- Serena MCP is MANDATORY for symbol-level work (find/trace classes, methods, references, wiring, signatures, cross-module navigation). Use `find_symbol`/`find_references` first, not `grep`/`read`.
-- Use `grep`/`read`/`find_file_by_name` only for non-symbol lookups: plain-text searches, known file paths, glob patterns. Fall back to `read` only when Serena's LSP does not cover the language or the symbol is dynamic/eval'd.
-- Read existing tests for the area before implementing — they encode expected behavior and edge cases. Trace side effects via Serena references, never by guessing.
-- Narrow the surface area first (Serena or `grep` with `context_lines`), then `read` with `offset`/`limit` for only the needed lines. Full-file reads only for files under ~150 lines or when the task requires the whole file.
+- Code navigation tools are MANDATORY for symbol-level work (see `/docs/code-navigation.md` in the project root). Use symbol lookup and reference tracing first, not `grep`/`read`.
+- Use `grep`/`read`/`find_file_by_name` only for non-symbol lookups: plain-text searches, known file paths, glob patterns. Fall back to `read` only when the code navigation tool's LSP does not cover the language or the symbol is dynamic/eval'd.
+- Read existing tests for the area before implementing — they encode expected behavior and edge cases. Trace side effects via code navigation references (see `/docs/code-navigation.md` in the project root), never by guessing.
+- Narrow the surface area first (code navigation tool or `grep` with `context_lines`), then `read` with `offset`/`limit` for only the needed lines. Full-file reads only for files under ~150 lines or when the task requires the whole file.
 
 ## Code Editing
 

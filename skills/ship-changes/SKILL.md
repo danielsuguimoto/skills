@@ -7,11 +7,11 @@ Run the full shipping pipeline: branch, commit, push, and open a PR.
 
 ## MCP Operations
 
-| Operation | Preferred MCP | CLI fallback |
+| Operation | Preferred MCP | CLI fallback per `/docs/git-hosts.md` |
 |-----------|--------------|--------------|
-| Pre-scan change state | `change_scan` | `git branch --show-current` + `git status --short` + `git diff --stat` + `git diff --cached --stat` + `git log @{u}..HEAD --oneline` |
+| Pre-scan change state | git host change scan (see `/docs/git-hosts.md` in the project root) | `git branch --show-current` + `git status --short` + `git diff --stat` + `git diff --cached --stat` + `git log @{u}..HEAD --oneline` |
 
-Forward `git-ops` availability to subskills so they skip their own `change_scan` and `pr_diff` calls when possible. Follow AGENTS.md Git Conventions for all git/gh operations.
+Forward git host tool availability to subskills so they skip their own change scan and PR diff calls when possible. Follow `/docs/git-hosts.md` in the project root for all git/gh operations.
 
 ### 1. Interpret Arguments
 

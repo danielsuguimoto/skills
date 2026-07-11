@@ -80,11 +80,11 @@ Fallback on `BLOCKED`: if a subagent returns `BLOCKED` / `NO_*` / `UNAVAILABLE`,
 
 ## Mandatory Offloading Threshold
 
-Hard gate (overrides "default to inline"): if a task needs **more than 3 file reads** OR spans **more than 1 module** for exploration/tracing, dispatch a read-only scout BEFORE any inline `read`/`grep`/Serena query. The parent acts on the brief; raw file contents never enter parent context.
+Hard gate (overrides "default to inline"): if a task needs **more than 3 file reads** OR spans **more than 1 module** for exploration/tracing, dispatch a read-only scout BEFORE any inline `read`/`grep`/code navigation query (see `/docs/code-navigation.md` in the project root). The parent acts on the brief; raw file contents never enter parent context.
 
 Rationale: exploration tokens are the largest avoidable parent-context cost. Once read, those tokens stay in context for the whole session. A scout's distilled brief costs a fraction and is discardable.
 
-Exceptions (inline allowed): exact file path and line range already known; a single `find_symbol` / `find_references` call answers it; target file under ~50 lines and fully isolated.
+Exceptions (inline allowed): exact file path and line range already known; a single code navigation symbol lookup / reference trace call (see `/docs/code-navigation.md` in the project root) answers it; target file under ~50 lines and fully isolated.
 
 ## Failure Modes and Red Flags
 

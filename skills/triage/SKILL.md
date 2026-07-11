@@ -28,7 +28,7 @@ Delegate evidence gathering to subagents. Inline only on BLOCKED. Parent owns Lo
 
 ### Load Ticket Context
 
-- If `<ticket-url>` defined: load ticket context via the ticket MCP tool (see `AGENTS.md` → Ticket Tools) with `source: <ticket-url>`, `comments: true` → `<ticket-context>`
+- If `<ticket-url>` defined: load ticket context via the issue tracker tool (see `/docs/issue-trackers.md` in the project root) with `source: <ticket-url>`, `comments: true` → `<ticket-context>`
   - Read all attachments with `relativePath` via `read` before triaging (images → describe; documents → extract key info → `<attachment-insights>`). Note gaps if inaccessible.
 - Otherwise: treat relevant request/conversation as `<ticket-context>`
 - If `<ticket-url>` missing or `<ticket-context>` cannot be loaded → STOP
@@ -49,12 +49,12 @@ Store the mode as `<triage-mode>`.
 Delegate to subagents. Inline only on BLOCKED.
 
 **ask mode:**
-- Repository context needed: delegate to a subagent. Pass `<question>`, relevant entities, module path. Require a distilled brief: entry points, callers, conventions, file:line citations. Store as `<repo-context>`. If the subagent is unavailable or returns `BLOCKED`, fall back to inline `grep`/`find_file_by_name`/Serena.
-- Library/framework/SDK docs needed: delegate to a subagent. Pass specific API/version questions. Require a distilled brief. Store as `<doc-context>`. If the subagent is unavailable or returns `BLOCKED`, fall back to inline doc lookup (see `AGENTS.md` → Knowledge Lookup).
+- Repository context needed: delegate to a subagent. Pass `<question>`, relevant entities, module path. Require a distilled brief: entry points, callers, conventions, file:line citations. Store as `<repo-context>`. If the subagent is unavailable or returns `BLOCKED`, fall back to inline `grep`/`find_file_by_name`/code navigation tool (see `/docs/code-navigation.md` in the project root).
+- Library/framework/SDK docs needed: delegate to a subagent. Pass specific API/version questions. Require a distilled brief. Store as `<doc-context>`. If the subagent is unavailable or returns `BLOCKED`, fall back to inline doc lookup (see `/docs/doc-lookup.md` in the project root).
 
 **debug mode:**
 - Spawn a subagent with inputs from the ticket context. Store the returned fenced markdown block as `<investigation-findings>`. Skip to "Draft Findings". If the subagent is unavailable or returns `BLOCKED` / `INVESTIGATION_BLOCKED` / `NO_TICKET_CONTEXT`, fall through to inline steps below.
-- Inline fallback: run the context-gathering workflow inline — grep/find_file_by_name/Serena for symbols, database tools for data, doc lookup for framework docs. Trace the code path from user action to failure; identify where actual behavior diverges from expected. Treat the live database as the source of truth for data. Verify current schema, row counts, sample rows, and actual values directly; do not rely on seeders, migrations, or operations to establish current state.
+- Inline fallback: run the context-gathering workflow inline — grep/find_file_by_name/code navigation tool (see `/docs/code-navigation.md` in the project root) for symbols, database tools (see `/docs/database-tools.md` in the project root) for data, doc lookup (see `/docs/doc-lookup.md` in the project root) for framework docs. Trace the code path from user action to failure; identify where actual behavior diverges from expected. Treat the live database as the source of truth for data. Verify current schema, row counts, sample rows, and actual values directly; do not rely on seeders, migrations, or operations to establish current state.
 
 ### Draft Findings
 
@@ -115,7 +115,7 @@ Include file paths, line numbers. Store as `<ticket-findings>`.
 
 ### Ticket Framing
 
-Applies to both modes. See `AGENTS.md` → Ticket Tools for provider-specific framing rules (private notes vs public comments).
+Applies to both modes. See `/docs/issue-trackers.md` in the project root for provider-specific framing rules (private notes vs public comments).
 
 - Frame findings based on the ticket provider's visibility rules. When the audience is internal team only, use technical language, cite code paths, state what was found and what it means. Never write as if speaking to the client (no "Hi", no "Thanks for reaching out", no second-person address to the customer).
 - Do NOT modify, create, or delete files; do NOT run git commit or push.
@@ -123,8 +123,8 @@ Applies to both modes. See `AGENTS.md` → Ticket Tools for provider-specific fr
 ### Sync
 
 CRITICAL: Always sync findings back to the ticket. The spec phase reads prior comments via the ticket load tool; skipping sync breaks the pipeline.
-- Sync findings via the ticket sync MCP tool (see `AGENTS.md` → Ticket Tools). Pass `refUrl` = `<ticket-url>` and `comments` = array with single markdown string. Debug mode: combine `<note-title>` (as top `##` heading) and structured findings. Ask mode: pass `<ticket-findings>` directly.
-- Follow provider-specific sync rules from `AGENTS.md` (e.g., omit `title` when updating existing cards or posting private notes).
+- Sync findings via the issue tracker sync tool (see `/docs/issue-trackers.md` in the project root). Pass `refUrl` = `<ticket-url>` and `comments` = array with single markdown string. Debug mode: combine `<note-title>` (as top `##` heading) and structured findings. Ask mode: pass `<ticket-findings>` directly.
+- Follow provider-specific sync rules from `/docs/issue-trackers.md` in the project root (e.g., omit `title` when updating existing cards or posting private notes).
 - If sync fails, report the error and provide findings in chat.
 
 ## Notes

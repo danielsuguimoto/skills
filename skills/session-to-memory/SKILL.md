@@ -7,7 +7,7 @@ description: >
   and context, then persists it to the active memory provider.
 ---
 
-This skill decides what to extract. `memory-usage` decides when writing is warranted. The active memory-provider skill supplies driver mechanics (tool names, args).
+This skill decides what to extract. `memory-usage` decides when writing is warranted. The active memory-provider skill supplies driver mechanics (tool names, args; see `/docs/memory-providers.md` in the project root).
 
 ## When to Run
 
@@ -42,7 +42,7 @@ Pull only what clears the `memory-usage` write bar: reusable, hard-won, non-obvi
 ## Procedure
 
 1. **Survey + Filter (delegate)** — delegate to a subagent. Pass the session's conversation history, tool outputs, and touched file paths. Require a distilled candidate list of `(topic-path, one-line substance, source citation)` entries that clear the `memory-usage` write bar. The subagent does the unbounded scan and filtering; the raw transcript never enters parent context. If the subagent is unavailable or returns `BLOCKED`, fall back to inline survey+filter.
-2. **Dedupe** — list existing memories (`memory-usage` workflow step 1). For each candidate, edit the existing entry if it overlaps; write a new entry only if the topic path is absent.
+2. **Dedupe** — list existing memories (`memory-usage` workflow step 1; see `/docs/memory-providers.md` in the project root). For each candidate, edit the existing entry if it overlaps; write a new entry only if the topic path is absent.
 3. **Structure** — name entries with stable slash-separated topic paths (`modules/<name>/<subtopic>`, `pitfalls/<topic>`, `decisions/<topic>`). Cross-reference with `mem:<name>`.
 4. **Persist** — hand each write to the active memory-provider skill's driver. The parent owns persistence; never delegate writes.
 5. **Report** — one line per entry written or edited: `topic-path — verb (wrote|edited) — source citation`. If nothing cleared the bar, say so.

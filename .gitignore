@@ -24,3 +24,6 @@ $RECYCLE.BIN/
 
 # Logs
 *.log
+
+docs/
+.serena/

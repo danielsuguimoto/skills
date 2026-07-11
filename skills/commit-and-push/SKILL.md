@@ -5,13 +5,13 @@ description: "Commit and push current changes."
 
 ## MCP Operations
 
-| Operation | Preferred MCP | CLI fallback |
+| Operation | Preferred MCP | CLI fallback per `/docs/git-hosts.md` |
 |-----------|--------------|--------------|
-| Load change state | `change_scan` | `git branch --show-current` + `git status --short` + `git diff --stat` + `git diff --cached --stat` + `git log @{u}..HEAD --oneline` |
-| Stage and commit | `commit` (with `message`) | `git add -A` + `git commit -m "<message>"` |
-| Push to remote | `push` | `git push` (retry `git push -u origin <branch>` if no upstream) |
+| Load change state | git host change scan (see `/docs/git-hosts.md` in the project root) | `git branch --show-current` + `git status --short` + `git diff --stat` + `git diff --cached --stat` + `git log @{u}..HEAD --oneline` |
+| Stage and commit | git host commit (see `/docs/git-hosts.md` in the project root, with `message`) | `git add -A` + `git commit -m "<message>"` |
+| Push to remote | git host push (see `/docs/git-hosts.md` in the project root) | `git push` (retry `git push -u origin <branch>` if no upstream) |
 
-Follow AGENTS.md Git Conventions for all git/gh operations.
+Follow `/docs/git-hosts.md` in the project root for all git/gh operations.
 
 ### 1. Interpret Arguments
 

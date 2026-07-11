@@ -7,8 +7,8 @@ Address PR feedback by making fixes and replying directly to review threads — 
 
 ## Quick Reference
 
-- Execution modes: `review` (default; ask before commit/push) or `auto` (commits/pushes without approval). Tools: `git-ops` MCP (fallback `git` CLI), `gh` MCP (fallback `gh` CLI). Prefer MCP.
-- ABSOLUTE RULE: Reply directly to review threads — never standalone PR comments. Follow AGENTS.md Git Conventions.
+- Execution modes: `review` (default; ask before commit/push) or `auto` (commits/pushes without approval). Tools: git host tool (see `/docs/git-hosts.md` in the project root). Prefer MCP; fall back to CLI.
+- ABSOLUTE RULE: Reply directly to review threads — never standalone PR comments. Follow `/docs/git-hosts.md` in the project root.
 
 Delegate Steps 2, 4, and 5 to a subagent. Inline only on `BLOCKED`, `NO_PR_REF`, or `NO_FEEDBACK`. The parent owns Steps 1, 3, and 6-13.
 
@@ -22,13 +22,13 @@ Delegate Steps 2, 4, and 5 to a subagent. Inline only on `BLOCKED`, `NO_PR_REF`,
 
 ### 2. Delegate PR Analysis (primary path)
 
-Resolve the project root via `git rev-parse --show-toplevel` → `<repo-path>`. Use it as `cwd` for every MCP call. Spawn a subagent with `<pr-ref>`, `<repo-path>`, and `<additional-context>`. Store the returned fenced markdown block as `<pr-analysis>`. Extract `<pr-number>`, `<pr-branch>`, and `<base-branch>` from the PR_NUMBER/PR_BRANCH/BASE_BRANCH sections. Run `git branch --show-current` → `<current-branch>`. Skip to Step 3. If the subagent is unavailable or returns `BLOCKED`, `MISSING_INPUT`, or `NO_PR_REF`, fall through to inline Steps 2, 4, and 5. If it returns `NO_FEEDBACK`, output "No changes".
+Resolve the project root via `git rev-parse --show-toplevel` (see `/docs/git-hosts.md` in the project root) → `<repo-path>`. Use it as `cwd` for every MCP call. Spawn a subagent with `<pr-ref>`, `<repo-path>`, and `<additional-context>`. Store the returned fenced markdown block as `<pr-analysis>`. Extract `<pr-number>`, `<pr-branch>`, and `<base-branch>` from the PR_NUMBER/PR_BRANCH/BASE_BRANCH sections. Run `git branch --show-current` → `<current-branch>`. Skip to Step 3. If the subagent is unavailable or returns `BLOCKED`, `MISSING_INPUT`, or `NO_PR_REF`, fall through to inline Steps 2, 4, and 5. If it returns `NO_FEEDBACK`, output "No changes".
 
 ### 2i. Load PR Context (inline fallback)
 
-Primary thread source: `gh_pr_list_unresolved_review_comments` (MCP, `cwd: <repo-path>`). It filters `isResolved=false` server-side, so resolved-thread bodies never enter parent context. CLI fallback: GraphQL `reviewThreads` with `isResolved` filter. Use `gh_pr_list_review_comments`/REST `pulls/{n}/comments` only as a `databaseId` cross-reference — never as the primary thread source, because it returns resolved comments too.
+Primary thread source: git host list unresolved review comments (see `/docs/git-hosts.md` in the project root). It filters `isResolved=false` server-side, so resolved-thread bodies never enter parent context. CLI fallback per `/docs/git-hosts.md`: GraphQL `reviewThreads` with `isResolved` filter. Use git host list review comments/REST `pulls/{n}/comments` only as a `databaseId` cross-reference — never as the primary thread source, because it returns resolved comments too.
 
-PR metadata: `gh_pr_view` (MCP, `cwd: <repo-path>`, fields: `number,title,body,url,headRefName,baseRefName,author,state,commits`) and `gh_pr_list_reviews` (MCP, `cwd: <repo-path>`). CLI fallback:
+PR metadata: git host view PR (see `/docs/git-hosts.md` in the project root, fields: `number,title,body,url,headRefName,baseRefName,author,state,commits`) and git host list reviews (see `/docs/git-hosts.md` in the project root). CLI fallback per `/docs/git-hosts.md`:
 ```bash
 gh pr view <pr-number> --json number,title,body,url,headRefName,baseRefName,author,state,commits
 gh api repos/{owner}/{repo}/pulls/<pr-number>/reviews
@@ -38,13 +38,13 @@ Extract `<pr-branch>`, `<base-branch>`, `<pr-number>`, and `<pr-url>`. Run `git 
 
 ### 3. Align Local Branch
 
-If `<pr-branch>` is unavailable, STOP. Otherwise check out via `gh_pr_checkout` (MCP) or CLI `gh pr checkout <pr-number>`. Store the active branch as `<active-branch>`. If checkout fails, STOP. Don't modify code until `<active-branch>` == `<pr-branch>`.
+If `<pr-branch>` is unavailable, STOP. Otherwise check out via git host checkout PR (see `/docs/git-hosts.md` in the project root) or CLI `gh pr checkout <pr-number>` per `/docs/git-hosts.md`. Store the active branch as `<active-branch>`. If checkout fails, STOP. Don't modify code until `<active-branch>` == `<pr-branch>`.
 
 > Never skip checkout even if workspace looks related. `<pr-ref>` is authoritative.
 
 ### 4i. Load Changes (inline fallback)
 
-Use `gh_pr_diff` (MCP). CLI fallback: `gh pr diff <pr-number>` or `git diff <base-branch>...<active-branch>`. Store as `<changes>`.
+Use git host PR diff (see `/docs/git-hosts.md` in the project root). CLI fallback per `/docs/git-hosts.md`: `gh pr diff <pr-number>` or `git diff <base-branch>...<active-branch>`. Store as `<changes>`.
 
 ### 5i. Analyze Feedback (inline fallback)
 
@@ -75,7 +75,7 @@ Parallel path: for each group, spawn a background subagent with group inputs. Th
 
 ### 8. Validate Changes
 
-- Delegate lint and tests to a foreground subagent: `kool run php vendor/bin/pint --dirty --format agent` and `kool run test --compact --filter` on the changed files. If the subagent is unavailable, run the same commands inline.
+- Delegate lint and tests to a foreground subagent: project lint and test commands (see project config or `/docs/` in the project root) on the changed files. If the subagent is unavailable, run the same commands inline.
 - Confirm the fixes address the feedback. Store `<validation-results>` and `<validation-passing>` (`yes`/`no`).
 
 ### 9. Review Fixes With User — MANDATORY APPROVAL GATE
@@ -116,7 +116,7 @@ CRITICAL — NEVER VIOLATE:
 - NEVER add standalone PR review comments (`gh pr review -c` or `gh pr comment`)
 - Every response = direct reply to existing review thread
 
-Sole exception — flat PR comments: if the reviewer left a flat PR comment (no line anchor), post a single flat PR comment that quote-replies (blockquote original + author handle, then response). This is the only permitted use of `gh_pr_comment` (MCP) or `gh pr comment` (CLI). Correct: use `gh_pr_reply_to_review_thread` MCP tool (`pr_number`, `comment_id`, `body`). CLI fallback:
+Sole exception — flat PR comments: if the reviewer left a flat PR comment (no line anchor), post a single flat PR comment that quote-replies (blockquote original + author handle, then response). This is the only permitted use of git host PR comment (see `/docs/git-hosts.md` in the project root) or `gh pr comment` (CLI) per `/docs/git-hosts.md`. Correct: use git host reply to review thread (see `/docs/git-hosts.md` in the project root, `pr_number`, `comment_id`, `body`). CLI fallback per `/docs/git-hosts.md`:
 
 ```bash
 gh api repos/{owner}/{repo}/pulls/<pr-number>/comments/<comment-id>/replies \
@@ -129,7 +129,7 @@ Avoid `-f body=` with special characters (use `--input -`), `gh pr review -c`, a
 
 ### 13. Resolve Addressed Threads
 
-After replying to fully addressed threads, resolve them via GraphQL `resolveReviewThread` (GraphQL-only; no REST endpoint). Use MCP `gh_pr_list_review_threads` to map comment IDs to thread node IDs (`PRRT_...`), then `gh_pr_resolve_review_thread` (`thread_id`).
+After replying to fully addressed threads, resolve them via GraphQL `resolveReviewThread` (GraphQL-only; no REST endpoint). Use git host list review threads (see `/docs/git-hosts.md` in the project root) to map comment IDs to thread node IDs (`PRRT_...`), then git host resolve review thread (see `/docs/git-hosts.md` in the project root, `thread_id`).
 
 CLI fallback:
 ```bash

@@ -12,7 +12,7 @@ Apply the user's local code-review feedback to the implementation. Local only �
 
 Act on feedback only: fix bugs, apply improvements, refactor per notes. Do NOT:
 - Create or update PRs
-- Commit or push (`git commit`, `git push`, `git-ops` commit tools)
+- Commit or push (git host commit/push tools, see `/docs/git-hosts.md` in the project root)
 - Reply to review threads (none exist)
 - Suggest follow-up work, next steps, or shipping on completion
 - Widen scope unless feedback explicitly requests it
@@ -23,7 +23,7 @@ The user ships separately.
 
 - Input: `$ARGUMENTS` = user feedback (free-form prose, possibly multi-point).
 - Branch: stay on the current branch (typically `master`). Do NOT switch.
-- Tools: `git-ops` MCP for status/diff only (fallback `git` CLI). Never use commit/push tools.
+- Tools: git host tool for status/diff only (see `/docs/git-hosts.md` in the project root). Never use commit/push tools.
 - Do NOT delegate to PR-shaped subagents — they expect PR metadata and misinterpret local feedback. Parse inline; spawn generic background subagents for parallel groups only if the runtime supports them.
 
 ### 1. Capture Feedback
@@ -33,10 +33,10 @@ Read `$ARGUMENTS` → `<feedback-raw>`. If empty or only a question, STOP and as
 ### 2. Load Current Changes
 
 Get workspace state:
-- `git-ops` `change_scan` (fallback `git status --short` + `git diff --stat`) → `<changes>`.
+- git host change scan (see `/docs/git-hosts.md` in the project root) (fallback `git status --short` + `git diff --stat` per `/docs/git-hosts.md`) → `<changes>`.
 - Clean tree (no implementation changes) → STOP and tell the user there is nothing to apply feedback against.
 
-Store `<active-branch>` = `git branch --show-current`. Do NOT checkout.
+Store `<active-branch>` = `git branch --show-current` (per `/docs/git-hosts.md` in the project root). Do NOT checkout.
 
 ### 3. Parse Feedback Into Actionable Items
 
@@ -93,7 +93,7 @@ STOP. No next steps, no shipping suggestions, no PR creation. The user invokes o
 ## Red Flags
 
 **Never:**
-- Commit, push, or call any commit/push MCP/CLI tool
+- Commit, push, or call any git host commit/push tool (see `/docs/git-hosts.md` in the project root)
 - Create a PR, comment on a PR, or reply to review threads
 - Switch branches or checkout anything
 - Widen scope beyond the feedback
