@@ -1,6 +1,6 @@
 ---
 name: context-gathering
-description: MANDATORY HOW-skill. Must be invoked BEFORE any codebase exploration, code reading, writing, editing, or answering about code. If this skill is not active in the current conversation, DO NOT explore/read/edit code or answer code questions.
+description: MANDATORY skill. Invoke BEFORE any codebase exploration, code reading, writing, editing, or answering about code. If not active in the current conversation, DO NOT explore/read/edit code or answer code questions.
 ---
 
 ## Core Principle

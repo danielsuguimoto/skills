@@ -1,6 +1,6 @@
 ---
 name: new-branch
-description: "Use when starting new work that needs a branch — creates and switches to a categorized branch summarizing current uncommitted or ahead-of-base work. Invoke when the user says 'new branch', 'start a branch', or when beginning a new task."
+description: "Use when starting new work that needs a branch — creates and switches to a categorized branch summarizing current uncommitted or ahead-of-base work. Invoke when the user says 'new branch', 'start a branch', or begins a new task."
 ---
 
 # Branch From Work

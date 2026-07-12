@@ -1,6 +1,6 @@
 ---
 name: browser-automation
-description: Use when you need browser automation (QA, element interaction, screencapture/snapshot, network capture), or have to work across user's logged-in accounts, apps, memory, and browsing history.
+description: Use for browser automation (QA, element interaction, screencapture/snapshot, network capture) or to work across the user's logged-in accounts, apps, memory, and browsing history.
 ---
 
 # Browser Automation

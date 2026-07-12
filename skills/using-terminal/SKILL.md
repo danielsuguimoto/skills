@@ -1,6 +1,6 @@
 ---
 name: using-terminal
-description: MANDATORY HOW-skill. Must be invoked BEFORE sending ANY command to the terminal/shell tool. If this skill is not active in the current conversation, DO NOT call exec.
+description: MANDATORY skill. Invoke BEFORE sending ANY command to the terminal/shell tool. If not active in the current conversation, DO NOT call exec.
 ---
 
 # Terminal Token Compression

@@ -1,6 +1,6 @@
 ---
 name: knowledge-graph
-description: "Use for any question about a codebase, its architecture, file relationships, or project content — especially when a knowledge graph output exists. Turns any input (code, docs, papers, images, videos) into a persistent knowledge graph with community detection, and query/path/explain tools."
+description: "Use for any question about a codebase, its architecture, file relationships, or project content — especially when a knowledge graph output exists. Turns any input (code, docs, papers, images, videos) into a persistent knowledge graph with community detection and query/path/explain tools."
 argument-hint: "[path|query|subcommand]"
 ---
 

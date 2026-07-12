@@ -1,6 +1,6 @@
 ---
 name: caveman
-description: Compression communication mode. Drops filler, hedging, and narration while keeping full sentences and technical accuracy. Use when the user says "caveman mode", "use caveman", "less tokens", "be brief", /caveman, or requests token efficiency.
+description: Compressed communication mode. Drops filler, hedging, and narration while keeping full sentences and technical accuracy. Use when the user says "caveman mode", "use caveman", "less tokens", "be brief", /caveman, or requests token efficiency.
 ---
 
 ## Core directive

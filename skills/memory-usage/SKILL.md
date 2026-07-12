@@ -2,7 +2,7 @@
 name: memory-usage
 description: >
   Use when reading or writing persistent project memory before, during, or after
-  non-trivial work. Always pair with the active memory-provider skill (see
+  non-trivial work. Pair with the active memory-provider skill (see
   `/docs/memory-providers.md` in the project root) for driver-specific tool
   mechanics.
 ---
