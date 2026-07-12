@@ -58,6 +58,24 @@ Otherwise spawn foreground. The parent pauses but the subagent gets full tool ac
 
 Profiles are discovered dynamically. Verify availability before delegating. If missing, fall back to inline per the WHAT-skill.
 
+## Model Routing
+
+Route by task shape. Strong models cost latency and tokens; weak models fail complex reasoning.
+
+| Task shape | Tier | Rationale |
+|---|---|---|
+| Code exploration, scout brief, symbol trace | Fast / cheap | Bounded read, distilled return |
+| Doc fetch, library/SDK lookup | Mid | Broad retrieval, moderate synthesis |
+| Implementation on disjoint files, PR-fix, synthesis | Strong | Multi-step reasoning, code generation |
+| Memory extraction, to-specs planning | Mid–strong | Judgment + structured output |
+| Test suite execution | Fast | Mechanical run + report |
+
+Mechanism is tool-specific: profile frontmatter `model` field, agent config, enterprise "subagent router" setting, or unsupported (inherits parent model). Discover via the tool's native profile/config system — same as profiles themselves. When unsupported, the parent model is used; bias toward inline if the parent model is already the right tier.
+
+**Defaults:** no `model` set → inherit parent session model; tool auto-routes → trust the router, override only on clear task-shape mismatch; unsupported → do not work around by spawning a second subagent, inline or accept inheritance.
+
+**Never** pin a strong model on a scout. **Never** pin a fast model on a synthesis step.
+
 ## Parallel Execution
 
 Spawn in parallel when workstreams are independent (no shared file writes, no cross-stream data dependency). **Don't parallelize** when: workstreams share file writes (serialize/merge), one stream feeds the next (serialize/fan-in), sync cost exceeds time saved (inline), or the work is a bounded single stream (inline is cheaper).
