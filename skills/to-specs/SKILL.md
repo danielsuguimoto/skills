@@ -22,7 +22,7 @@ Turn a request or ticket into a spec, then sync to the ticket system. Read-only 
 
 3. **Interpret Planning Context**: Derive from the full ticket (raw text + comments): `<planning-objective>`, `<operative-constraints>`, `<proposed-technical-direction>`, and `<open-questions>` (only unresolved issues). Keep earlier comments that define constraints, business rules, implementation decisions, migration rules, naming, sequencing, or scoping. If the request describes multiple independent subsystems, flag it immediately. Help the user identify the independent pieces, their relationships, and the build order. Plan the first subsystem through the normal flow. Split into separate tickets only when the user explicitly asks.
 
-4. **Gather Project Standards**: Read the relevant `AGENTS.md` files and `/docs/` specifications in the project root (project root and module-specific). Check the active memory provider for code standards, architecture, and tech stack. Store as `<project-standards>`.
+4. **Gather Project Standards**: Read the relevant `/docs/` specifications in the project root (project root and module-specific). Check the active memory provider for code standards, architecture, and tech stack. Store as `<project-standards>`.
 
 5. **Clarify Requirements with User (MANDATORY)**: Run a clarification interview before shaping the spec by default. Skipping is the exception; justify it in the spec output. No assumptions, guesses, or inferred intent instead of user clarification.
 

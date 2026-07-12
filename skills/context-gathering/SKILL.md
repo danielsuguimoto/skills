@@ -40,7 +40,7 @@ Code navigation tools are PRIMARY for symbol-level work (see `/docs/code-navigat
 ### 3. Map the codebase
 
 - If a knowledge graph output exists (see `/docs/knowledge-graphs.md` in the project root), query it before raw source browsing. Fallback to the knowledge graph wiki/report for broad navigation and architecture review (see `/docs/knowledge-graphs.md` in the project root).
-- Locate entry points, related modules, dependencies. Read module-specific `AGENTS.md` files for conventions. Trace cross-module wiring via contracts and repositories. Identify callers and callees. Read existing implementations of similar features for patterns.
+- Locate entry points, related modules, dependencies. Trace cross-module wiring via contracts and repositories. Identify callers and callees. Read existing implementations of similar features for patterns.
 - Query the database when the target touches persisted state: schema, row counts, EXPLAIN plans, sample rows. Use database tools (see `/docs/database-tools.md` in the project root). Database state is ground truth — verify it alongside code. Do not rely on seeders, migrations, factories, or operations for current data shape.
 
 ### 4. Fetch current documentation
