@@ -1,6 +1,6 @@
 ---
 name: triage
-description: "Triage a ticket: answer a question or debug an issue. Loads ticket context, gathers codebase/database/library evidence, and posts findings. Invoke when the user says 'answer this ticket', 'debug this ticket', 'triage this ticket', or when a ticket needs investigation or a response. READ-ONLY — no code changes."
+description: "Use when answering a ticket question, debugging an issue, or when a ticket needs investigation or a response. READ-ONLY — no code changes."
 ---
 
 Load ticket context, determine mode (ask or debug), gather evidence, draft findings, sync back.

@@ -1,9 +1,7 @@
 ---
 name: code-work
 description: >
-  Code reading and editing conventions. Activate when reading, writing, or editing
-  code — scoped reads, minimal edits, no comments. Invoke alongside
-  using-code-navigation for any code change task.
+  Code reading and editing conventions. Activate when reading, writing, or editing code. Invoke alongside using-code-navigation for any code change task.
 ---
 
 ## 1. Think Before Coding

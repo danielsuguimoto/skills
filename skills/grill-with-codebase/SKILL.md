@@ -1,6 +1,6 @@
 ---
 name: grill-with-codebase
-description: Grill the user about a task or intent, using the codebase as ground truth, until the resolved decisions form a concrete plan. Use when the user brings a task, ticket, or vague intent touching an existing codebase and wants interrogation to shape a buildable plan, or uses any 'grill' trigger phrases alongside a codebase context.
+description: Use when the user brings a task, ticket, or vague intent touching an existing codebase and wants interrogation to shape a buildable plan, or uses any 'grill' trigger phrases alongside a codebase context.
 ---
 
 I have a task or intent, not a finished plan. Interview me one question at a time until the answers form a concrete plan. Resolve dependencies between decisions one-by-one. Give a recommended answer with each question.

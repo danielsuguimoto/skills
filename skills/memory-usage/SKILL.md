@@ -1,10 +1,7 @@
 ---
 name: memory-usage
 description: >
-  Use when reading or writing persistent project memory before, during, or after
-  non-trivial work. Pair with the active memory-provider skill (see
-  `/docs/memory-providers.md` in the project root) for driver-specific tool
-  mechanics.
+  Use when reading or writing persistent project memory before, during, or after non-trivial work.
 ---
 
 Persistent memory holds facts that are expensive to re-derive and survive across sessions.

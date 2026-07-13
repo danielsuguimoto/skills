@@ -1,6 +1,6 @@
 ---
 name: pr-fix
-description: "Addresses feedback on a pull request by making fixes and RESPONDING DIRECTLY TO REVIEW THREADS."
+description: "Activate when a pull request has review feedback that requires code fixes and direct thread responses."
 ---
 
 Address PR feedback by making fixes and replying directly to review threads — NEVER add standalone PR comments.

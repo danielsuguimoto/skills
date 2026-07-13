@@ -1,6 +1,6 @@
 ---
 name: implement
-description: "Develop from a ticket: load details, gather context, implement on master."
+description: "Activate when implementing a ticket or planned change directly on master."
 ---
 
 ## MCP Server Preference
