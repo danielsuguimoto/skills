@@ -75,6 +75,8 @@ Subagent unavailable or `BLOCKED` → fall back inline:
 - PHP: Run the project's lint command (see project config or `/docs/` in the project root) (inline)
 - Tests: delegate to a subagent with the project's test command (see project config or `/docs/` in the project root). Unavailable → inline run of the project's test command.
 
+**Test todo items**: when the `in_progress` item is a test, delegate creation to a write-capable subagent — do not scout test context in the parent. Pass the inherited `file`/`symbol`/`location`/`patch`, the production code under test, and a distilled brief of conventions from Step 4. The subagent scouts existing tests, base classes, factories, and assertion style; writes the test; returns a distilled brief (files created/modified, what each test covers). Parent keeps verification: lint + run tests per the bullets above. Unavailable → fall back inline.
+
 6. **Present Implementation**: Complete and validated → present changes and STOP. No approval, no commit, no push.
 
 Load status + diff stat (git host change scan; see `/docs/git-hosts.md` in the project root).
