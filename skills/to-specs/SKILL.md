@@ -32,9 +32,9 @@ If the request is unclear or any gate is false or uncertain, invoke a clarificat
 
 Skip reason (when used): `Skip reason: <all 6 conditions met because ...>`. Skipping without justification is a process violation.
 
-6. **Gather Context** (repo, docs, skills): Delegate each layer to the matching subagent. Fall back to inline when unavailable or `BLOCKED`.
-- **Repo**: Delegate to a subagent with `<planning-objective>`, `<proposed-technical-direction>`, `<related-entities>`, module path. Require entry points, existing patterns, callers, schema facts, `file:line` citations, validation of `<proposed-technical-direction>`, and a **surface inventory** of each layer the change touches (DB, model, policy, service, controller, API, UI, tests, config, docs, ops). For each layer state: patch, new file, or no change, with concrete file(s) and symbol(s). Store as `<repo-context>`. Inline fallback: `grep`/`find_file_by_name` for names, code navigation tool (see `/docs/code-navigation.md` in the project root) for symbols/references, database tools (see `/docs/database-tools.md` in the project root) for schema. Read one or two key files. Confirm current behavior and patterns. Note gaps; avoid false certainty.
-- **Docs**: Delegate to a subagent with libraries, frameworks, Laravel features, `<proposed-technical-direction>`, API/best-practice questions. Require API signatures, version-specific behavior, gotchas. Store as `<doc-context>`. Inline fallback: doc lookup per `/docs/doc-lookup.md` in the project root.
+6. **Gather Context** (repo, docs, skills):
+- **Repo**: Gather entry points, existing patterns, callers, schema facts, `file:line` citations, validation of `<proposed-technical-direction>`, and a **surface inventory** of each layer the change touches (DB, model, policy, service, controller, API, UI, tests, config, docs, ops). For each layer state: patch, new file, or no change, with concrete file(s) and symbol(s). Store as `<repo-context>`. Use `grep`/`find_file_by_name` for names, code navigation tool (see `/docs/code-navigation.md` in the project root) for symbols/references, database tools (see `/docs/database-tools.md` in the project root) for schema. Read one or two key files. Confirm current behavior and patterns. Note gaps; avoid false certainty.
+- **Docs**: Gather API signatures, version-specific behavior, gotchas for libraries, frameworks, Laravel features, `<proposed-technical-direction>`, API/best-practice questions. Store as `<doc-context>`. Use doc lookup per `/docs/doc-lookup.md` in the project root.
 - **Skills**: If planning touches specific domains (testing, frontend, Livewire), invoke the relevant skills. Store as `<skill-context>`.
 
 7. **Brainstorm Technical Approaches**: After inspecting the repo, brainstorm for complex tasks. Complex = touches multiple subsystems, has multiple valid high-level approaches, lacks concrete `<proposed-technical-direction>`, or user flags it. For complex tasks: ask remaining clarifying questions one at a time; propose 2-3 approaches grounded in `<repo-context>` with trade-offs; lead with a recommendation; ask the user to choose one. Record as `<technical-approach-decision>` and get explicit alignment before shaping the spec. For non-complex tasks, skip only when `<proposed-technical-direction>` is concrete and unambiguous and the user has explicitly confirmed it.
@@ -70,7 +70,7 @@ Rules: One item = one single-purpose patch. Split compound changes into separate
 
 Wait for the user's response. Revise and re-run self-review if needed. Sync only after approval.
 
-**Self-Review Checklist** (fix failures inline before syncing):
+**Self-Review Checklist** (fix failures before syncing):
 - [ ] No placeholders, TBDs, TODOs, or vague requirements.
 - [ ] Internal consistency: checklists match description; each implementation item has validation coverage.
 - [ ] Scope: one ticket. Narrow the destination if not.

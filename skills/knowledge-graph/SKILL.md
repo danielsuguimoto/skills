@@ -85,59 +85,57 @@ After transcription: read `graphify-out/.graphify_transcripts.json` (the graph o
 
 ### Step 3 - Extract entities and relationships
 
-**Before starting:** Note if `--mode deep` was given. Pass `DEEP_MODE=true` to every subagent in Step B2 if set. Track from the original invocation.
+**Before starting:** Note if `--mode deep` was given. Pass `DEEP_MODE=true` to every extraction chunk in Step B2 if set. Track from the original invocation.
 
 Two parts: **structural extraction** (AST, deterministic, free) and **semantic extraction** (your model, costs tokens).
 
-> **The knowledge graph tool needs no external API key. Never ask or block on one.** Code is extracted structurally (AST) with no LLM/key — a code-only corpus skips semantic extraction entirely (go straight to Part A, skip Part B). Semantic extraction (docs/papers/images only) uses your model. The tool does **not** read any provider key. If subagents are unavailable: code-only corpus has no semantic work (write an empty semantic file and continue to Part C); for docs/papers/images, extract inline. Never prompt or block on a missing API key — proceed without one.
+> **The knowledge graph tool needs no external API key. Never ask or block on one.** Code is extracted structurally (AST) with no LLM/key — a code-only corpus skips semantic extraction entirely (go straight to Part A, skip Part B). Semantic extraction (docs/papers/images only) uses your model. The tool does **not** read any provider key. Code-only corpus has no semantic work (write an empty semantic file and continue to Part C). Never prompt or block on a missing API key — proceed without one.
 
-**Run Part A (AST) and Part B (semantic) in parallel. Dispatch all semantic subagents AND start AST extraction in the same message. They run simultaneously across different file types. Merge in Part C.**
+**Run Part A (AST) and Part B (semantic) in parallel. Start AST extraction and semantic extraction in the same message. They run simultaneously across different file types. Merge in Part C.**
 
 #### Part A - Structural extraction for code files
 
-For any code files detected, run AST extraction in parallel with Part B subagents (see `/docs/knowledge-graphs.md` in the project root):
+For any code files detected, run AST extraction in parallel with Part B (see `/docs/knowledge-graphs.md` in the project root):
 
 <!-- script: see references/scripts.md §Step 3 Part A - Structural extraction (AST) -->
 
-#### Part B - Semantic extraction (parallel subagents)
+#### Part B - Semantic extraction (parallel chunks)
 
 **Fast path:** If zero docs/papers/images are detected (code-only corpus), skip Part B and go straight to Part C. AST handles code.
 
-Before dispatching subagents, print a timing estimate:
+Before starting, print a timing estimate:
 - Load `total_words`/file counts from `graphify-out/.graphify_detect.json`
-- Estimate agents: `ceil(uncached_non_code_files / 22)` (chunk size 20-25)
-- Estimate time: ~45s per agent batch (parallel, so total ≈ 45s × ceil(agents/parallel_limit))
-- Print: "Semantic extraction: ~N files → X agents, estimated ~Ys"
-
-**MANDATORY: Use the subagent system here. Reading files one-by-one is forbidden (5-10x slower).**
+- Estimate chunks: `ceil(uncached_non_code_files / 22)` (chunk size 20-25)
+- Estimate time: ~45s per chunk batch (parallel, so total ≈ 45s × ceil(chunks/parallel_limit))
+- Print: "Semantic extraction: ~N files → X chunks, estimated ~Ys"
 
 **Step B0 - Check extraction cache first**
 
-Before dispatching any subagents, check which files already have cached extraction results:
+Before starting, check which files already have cached extraction results:
 
 <!-- script: see references/scripts.md §Step B0 - Check extraction cache -->
 
-Only dispatch subagents for files listed in `graphify-out/.graphify_uncached.txt`. If all files are cached, skip to Part C directly.
+Only process files listed in `graphify-out/.graphify_uncached.txt`. If all files are cached, skip to Part C directly.
 
 **Step B1 - Split into chunks**
 
 Load files from `graphify-out/.graphify_uncached.txt`. Split into chunks of 20-25 files each. Each image gets its own chunk (vision needs separate context). Group files from the same directory together so related artifacts land in the same chunk and cross-file relationships are more likely to be extracted.
 
-**Step B2 - Dispatch subagents**
+**Step B2 - Extract each chunk**
 
-Dispatch ALL subagents in the same response so they run in parallel.
+Process ALL chunks in parallel.
 
 Concrete example for 3 chunks:
 ```
-[Subagent 1: files 1-15]
-[Subagent 2: files 16-30]
-[Subagent 3: files 31-45]
+[Chunk 1: files 1-15]
+[Chunk 2: files 16-30]
+[Chunk 3: files 31-45]
 ```
 
-For each chunk, dispatch a subagent with this exact prompt (fill in `FILE_LIST`):
+For each chunk, extract a knowledge graph fragment using this exact prompt (fill in `FILE_LIST`):
 
 ```
-You are a knowledge graph extraction subagent. Read the files listed and extract a knowledge graph fragment.
+Read the files listed and extract a knowledge graph fragment.
 Output ONLY valid JSON with no commentary: {"nodes": [...], "edges": [...], "hyperedges": [...], "input_tokens": 0, "output_tokens": 0}
 
 Extraction rules:
@@ -171,17 +169,17 @@ FILE_LIST
 
 **Step B3 - Cache and merge**
 
-Wait for all subagents. For each result:
+Wait for all chunks. For each result:
 - Check that `graphify-out/.graphify_chunk_N.json` exists on disk — this is the success signal.
 - If the file exists and contains valid JSON with `nodes` and `edges`, include it and save to cache.
-- If the file is missing, the subagent was likely dispatched as read-only — print a warning: "chunk N missing from disk — subagent may have been read-only. Re-run with general-purpose agent." Do not silently skip.
-- If a subagent failed or returned invalid JSON, print a warning and skip that chunk — do not abort.
+- If the file is missing, print a warning: "chunk N missing from disk." Do not silently skip.
+- If a chunk failed or returned invalid JSON, print a warning and skip that chunk — do not abort.
 
-If more than half the chunks failed or are missing, stop and tell the user to re-run with `subagent_type="general-purpose"`.
+If more than half the chunks failed or are missing, stop and tell the user to re-run.
 
-After each subagent call completes, write its result to `graphify-out/.graphify_chunk_N.json`. **Then read the real token counts from the subagent tool result's `usage` field and write them back into the chunk JSON before merging** — the chunk JSON itself always has placeholder zeros. Then merge:
+After each chunk completes, write its result to `graphify-out/.graphify_chunk_N.json`. The chunk JSON has placeholder zeros for token counts — update them with real values before merging. Then merge:
 
-<!-- script: see references/scripts.md §Step B3 - Merge subagent chunks -->
+<!-- script: see references/scripts.md §Step B3 - Merge chunks -->
 
 Save new results to cache:
 <!-- script: see references/scripts.md §Step B3 - Save new results to cache -->
@@ -334,7 +332,7 @@ If new files exist, first check whether all changed files are code files:
 
 <!-- script: see references/scripts.md §--update - Check if code-only -->
 
-If `code_only` is True: print `[graphify update] Code-only changes detected - skipping semantic extraction (no LLM needed)`, run only Step 3A (AST) on the changed files, skip Step 3B entirely (no subagents), then merge and run Steps 4-8.
+If `code_only` is True: print `[graphify update] Code-only changes detected - skipping semantic extraction (no LLM needed)`, run only Step 3A (AST) on the changed files, skip Step 3B entirely, then merge and run Steps 4-8.
 
 If `code_only` is False (any changed file is a doc/paper/image): run the full Steps 3A-3C pipeline as normal.
 

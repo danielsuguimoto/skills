@@ -11,7 +11,7 @@ Operations: detect branch+default base, check uncommitted, fetch base+compute di
 
 Follow `/docs/git-hosts.md` in the project root for all git/gh operations.
 
-Delegate metadata generation to a subagent. Inline on `BLOCKED` or `NOTHING_TO_SHIP`. The parent owns Steps 1-3, 5, and 7-10. On `NOTHING_TO_SHIP`, proceed to Step 3 blockers.
+The parent owns Steps 1-10. On `NOTHING_TO_SHIP`, proceed to Step 3 blockers.
 
 ### 1. Interpret Arguments
 
@@ -37,19 +37,11 @@ If `<change-summary>` was forwarded, reuse it verbatim and skip re-analysis. Oth
 - If `<ticket-mode>` is already set, don't ask. Otherwise, if the `question` tool is available, ask one question (header `Provide Ticket`) with options `Automatically Create` / `Skip` and custom answers enabled. If no `question` tool, set `<ticket-mode>` = `skip` and `<ticket-url>` = `SKIPPED`.
 - Normalize: `Automatically Create` → `auto`; custom URL → `provided`; `Skip` → `skip`.
 
-### 6. Delegate Metadata Generation (primary path)
+### 6. Generate Metadata + Prepare Ticket Reference
 
-Spawn a subagent with `<resolved-base>`, `<ticket-mode>`, `<ticket-url>` (when `provided`), and `<additional-context>`. Store the returned fenced markdown block as `<pr-writer-output>`. Extract `<pr-title>` (PR_TITLE), `<pr-body>` (PR_BODY), `<ticket-title>` (TICKET_TITLE when `<ticket-mode>` = `auto`), and `<ticket-body>` (TICKET_BODY when `auto`). If the subagent is unavailable or returns `BLOCKED` / `NOTHING_TO_SHIP`, fall through to inline Steps 6i and 9i.
-
-### 6i. Prepare Ticket Reference (inline fallback)
+Generate `<pr-title>`, `<pr-body>`, `<ticket-title>` (when `<ticket-mode>` = `auto`), and `<ticket-body>` (when `auto`) from `<resolved-base>`, `<ticket-mode>`, `<ticket-url>` (when `provided`), and `<additional-context>`.
 
 When `<ticket-mode>` = `auto`: reuse `<change-summary>` themes based on actual commits/diff. Title (max 70 chars) reflecting the delivered outcome. Description: what and why. Checklists: 2-4 functional sections plus a final `Validation` section (reviewer-facing: "Verify that...", "Confirm that..."). Create via git host create issue (see `/docs/git-hosts.md` in the project root, title, body, assignee `@me`) or CLI fallback per `/docs/git-hosts.md` with a temp file. No attribution lines. Store the issue URL as `<ticket-url>`.
-
-Otherwise: `provided` → use provided value; `skip` → `SKIPPED`.
-
-### 6p. Create Ticket from Delegated Metadata (primary path)
-
-When `<ticket-mode>` = `auto`: create via git host create issue (see `/docs/git-hosts.md` in the project root, title=`<ticket-title>`, body=`<ticket-body>`, assignee `@me`) or CLI fallback per `/docs/git-hosts.md` with a temp file. No attribution lines. Store the issue URL as `<ticket-url>`.
 
 Otherwise: `provided` → use provided value; `skip` → `SKIPPED`.
 
@@ -67,7 +59,7 @@ If no template is found, set `<pr-template>` = `none`; fall back to the default 
 
 ### 9. Create PR
 
-Primary path (when `<pr-writer-output>` is available): use `<pr-title>` and `<pr-body>` from delegation. When `<pr-template>` ≠ `none`, override `<pr-body>` with the filled template from §8; `<pr-title>` still applies. Inline fallback (no `<pr-writer-output>`): generate metadata from actual `<changes>`. Title (max 70 chars) → `<pr-title>`. Description: brief intent/scope. Checklist: 2-4 functional sections plus `Validation`.
+Use `<pr-title>` and `<pr-body>` from Step 6. When `<pr-template>` ≠ `none`, override `<pr-body>` with the filled template from §8; `<pr-title>` still applies. Title (max 70 chars) → `<pr-title>`. Description: brief intent/scope. Checklist: 2-4 functional sections plus `Validation`.
 - Body (when `<pr-template>` = `none`):
 ```markdown
 ## Ticket

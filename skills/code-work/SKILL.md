@@ -56,7 +56,6 @@ For multi-step tasks, state a brief plan:
 
 ## Code Reading
 
-- Delegate to a subagent when edits span >1 module or >3 file reads.
 - Code navigation tools are MANDATORY for symbol-level work (see `/docs/code-navigation.md` in the project root). Use symbol lookup and reference tracing first, not `grep`/`read`.
 - Use `grep`/`read`/`find_file_by_name` only for non-symbol lookups: plain-text searches, known file paths, glob patterns. Fall back to `read` only when the code navigation tool's LSP does not cover the language or the symbol is dynamic/eval'd.
 - Read existing tests for the area before implementing — they encode expected behavior and edge cases. Trace side effects via code navigation references (see `/docs/code-navigation.md` in the project root), never by guessing.

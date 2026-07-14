@@ -7,27 +7,12 @@ description: MANDATORY skill. Invoke BEFORE any codebase exploration, code readi
 
 Never write code from assumptions. Gather context first, then act.
 
-Flow: clarify target → delegate to a subagent (non-trivial) or inline → map (codebase + database) → fetch docs (delegate to a subagent) → analyze conventions → verify → act.
+Flow: clarify target → map (codebase + database) → fetch docs → analyze conventions → verify → act.
 
 ## Pre-flight checkpoint
 
 Before any codebase exploration, `read`/`edit`/`write` on a code file, any code navigation tool call (see `/docs/code-navigation.md` in the project root), or any answer about code, verify:
 1. The target (file path, symbol, or question) is defined — if ambiguous, ask before exploring.
-2. If a dispatch gate fires for steps 2-5, delegate instead of gathering inline.
-
-## Delegation
-
-Delegate steps 2-5 to a subagent, step 4 to a doc-fetching subagent. Inline only on BLOCKED. Parent keeps: clarify (step 1), verify (step 6), plan, edit.
-
-| Step | Delegate when… | Keep inline when… |
-|---|---|---|
-| 2 Discover symbols | Search spans multiple modules or returns many candidates | One or two known symbols, single `find_symbol` call |
-| 3 Map codebase | Always delegate on non-trivial code tasks (gate fires) | Target file fully isolated and small (rare) |
-| 3a Query database | Schema/counts/EXPLAIN span multiple tables or inform a data-driven bug | Single-table lookup with a known query already in context |
-| 4 Fetch docs | Always delegate — any framework/library/SDK lookup is unbounded cost | Feature verified in last 30 lines of code already in context |
-| 5 Analyze conventions | Convention sources spread across many files or unfamiliar area | Conventions already in module `AGENTS.md` in context |
-
-If unsure whether volume is bounded, delegate.
 
 ### 1. Clarify the target
 

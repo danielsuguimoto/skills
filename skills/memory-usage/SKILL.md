@@ -6,10 +6,6 @@ description: >
 
 Persistent memory holds facts that are expensive to re-derive and survive across sessions.
 
-## Delegation First (MANDATORY before inline reads)
-
-Before listing or reading memories inline, check the dispatch gate. Delegate any read trigger to a subagent. Run inline only if the subagent is unavailable or returns `BLOCKED`. Write operations (write, edit memory operations, etc., see `/docs/memory-providers.md` in the project root) are never delegated — the parent owns persistence.
-
 ## When to Use Memory
 
 ### Read before acting

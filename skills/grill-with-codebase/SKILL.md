@@ -32,10 +32,6 @@ Start by establishing the task's scope and success state, then rotate through th
 
 Record each decision. When every branch resolves, present the concrete plan: file-by-file changes, new artifacts, migrations, tests, and open risks. Ask for confirmation before enactment.
 
-## Delegation First (MANDATORY before inline grilling)
-
-Before the inline grill loop, check the dispatch gate. Delegate ambiguous or under-specified tasks to a foreground subagent. The subagent runs the one-question loop off-context, spawns further subagents for codebase-answerable questions, and returns only resolved decisions — never the Q&A transcript. Run inline only if the subagent is unavailable or returns `BLOCKED`.
-
 - One question at a time. Don't dump 5 questions in one message. Ask, wait, then next.
 - Recommended answer: one line. Don't justify it.
 - This skill is read-only. Don't edit, refactor, or fix anything while grilling. The output is a plan, not a change.

@@ -122,7 +122,7 @@ print(f'Cache: {len(all_files)-len(uncached)} files hit, {len(uncached)} files n
 "
 ```
 
-## Step B3 - Merge subagent chunks
+## Step B3 - Merge chunks
 
 # Loads, validates, sanitizes, and merges chunk files into graphify-out/.graphify_semantic_new.json
 

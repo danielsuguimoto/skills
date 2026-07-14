@@ -24,7 +24,7 @@ The user ships separately.
 - Input: `$ARGUMENTS` = user feedback (free-form prose, possibly multi-point).
 - Branch: stay on the current branch (typically `master`). Do NOT switch.
 - Tools: git host tool for status/diff only (see `/docs/git-hosts.md` in the project root). Never use commit/push tools.
-- Do NOT delegate to PR-shaped subagents — they expect PR metadata and misinterpret local feedback. Parse inline; spawn generic background subagents for parallel groups only if the runtime supports them.
+- Parse `$ARGUMENTS` directly.
 
 ### 1. Capture Feedback
 
@@ -40,9 +40,7 @@ Store `<active-branch>` = `git branch --show-current` (per `/docs/git-hosts.md` 
 
 ### 3. Parse Feedback Into Actionable Items
 
-Parse `<feedback-raw>` inline — do NOT delegate to PR-shaped subagents. If feedback is large (≥8 points) AND the runtime supports subagents, you may delegate to a generic background subagent framed as: "local post-implementation feedback, no PR, parse into the structured format below" — otherwise inline.
-
-Inline parse:
+Parse `<feedback-raw>`:
 
 1. Split `<feedback-raw>` into discrete points. Each → one `<feedback-item>`:
    - `id`: `F1`, `F2`, …
@@ -55,23 +53,21 @@ Inline parse:
 
 ### 4. Plan Implementation
 
-Fast path: every actionable `<feedback-item>` is a specific code suggestion with no conflicts → `<implementation-plan>` = `trivial`, skip to Step 5 serial. Otherwise:
+Fast path: every actionable `<feedback-item>` is a specific code suggestion with no conflicts → `<implementation-plan>` = `trivial`, skip to Step 5. Otherwise:
 
 1. Order: `critical` → `important` → `style`, then file, then line.
 2. Validate each: mark `invalid` if it would break behavior or contradicts ticket intent → `<not-fixing>` with reason.
 3. Map cross-item dependencies (shared files/types/callers) → `<dependencies>`.
-4. Identify file-disjoint groups for parallel execution.
-5. Pick path: Parallel (≥2 file-disjoint groups, no cross-group deps) or Serial.
 
 ### 5. Implement Fixes
 
-Parallel: spawn generic background subagents per group (if the runtime supports them). Pass the group's `<feedback-item>`s, file paths, and the constraint "apply only these fixes, no PR, no commits, stay on current branch". Await and merge results. Parent handles cross-file/ambiguous items serially. Serial: fix critical first, follow existing patterns, make minimal edits, no comments unless asked, stay on `<active-branch>`.
+Fix critical items first, follow existing patterns, make minimal edits, no comments unless asked, stay on `<active-branch>`.
 
-After either: store `<changes-count>`.
+After: store `<changes-count>`.
 
 ### 6. Validate Changes
 
-Run the project's lint and test commands. If the runtime supports subagents and the suite is slow, delegate both to a generic background subagent in one task; otherwise inline. The subagent returns combined pass/fail + failure traces. Store `<validation-results>` and `<validation-passing>` (`yes`/`no`).
+Run the project's lint and test commands. Store `<validation-results>` and `<validation-passing>` (`yes`/`no`).
 
 Confirm fixes address the feedback points. If a fix misses intent, re-implement that item.
 

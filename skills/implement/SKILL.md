@@ -19,9 +19,9 @@ Operations: Use git host operations (see `/docs/git-hosts.md` in the project roo
 - Ticket URL → use directly
 - Mention without URL → ask for link
 
-3. **Load Ticket + Build Todo List**: Delegate to a ticket-loading subagent (foreground — MCP tools need approval). Ticket is bulky; subagent ingests via the issue tracker tool (see `/docs/issue-trackers.md` in the project root), returns distilled fields. Pass `<ticket-url>` and todo-list rules. Use the appropriate subagent profile for ticket loading, `is_background: false`.
+3. **Load Ticket + Build Todo List**: Load the ticket via the issue tracker tool (see `/docs/issue-trackers.md` in the project root). Ticket is bulky. Pass `<ticket-url>` and todo-list rules.
 
-Subagent does:
+Steps:
 1. List tools on the issue tracker (see `/docs/issue-trackers.md` in the project root) → confirm ticket load tool available. Missing → return `BLOCKED` with `NO_MCP_ACCESS`.
 2. Load ticket via the issue tracker tool with `source: <ticket-url>`.
 3. Read every attachment with `relativePath` via `read` (images → describe; documents → extract key requirements → `<attachment-insights>`).
@@ -29,7 +29,7 @@ Subagent does:
 5. **Inherit plan code-targets.** Ticket produced by the planning phase. `Implementation` checklist items encoded as `S1: <title> — <file> @ <symbol>::<location> — <instruction>`; full `<requirement-item>` blocks (with `patch`) appended to ticket description. Parse both: checklist line gives per-item locator triple (`file`/`symbol`/`location`); description block supplies `patch` snippet and full instruction. Carry forward verbatim into todo list. Don't re-derive code targets here.
 6. Build structured todo list from `<acceptance-criteria>` and checklists, one todo per parsed `<requirement-item>`. Checklist item lacking encoded locator triple (legacy/non-plan) → fall back to `content`-only format, flag for code-target resolution in Step 4.
 
-Subagent returns (distilled, no raw card body):
+Returns (distilled, no raw card body):
 - `<ticket-name>`, `<ticket-url>`
 - `<ticket-board>` / `<ticket-websiteId>`, `<ticket-list>` / `<ticket-state>`
 - `<feature-area>`: module/domain (e.g., Student, Finance, Report)
@@ -59,11 +59,11 @@ Rules:
 - Scope changes explicit: missing requirement → add new `pending` item with one-line justification. Don't silently expand scope; don't drop items without recording why
 - Re-sync only on drift: card updates mid-implementation → reconcile todo list before continuing. Todo list mirrors card, not replaces it
 
-`ticket-loading subagent` unavailable or `BLOCKED` (including `NO_MCP_ACCESS`) → fall back inline: list tools on the issue tracker, then load the ticket in parent, ingest attachments, analyze requirements, build todo list per rules above.
+If ticket load fails or returns `BLOCKED` (including `NO_MCP_ACCESS`): list tools on the issue tracker, then load the ticket, ingest attachments, analyze requirements, build todo list per rules above.
 
-4. **Gather Codebase Context**: Delegate to a subagent. Pass `<feature-area>`, `<related-entities>`, `<acceptance-criteria>`, module path, **and inherited code-target triples (`file`/`symbol`/`location`) from todo list**. The subagent must **validate each inherited target against current code** (confirm file exists, symbol at stated location, patch applies cleanly) and report drift. Only resolve `TBD` targets for non-plan cards. Require distilled brief: entry points, related modules, callers, conventions, file:line citations. Store as `<context-files>`.
+4. **Gather Codebase Context**: Pass `<feature-area>`, `<related-entities>`, `<acceptance-criteria>`, module path, **and inherited code-target triples (`file`/`symbol`/`location`) from todo list**. **Validate each inherited target against current code** (confirm file exists, symbol at stated location, patch applies cleanly) and report drift. Only resolve `TBD` targets for non-plan cards. Require distilled brief: entry points, related modules, callers, conventions, file:line citations. Store as `<context-files>`.
 
-Subagent unavailable or `BLOCKED` → fall back inline:
+If `BLOCKED`:
 - `grep` for model names, route names, feature flags
 - `find_file_by_name` for controllers, repositories, Filament resources
 - code navigation tool (see `/docs/code-navigation.md` in the project root) as alternative
@@ -72,10 +72,10 @@ Subagent unavailable or `BLOCKED` → fall back inline:
 - Store relevant paths as `<context-files>`
 
 5. **Implement on Master**: Focused, minimal changes on `master`. Drive off `<todo-list>`: pick next `pending` item, mark `in_progress`, apply change at inherited `file`/`symbol`/`location` (use `patch` as starting delta when present; adapt to drift from Step 4), verify, mark `completed`, move on. Exactly one item `in_progress` at a time. After each meaningful chunk:
-- PHP: Run the project's lint command (see project config or `/docs/` in the project root) (inline)
-- Tests: delegate to a subagent with the project's test command (see project config or `/docs/` in the project root). Unavailable → inline run of the project's test command.
+- PHP: Run the project's lint command (see project config or `/docs/` in the project root).
+- Tests: Run the project's test command (see project config or `/docs/` in the project root).
 
-**Test todo items**: when the `in_progress` item is a test, delegate creation to a write-capable subagent — do not scout test context in the parent. Pass the inherited `file`/`symbol`/`location`/`patch`, the production code under test, and a distilled brief of conventions from Step 4. The subagent scouts existing tests, base classes, factories, and assertion style; writes the test; returns a distilled brief (files created/modified, what each test covers). Parent keeps verification: lint + run tests per the bullets above. Unavailable → fall back inline.
+**Test todo items**: when the `in_progress` item is a test, scout existing tests, base classes, factories, and assertion style. Write the test using the inherited `file`/`symbol`/`location`/`patch`, the production code under test, and a distilled brief of conventions from Step 4. Verify: lint + run tests per the bullets above.
 
 6. **Present Implementation**: Complete and validated → present changes and STOP. No approval, no commit, no push.
 

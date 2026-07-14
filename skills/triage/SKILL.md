@@ -17,8 +17,6 @@ CRITICAL: READ-ONLY. Do NOT write, edit, or commit code. Gather context, investi
 
 **Determining the mode is the skill.** Read the ticket, then decide: question to answer or issue to debug?
 
-Delegate evidence gathering to subagents. Inline only on BLOCKED. Parent owns Load Ticket Context, Determine Mode, Draft Findings, Sync, Output.
-
 ### Interpret Arguments
 
 - Ticket reference/URL → `<ticket-url>`
@@ -46,15 +44,12 @@ Store the mode as `<triage-mode>`.
 
 ### Gather Evidence
 
-Delegate to subagents. Inline only on BLOCKED.
-
 **ask mode:**
-- Repository context needed: delegate to a subagent. Pass `<question>`, relevant entities, module path. Require a distilled brief: entry points, callers, conventions, file:line citations. Store as `<repo-context>`. If the subagent is unavailable or returns `BLOCKED`, fall back to inline `grep`/`find_file_by_name`/code navigation tool (see `/docs/code-navigation.md` in the project root).
-- Library/framework/SDK docs needed: delegate to a subagent. Pass specific API/version questions. Require a distilled brief. Store as `<doc-context>`. If the subagent is unavailable or returns `BLOCKED`, fall back to inline doc lookup (see `/docs/doc-lookup.md` in the project root).
+- Repository context needed: gather a distilled brief — entry points, callers, conventions, file:line citations — using `grep`/`find_file_by_name`/code navigation tool (see `/docs/code-navigation.md` in the project root). Pass `<question>`, relevant entities, module path. Store as `<repo-context>`.
+- Library/framework/SDK docs needed: gather a distilled brief on specific API/version questions using doc lookup (see `/docs/doc-lookup.md` in the project root). Store as `<doc-context>`.
 
 **debug mode:**
-- Spawn a subagent with inputs from the ticket context. Store the returned fenced markdown block as `<investigation-findings>`. Skip to "Draft Findings". If the subagent is unavailable or returns `BLOCKED` / `INVESTIGATION_BLOCKED` / `NO_TICKET_CONTEXT`, fall through to inline steps below.
-- Inline fallback: run the context-gathering workflow inline — grep/find_file_by_name/code navigation tool (see `/docs/code-navigation.md` in the project root) for symbols, database tools (see `/docs/database-tools.md` in the project root) for data, doc lookup (see `/docs/doc-lookup.md` in the project root) for framework docs. Trace the code path from user action to failure; identify where actual behavior diverges from expected. Treat the live database as the source of truth for data. Verify current schema, row counts, sample rows, and actual values directly; do not rely on seeders, migrations, or operations to establish current state.
+- Run the context-gathering workflow: grep/find_file_by_name/code navigation tool (see `/docs/code-navigation.md` in the project root) for symbols, database tools (see `/docs/database-tools.md` in the project root) for data, doc lookup (see `/docs/doc-lookup.md` in the project root) for framework docs. Trace the code path from user action to failure; identify where actual behavior diverges from expected. Treat the live database as the source of truth for data. Verify current schema, row counts, sample rows, and actual values directly; do not rely on seeders, migrations, or operations to establish current state. Store findings as `<investigation-findings>`.
 
 ### Draft Findings
 
@@ -64,7 +59,7 @@ Synthesize evidence into a response. Mode determines the shape.
 
 **debug mode:** Build a root-cause note. Reproduction + ranked hypotheses separates root-cause finding from symptom-guessing.
 
-Run the debug investigation steps below when inline (subagent path skips to "Shape Investigation Findings"):
+Run the debug investigation steps below:
 
 #### Ranked Hypotheses (debug)
 
@@ -99,7 +94,7 @@ Ground analysis in actual findings. Avoid speculation.
 
 #### Shape Investigation Findings (debug)
 
-Map `<investigation-findings>` (subagent return) to the published note. Carry every subagent field forward; do not drop CONFIDENCE, ALTERNATIVE_HYPOTHESES, or GAPS.
+Map `<investigation-findings>` to the published note. Carry every field forward; do not drop CONFIDENCE, ALTERNATIVE_HYPOTHESES, or GAPS.
 
 - `<note-title>` — clear title summarizing the investigation (derive from ROOT_CAUSE)
 - `<issue-summary>` — brief description of what was investigated (from the issue context)

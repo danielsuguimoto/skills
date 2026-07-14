@@ -10,7 +10,7 @@ Address PR feedback by making fixes and replying directly to review threads — 
 - Execution modes: `review` (default; ask before commit/push) or `auto` (commits/pushes without approval). Tools: git host tool (see `/docs/git-hosts.md` in the project root). Prefer MCP; fall back to CLI.
 - ABSOLUTE RULE: Reply directly to review threads — never standalone PR comments. Follow `/docs/git-hosts.md` in the project root.
 
-Delegate Steps 2, 4, and 5 to a subagent. Inline only on `BLOCKED`, `NO_PR_REF`, or `NO_FEEDBACK`. The parent owns Steps 1, 3, and 6-13.
+The parent owns Steps 1-13.
 
 > CRITICAL: Default mode is `review` — you MUST get explicit user approval (Step 9) before committing, pushing, or replying to threads. Never infer approval.
 
@@ -20,11 +20,9 @@ Delegate Steps 2, 4, and 5 to a subagent. Inline only on `BLOCKED`, `NO_PR_REF`,
 
 > The user's `<pr-ref>` is the only authoritative source for the target PR. Never assume the current branch determines the target. If `<pr-ref>` points to a different branch, check it out in Step 3.
 
-### 2. Delegate PR Analysis (primary path)
+### 2. Load PR Context
 
-Resolve the project root via `git rev-parse --show-toplevel` (see `/docs/git-hosts.md` in the project root) → `<repo-path>`. Use it as `cwd` for every MCP call. Spawn a subagent with `<pr-ref>`, `<repo-path>`, and `<additional-context>`. Store the returned fenced markdown block as `<pr-analysis>`. Extract `<pr-number>`, `<pr-branch>`, and `<base-branch>` from the PR_NUMBER/PR_BRANCH/BASE_BRANCH sections. Run `git branch --show-current` → `<current-branch>`. Skip to Step 3. If the subagent is unavailable or returns `BLOCKED`, `MISSING_INPUT`, or `NO_PR_REF`, fall through to inline Steps 2, 4, and 5. If it returns `NO_FEEDBACK`, output "No changes".
-
-### 2i. Load PR Context (inline fallback)
+Resolve the project root via `git rev-parse --show-toplevel` (see `/docs/git-hosts.md` in the project root) → `<repo-path>`. Use it as `cwd` for every MCP call.
 
 Primary thread source: git host list unresolved review comments (see `/docs/git-hosts.md` in the project root). It filters `isResolved=false` server-side, so resolved-thread bodies never enter parent context. CLI fallback per `/docs/git-hosts.md`: GraphQL `reviewThreads` with `isResolved` filter. Use git host list review comments/REST `pulls/{n}/comments` only as a `databaseId` cross-reference — never as the primary thread source, because it returns resolved comments too.
 
@@ -34,7 +32,7 @@ gh pr view <pr-number> --json number,title,body,url,headRefName,baseRefName,auth
 gh api repos/{owner}/{repo}/pulls/<pr-number>/reviews
 ```
 
-Extract `<pr-branch>`, `<base-branch>`, `<pr-number>`, and `<pr-url>`. Run `git branch --show-current` → `<current-branch>`. Review attachments (images, PDFs, linked files) when relevant. Note gaps if inaccessible.
+Extract `<pr-branch>`, `<base-branch>`, `<pr-number>`, and `<pr-url>`. Run `git branch --show-current` → `<current-branch>`. Review attachments (images, PDFs, linked files) when relevant. Note gaps if inaccessible. If no feedback, output "No changes".
 
 ### 3. Align Local Branch
 
@@ -42,40 +40,33 @@ If `<pr-branch>` is unavailable, STOP. Otherwise check out via git host checkout
 
 > Never skip checkout even if workspace looks related. `<pr-ref>` is authoritative.
 
-### 4i. Load Changes (inline fallback)
+### 4. Load Changes
 
 Use git host PR diff (see `/docs/git-hosts.md` in the project root). CLI fallback per `/docs/git-hosts.md`: `gh pr diff <pr-number>` or `git diff <base-branch>...<active-branch>`. Store as `<changes>`.
 
-### 5i. Analyze Feedback (inline fallback)
+### 5. Analyze Feedback
 
 1. Review open, unresolved review threads; check review states (`CHANGES_REQUESTED`, `APPROVED`, etc.)
 2. Use `<changes>` to understand the current diff. Prioritize critical issues (bugs, security, broken contracts). Identify files needing changes.
-3. Effectively resolved threads (skip, don't re-fix or re-reply): not marked resolved in GitHub, but have a reply stating addressed ("Fixed...", "Done...") and a later commit implementing the fix (verify via commit diff). If in doubt, ask the user. Threads already resolved by GitHub are excluded upstream in Step 2i; this step catches only the GitHub-unresolved subset.
-4. For each actionable thread, record `<comment-id>`, `<file>`, `<lines>`, `<category>`, `<suggestion>`, `<reviewer-body>`, and `<current-heading>`. Don't blindly follow every suggestion — some lead off course.
-
-### 5p. Parse Delegated Analysis (primary path)
-
-From `<pr-analysis>`, build the actionable-thread list. For each thread in the THREADS section with category `critical`, `important`, or actionable `style`, record `<comment-id>`, `<file>`, `<lines>`, `<category>`, `<suggestion>` (one-line), and `<current-heading>`. Do not persist `<reviewer-body>` in parent context for actionable threads — pass it through the group-assignment payload to subagents in Step 7. Carry SUMMARY's recommended fix order and GROUPS partition into Step 6. Threads marked `noise` or `question` go to the `not-fixing` list with reasons; record `<reviewer-body>` only there (needed for Step 12 reply justification).
+3. Effectively resolved threads (skip, don't re-fix or re-reply): not marked resolved in GitHub, but have a reply stating addressed ("Fixed...", "Done...") and a later commit implementing the fix (verify via commit diff). If in doubt, ask the user. Threads already resolved by GitHub are excluded upstream in Step 2; this step catches only the GitHub-unresolved subset.
+4. For each actionable thread, record `<comment-id>`, `<file>`, `<lines>`, `<category>`, `<suggestion>`, `<reviewer-body>`, and `<current-heading>`. Don't blindly follow every suggestion — some lead off course. Threads marked `noise` or `question` go to the `not-fixing` list with reasons; record `<reviewer-body>` only there (needed for Step 12 reply justification).
 
 ### 6. Plan Implementation
 
-Fast path: if every actionable thread is a straightforward, specific code suggestion with no conflicts, skip planning. Set `<implementation-plan>` = `trivial` and go to Step 7 serial path. Skip the fast path when any thread is ambiguous, has cross-thread dependencies, or needs judgment. Otherwise synthesize actionable threads into an internal plan (no approval gate):
+Fast path: if every actionable thread is a straightforward, specific code suggestion with no conflicts, skip planning. Set `<implementation-plan>` = `trivial` and go to Step 7. Skip the fast path when any thread is ambiguous, has cross-thread dependencies, or needs judgment. Otherwise synthesize actionable threads into an internal plan (no approval gate):
 
 1. Build an ordered fix list: sort by priority (`critical` → `important` → `style`), then file, then line. Move effectively resolved, `noise`, and `current-heading: yes` threads to a separate `not-fixing` list with reasons.
-2. Evaluate validity. Mark threads `invalid` (misreading, would break behavior, contradicts PR intent) with a one-line reason and add them to the `not-fixing` list. No fix is needed, but reply explaining why in Step 12. Optional parallel investigation: spawn background subagents to investigate validity only when ≥4 actionable threads need deep code lookups and subagent spawning is available. Partition into batches of 3-5. Subagents return `valid`/`invalid` + reason + evidence; don't let them make cross-thread validity calls — flag those for the parent. Skip when threads are simple, few, or surface-level.
+2. Evaluate validity. Mark threads `invalid` (misreading, would break behavior, contradicts PR intent) with a one-line reason and add them to the `not-fixing` list. No fix is needed, but reply explaining why in Step 12.
 3. Map dependencies between threads (shared imports, types, callers) → `<dependencies>`.
-4. Identify file-disjoint groups. Consume the GROUPS partition from `<pr-analysis>` when present. Override only when cross-thread deps invalidate the analyzer's partition; otherwise don't re-derive. Cross-boundary threads stay in the parent's serial pass.
-5. Draft subagent task inputs per group → `<group-assignments>`.
-6. Execution path: parallel (≥2 file-disjoint groups, no cross-group deps) or serial (single thread, shared files, or subagent spawning unavailable).
-7. Store `<implementation-plan>`: ordered fix list, `not-fixing` list, `<dependencies>`, `<group-assignments>`, and execution path.
+4. Store `<implementation-plan>`: ordered fix list, `not-fixing` list, and `<dependencies>`.
 
 ### 7. Implement Fixes
 
-Parallel path: for each group, spawn a background subagent with group inputs. The parent handles cross-file or ambiguous threads serially. Await results via `read_subagent` and merge them. Handle `blocked-cross-file` in the parent. Serial path: fix critical issues first, follow existing patterns, use `<active-branch>`, make focused minimal changes, and be ready to explain why you maintained your heading. After either path, store `<changes-count>` and collect `<subagent-validation>`.
+Fix critical issues first, follow existing patterns, use `<active-branch>`, make focused minimal changes, and be ready to explain why you maintained your heading. Store `<changes-count>`.
 
 ### 8. Validate Changes
 
-- Delegate lint and tests to a foreground subagent: project lint and test commands (see project config or `/docs/` in the project root) on the changed files. If the subagent is unavailable, run the same commands inline.
+- Run project lint and test commands (see project config or `/docs/` in the project root) on the changed files.
 - Confirm the fixes address the feedback. Store `<validation-results>` and `<validation-passing>` (`yes`/`no`).
 
 ### 9. Review Fixes With User — MANDATORY APPROVAL GATE
