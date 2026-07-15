@@ -1,7 +1,6 @@
 ---
 name: adjust
 description: "Apply user-requested adjustments to existing code — fixes, improvements, refactors per notes. Interactive: grills the user to clarify the request, then parses, plans, and executes. No shipping, no next steps, no loop."
-argument-hint: "[adjustments]"
 ---
 
 # Adjust
