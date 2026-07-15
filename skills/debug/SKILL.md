@@ -15,6 +15,7 @@ Reference `/docs` specs in the project root, never hardcode tool names:
 | Database schema, queries, sample rows | `/docs/database-tools.md` |
 | Framework/library/SDK behavior | `/docs/doc-lookup.md` |
 | Error logs, stack traces, bug records | `/docs/bug-trackers.md` |
+| App runtime observability (requests, queries, logs, jobs) | `/docs/observability-tools.md` |
 | Terminal commands | `/docs/terminal-wrappers.md` |
 | Memory of prior pitfalls | `/docs/memory-providers.md` |
 
@@ -58,6 +59,7 @@ Symptom still undefined after one round → **stop, list unknowns.** Don't inves
 - **Trace the code path** user action → failure (see `/docs/code-navigation.md`). Find where actual diverges from expected.
 - **Inspect the DB** when state persists (see `/docs/database-tools.md`). Live data is ground truth — schema, counts, sample rows, actual values. Don't trust seeders, migrations, factories.
 - **Pull error logs and traces** (see `/docs/bug-trackers.md`). Read the full trace, not just the top frame.
+- **Inspect app runtime** — failing request, queries, log entries, dispatched jobs (see `/docs/observability-tools.md`).
 - **Check memory** for prior pitfalls on this module/pattern (see `/docs/memory-providers.md`).
 - **Fetch framework docs** when behavior hinges on a version/API contract (see `/docs/doc-lookup.md`).
 
