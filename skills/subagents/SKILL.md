@@ -6,7 +6,7 @@ description: >
   splittable into parallel independent tasks.
 ---
 
-Discover profiles through your tool's native mechanism. Don't assume a fixed list or path.
+Discover profiles through the tool's native mechanism. Don't assume a fixed list or path.
 
 ## Dispatch Rationales
 
@@ -22,7 +22,7 @@ Spawn a subagent **only** when at least one holds. First two are strict — when
 
 ## Foreground Preference
 
-**Default to foreground.** Background subagents have reduced capabilities: unapproved tools auto-denied, `exec` unavailable, no new permission prompts. Background subagents often fail silently on tasks requiring tool approval.
+**Default to foreground.** Background subagents have reduced capabilities: unapproved tools auto-denied, `exec` unavailable, no new permission prompts. They often fail silently on tasks requiring tool approval.
 
 Use background **only** when all hold:
 - ≥3 truly independent workstreams benefit from parallelism
@@ -78,7 +78,16 @@ Hard gate (overrides "default to inline"): if a task needs **more than 3 file re
 
 Exploration tokens are the largest avoidable parent-context cost. Once read, they stay in context for the whole session. A scout's distilled brief costs a fraction and is discardable.
 
-Exceptions (inline allowed): exact file path and line range already known; a single code navigation symbol lookup / reference trace call (see `/docs/code-navigation.md` in the project root) answers it; target file under ~50 lines and fully isolated.
+**Cold scan vs. warm read (decides inline vs. subagent):**
+
+| State | Parent context | Scan shape | Action |
+|---|---|---|---|
+| Cold scan | Doesn't hold the target area yet | Multi-file / multi-module exploration | Subagent scout — raw output would bloat parent |
+| Warm read | Already holds the bulk of context for the task | Small partial scan (a few lines, one symbol, one file) to confirm or double-check | Inline — offloading costs more in dispatch overhead than it saves |
+
+Subagents exist to keep cold-scan raw output out of parent context. A warm read adds negligible tokens because the parent already carries the surrounding context — dispatch overhead exceeds the savings.
+
+Other exceptions (inline allowed): exact file path and line range already known; a single code navigation symbol lookup / reference trace call (see `/docs/code-navigation.md` in the project root) answers it; target file under ~50 lines and fully isolated.
 
 ## Failure Modes
 
