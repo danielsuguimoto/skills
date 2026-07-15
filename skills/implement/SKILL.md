@@ -5,9 +5,9 @@ description: "Activate when implementing a ticket or planned change directly on 
 
 ## MCP Server Preference
 
-Use the git host tool (see `/docs/git-hosts.md` in the project root). Prefer MCP tools over CLI when available; fall back silently when offline. All git host tools need `repo_path`.
+Use the git host tool (see `/docs/git-hosts.md` in the project root). Prefer MCP over CLI; fall back silently when offline. All git host tools need `repo_path`.
 
-Operations: Use git host operations (see `/docs/git-hosts.md` in the project root) for branch check, switch to master, and pull latest.
+Operations: Use git host operations (see `/docs/git-hosts.md` in the project root) for branch check, switch to master, pull latest.
 
 1. **Ensure Clean Master**: Load branch + status. Store `<current-branch>`.
 - Not `master`/`main` → switch to master
@@ -39,7 +39,7 @@ Returns (distilled, no raw card body):
 - `<gaps>`: vague/missing requirements, or `None identified`
 - `<todo-list>`: structured todo list (format below)
 
-Tickets from the planning phase are approved plans — proceed to implementation. No design/plan approval.
+Planning-phase tickets are approved plans — proceed to implementation. No design/plan approval.
 
 **Todo List Format**: One todo per acceptance criterion/checklist item. Each item:
 - `id` — inherited from plan's `<requirement-item>` (e.g., `S1`, `S2`). Non-plan cards: assign `T1`, `T2`, …
@@ -55,7 +55,7 @@ Rules:
 - Total coverage: every `<acceptance-criteria>` and checklist entry maps to exactly one todo item. No orphans, no extras
 - Order by dependency: schema → model → service → UI → tests
 - No workflow items: no entries for context gathering, validation, presentation, or commit
-- State transitions immediate: mark `in_progress` when starting code change; mark `completed` once verified (pint + tests green for that item). Never batch completions; never leave `in_progress` across context boundaries
+- State transitions immediate: mark `in_progress` when starting the code change; mark `completed` once verified (pint + tests green for that item). Never batch completions; never leave `in_progress` across context boundaries
 - Scope changes explicit: missing requirement → add new `pending` item with one-line justification. Don't silently expand scope; don't drop items without recording why
 - Re-sync only on drift: card updates mid-implementation → reconcile todo list before continuing. Todo list mirrors card, not replaces it
 
@@ -71,13 +71,32 @@ If `BLOCKED`:
 - Resolve any `TBD` todo item `file`/`symbol`/`location` now, update todo list
 - Store relevant paths as `<context-files>`
 
-5. **Implement on Master**: Focused, minimal changes on `master`. Drive off `<todo-list>`: pick next `pending` item, mark `in_progress`, apply change at inherited `file`/`symbol`/`location` (use `patch` as starting delta when present; adapt to drift from Step 4), verify, mark `completed`, move on. Exactly one item `in_progress` at a time. After each meaningful chunk:
+5. **Resolve Open Questions (optional)**: After Step 3 and Step 4, doubts may surface — plan/code drift, ambiguous acceptance criteria, conflicting patterns, unresolved `<gaps>`/`<blockers>`, or multiple viable shapes for one todo item. When any remain, grill the user before implementing.
+
+Trigger this step ONLY when at least one holds:
+- An inherited code-target triple (`file`/`symbol`/`location`) from Step 4 doesn't validate against current code and the right replacement is ambiguous
+- `<gaps>` or `<blockers>` from Step 3 are non-empty and material to the work
+- A todo item has more than one reasonable implementation shape and the plan's `patch` doesn't disambiguate
+- A planned change conflicts with an existing invariant, lifecycle hook, or convention surfaced in Step 4
+
+If none hold, skip this step — proceed to Step 6. Don't manufacture questions.
+
+Grilling rules (mirror `grill-with-codebase`):
+- One question at a time. Wait for the answer before asking the next. Don't batch.
+- Each question ships with a one-line recommended answer grounded in code read this session. Cite `file:lineRange` for any code reference.
+- If a question can be settled by exploring the codebase further, explore instead of asking. Grill only on decisions the code can't settle.
+- When the user proposes a shape that contradicts an existing pattern or invariant, surface the conflict with the decisive snippet before moving on.
+- Record each resolved decision back into the affected todo item (`file`/`symbol`/`location`/`patch` or a one-line note). Re-sync the todo list, not the ticket card.
+
+Stop grilling when every open question resolves. Don't re-open settled decisions. Proceed to Step 6.
+
+6. **Implement on Master**: Focused, minimal changes on `master`. Drive off `<todo-list>`: pick next `pending` item, mark `in_progress`, apply change at inherited `file`/`symbol`/`location` (use `patch` as starting delta when present; adapt to drift from Step 4 or resolution from Step 5), verify, mark `completed`, move on. Exactly one item `in_progress` at a time. After each meaningful chunk:
 - PHP: Run the project's lint command (see project config or `/docs/` in the project root).
 - Tests: Run the project's test command (see project config or `/docs/` in the project root).
 
 **Test todo items**: when the `in_progress` item is a test, scout existing tests, base classes, factories, and assertion style. Write the test using the inherited `file`/`symbol`/`location`/`patch`, the production code under test, and a distilled brief of conventions from Step 4. Verify: lint + run tests per the bullets above.
 
-6. **Present Implementation**: Complete and validated → present changes and STOP. No approval, no commit, no push.
+7. **Present Implementation**: Complete and validated → present changes and STOP. No approval, no commit, no push.
 
 Load status + diff stat (git host change scan; see `/docs/git-hosts.md` in the project root).
 
@@ -102,4 +121,3 @@ CRITICAL: STOP here. Never commit, push, or request approval. User invokes separ
 - Run validate-code-changes after implementation
 - Present results and stop — no unsolicited next steps
 - Build `<todo-list>` from ticket before implementing; drive every code change off it
-
