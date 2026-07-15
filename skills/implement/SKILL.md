@@ -27,47 +27,19 @@ Steps:
 5. **Inherit plan code-targets.** Ticket produced by the planning phase. `Implementation` checklist items encoded as `S1: <title> — <file> @ <symbol>::<location> — <instruction>`; full `<requirement-item>` blocks (with `patch`) appended to ticket description. Parse both: checklist line gives per-item locator triple (`file`/`symbol`/`location`); description block supplies `patch` snippet and full instruction. Carry forward verbatim into todo list. Don't re-derive code targets here.
 6. Build structured todo list from `<acceptance-criteria>` and checklists, one todo per parsed `<requirement-item>`. Checklist item lacking encoded locator triple (legacy/non-plan) → fall back to `content`-only format, flag for code-target resolution in Step 4.
 
-Returns (distilled, no raw card body):
-- `<ticket-name>`, `<ticket-url>`
-- `<ticket-board>` / `<ticket-websiteId>`, `<ticket-list>` / `<ticket-state>`
-- `<feature-area>`: module/domain (e.g., Student, Finance, Report)
-- `<acceptance-criteria>`: concrete must-haves from checklists/description
-- `<related-entities>`: model names, table names, feature flags
-- `<blockers>`: anything marked blocking/waiting
-- `<gaps>`: vague/missing requirements, or `None identified`
-- `<todo-list>`: structured todo list (format below)
+Returns (distilled): `<ticket-name>`, `<ticket-url>`, `<ticket-board>`/`<ticket-websiteId>`, `<ticket-list>`/`<ticket-state>`, `<feature-area>`, `<acceptance-criteria>`, `<related-entities>`, `<blockers>`, `<gaps>`, `<todo-list>`.
 
 Planning-phase tickets are approved plans — proceed to implementation. No design/plan approval.
 
-**Todo List Format**: One todo per acceptance criterion/checklist item. Each item:
-- `id` — inherited from plan's `<requirement-item>` (e.g., `S1`, `S2`). Non-plan cards: assign `T1`, `T2`, …
-- `content`: short imperative phrase naming the deliverable (e.g., `Add Status::ACTIVE guard in Placement::save()`), not a workflow step
-- `file`: repo-root-relative path(s). Inherited from plan; `TBD` only for non-plan cards pending Step 4
-- `symbol`: function/class/method/component to modify. Inherited from plan
-- `location`: exact insertion/modification point (e.g., `inside store() before return redirect()`). Inherited from plan
-- `patch`: minimal code snippet or unified diff from plan's `<requirement-item>`, if present. Otherwise omitted
-- `status`: `pending` initially
+**Todo List Format**: One todo per acceptance criterion/checklist item. Each item: `id` (inherited from plan or `T1`, `T2`, …), `content` (short imperative naming the deliverable), `file` (inherited or `TBD`), `symbol` (inherited), `location` (exact insertion point), `patch` (from plan if present), `status` (`pending`).
 
-Rules:
-- One item = one single-purpose deliverable. Split compound criteria into separate items
-- Total coverage: every `<acceptance-criteria>` and checklist entry maps to exactly one todo item. No orphans, no extras
-- Order by dependency: schema → model → service → UI → tests
-- No workflow items: no entries for context gathering, validation, presentation, or commit
-- State transitions immediate: mark `in_progress` when starting the code change; mark `completed` once verified (pint + tests green for that item). Never batch completions; never leave `in_progress` across context boundaries
-- Scope changes explicit: missing requirement → add new `pending` item with one-line justification. Don't silently expand scope; don't drop items without recording why
-- Re-sync only on drift: card updates mid-implementation → reconcile todo list before continuing. Todo list mirrors card, not replaces it
+Rules: one item = one deliverable (split compound criteria). Total coverage: every acceptance criterion maps to exactly one item. Order by dependency: schema → model → service → UI → tests. No workflow items (context gathering, validation, presentation, commit). Mark `in_progress` when starting, `completed` once verified — never batch, never leave `in_progress` across context boundaries. Scope changes explicit: missing requirement → add `pending` with justification. Re-sync only on drift.
 
-If ticket load fails or returns `BLOCKED` (including `NO_MCP_ACCESS`): list tools on the issue tracker, then load the ticket, ingest attachments, analyze requirements, build todo list per rules above.
+If ticket load fails or returns `BLOCKED`: list tools, load ticket, ingest attachments, analyze requirements, build todo list per rules above.
 
-4. **Gather Codebase Context**: Pass `<feature-area>`, `<related-entities>`, `<acceptance-criteria>`, module path, **and inherited code-target triples (`file`/`symbol`/`location`) from todo list**. **Validate each inherited target against current code** (confirm file exists, symbol at stated location, patch applies cleanly) and report drift. Only resolve `TBD` targets for non-plan cards. Require distilled brief: entry points, related modules, callers, conventions, file:line citations. Store as `<context-files>`.
+4. **Gather Codebase Context**: Pass `<feature-area>`, `<related-entities>`, `<acceptance-criteria>`, module path, and inherited code-target triples. Validate each inherited target against current code (file exists, symbol at location, patch applies) and report drift. Only resolve `TBD` targets for non-plan cards. Require distilled brief: entry points, related modules, callers, conventions, file:line citations. Store as `<context-files>`.
 
-If `BLOCKED`:
-- `grep` for model names, route names, feature flags
-- `find_file_by_name` for controllers, repositories, Filament resources
-- code navigation tool (see `/docs/code-navigation.md` in the project root) as alternative
-- Read 1-2 key files to understand patterns
-- Resolve any `TBD` todo item `file`/`symbol`/`location` now, update todo list
-- Store relevant paths as `<context-files>`
+If `BLOCKED`: `grep` for model/route/feature-flag names, `find_file_by_name` for controllers/repositories/resources, code navigation tool (see `/docs/code-navigation.md`) as alternative. Read 1-2 key files. Resolve `TBD` items, update todo list. Store paths as `<context-files>`.
 
 5. **Resolve Open Questions (optional)**: After Step 3 and Step 4, doubts may surface — plan/code drift, ambiguous acceptance criteria, conflicting patterns, unresolved `<gaps>`/`<blockers>`, or multiple viable shapes for one todo item. When any remain, grill the user before implementing.
 
@@ -79,12 +51,7 @@ Trigger this step ONLY when at least one holds:
 
 If none hold, skip this step — proceed to Step 6. Don't manufacture questions.
 
-Grilling rules (mirror `grill-with-codebase`):
-- One question at a time. Wait for the answer before asking the next. Don't batch.
-- Each question ships with a one-line recommended answer grounded in code read this session. Cite `file:lineRange` for any code reference.
-- If a question can be settled by exploring the codebase further, explore instead of asking. Grill only on decisions the code can't settle.
-- When the user proposes a shape that contradicts an existing pattern or invariant, surface the conflict with the decisive snippet before moving on.
-- Record each resolved decision back into the affected todo item (`file`/`symbol`/`location`/`patch` or a one-line note). Re-sync the todo list, not the ticket card.
+Grilling rules: follow `grill-with-codebase` discipline (one question at a time with a recommended answer, ground in code, cite `file:lineRange`, explore before asking). When the user proposes a shape that contradicts an existing pattern or invariant, surface the conflict with the decisive snippet before moving on. Record each resolved decision back into the affected todo item (`file`/`symbol`/`location`/`patch` or a one-line note). Re-sync the todo list, not the ticket card.
 
 Stop grilling when every open question resolves. Don't re-open settled decisions. Proceed to Step 6.
 

@@ -5,159 +5,68 @@ description: Use for browser automation (QA, element interaction, screencapture/
 
 # Browser Automation
 
-Browser automation tools provide agent-driven and REPL-driven browser control (see `/docs/browser-automation.md` in the project root). They are designed to handle complex tasks across user's logged-in accounts, cookies, websites and SaaS tools the user uses, and browsing histories.
-The CLI interface exposes an agent's prompt execution surface (browser exec, autonomous agent) and browser automation tools (browser REPL, direct control).
-
-There are two ways of controlling the browser automation tool:
-- Browser exec (autonomous agent) spawns an agent session. think of it like spawning subagent. Use when you need to work across user's logged-in accounts, apps, memory, and browsing history.
-- Browser REPL starts JS REPL session that provides Playwright-compatible, low-level browser interaction tools. Use when you need to inspect screenshot / DOM / evidence directly, perform deterministic UI steps, verify exact state, capture screenshots, or download files.
+Browser automation tools (see `/docs/browser-automation.md`) provide agent-driven and REPL-driven browser control for complex tasks across user's logged-in accounts, cookies, websites, SaaS tools, and browsing histories.
 
 ## Choose the Surface
 
-- Whole-task delegation to the autonomous browser agent: browser exec.
-- Direct evidence, downloads, screenshots, exact verification, or sensitive logged-in work: browser REPL.
+- **Browser exec** (autonomous agent): spawns an agent session like a subagent. Use for whole-task delegation across logged-in accounts, apps, memory, browsing history. Poll and give user status updates every ~60 seconds — the user can't see the CLI background.
+- **Browser REPL**: persistent ES2023+ JS REPL with Playwright-compatible, low-level browser interaction. Use for direct evidence, downloads, screenshots, exact verification, deterministic UI steps, sensitive logged-in work. Top-level `const`/`let` bindings persist — use fresh variable names.
 
-Before using the CLI, inspect current usage instead of relying on memorized options (see `/docs/browser-automation.md` in the project root):
+Both open ephemeral sessions. Use interactive PTY for CLI commands — session deleted when CLI exits. Inspect current CLI usage before running (see `/docs/browser-automation.md`).
 
-```bash
-# inspect current CLI usage per /docs/browser-automation.md in the project root
-```
+## REPL Globals
 
-both browser exec and browser repl open new ephemeral session that keeps context and state.
-use interactive PTY for browser automation CLI commands: the session will be deleted as the CLI process exists.
+`page` (current Playwright-like `Page`), `tabs`, `listBrowserTabs()`, `attachBrowserTab(targetId)`, `attachActiveBrowserTab()`, `getTabByTargetId(targetId)`, `openTab(url)`, `closeTab(tab)`, `snapshot(page, options?)` → `{ tree, diff }`, `annotatedScreenshot(page)`, `page.screenshot()`, `page.pdf(options?)` (save under `./artifacts/`), `fetch(url)` (cookie-bearing HTTP; same-origin/trusted GET/HEAD only), `fs`, `path`, `Buffer`, `sleep`, `display`, `pwd`. Use `console.log()` to return values.
 
-# exec usages
+## Open Browser Tabs
 
-Think using the browser automation tool's exec mode like using browser-special subagent. After entering the command, the CLI will show the agent's thinking and tool call status.
-poll it and watch it. give user status update around every 60 seconds. the user can't see what's going in the browser automation CLI background, so you have to restate and give update to user.
-
-# REPL Usages
-
-The browser automation REPL is a persistent ES2023+ JavaScript environment within one live REPL session. Top-level `const` and `let` bindings persist, so use fresh variable names.
-
-Available globals (see `/docs/browser-automation.md` in the project root for the full API):
-
-- `page`: current Playwright-like `Page`.
-- `tabs`: open pages in this REPL session.
-- `listBrowserTabs()`: list currently open browser tabs without attaching to them.
-- `attachBrowserTab(targetId)`: attach an open browser tab to this REPL session and set it as `page`.
-- `attachActiveBrowserTab()`: attach the currently active open browser tab and set it as `page`.
-- `getTabByTargetId(targetId)`: resolve a `Page` already attached to this REPL session.
-- `openTab(url)`: open a tab, wait until interactive, and update `page` and `tabs`.
-- `closeTab(tab)`: close a tab and update `page` and `tabs`.
-- `snapshot(page, options?)`: primary page-reading API; returns `{ tree, diff }`.
-- `annotatedScreenshot(page)`, `page.screenshot()`: visual verification.
-- `page.pdf(options?)`: print the current page to PDF; save user-visible PDFs under `./artifacts/`, e.g. `await page.pdf({ path: './artifacts/page.pdf', format: 'A4' })`.
-- `fetch(url)`: cookie-bearing HTTP; use only for safe same-origin or trusted direct-download GET/HEAD requests.
-- `fs`, `path`, `Buffer`, `sleep`, `display`, `pwd`.
-
-Always use `console.log()` to return values to yourself.
-
-
-## Browser interaction with REPL
-
-### Open browser tabs
-
-`browser repl` starts as a neutral session. Do not assume `page` is the user's current tab.
-
-When the user mentions the current page, an already-open page, or a specific tab/site that may already be open, inspect open tabs first:
-
+`browser repl` starts neutral — don't assume `page` is the user's current tab. When the user mentions a current/open page or specific tab, inspect first:
 ```js
 const openTabs = await listBrowserTabs();
 console.log(openTabs.map((tab) => ({ targetId: tab.targetId, active: tab.active, title: tab.title, url: tab.url })));
 ```
+`attachActiveBrowserTab()` for current/active page, `attachBrowserTab(targetId)` for specific tab. After attaching, read with `snapshot(page, { interactive: true })`. Only `openTab()` when no relevant open tab exists or user explicitly asks.
 
-- Use `attachActiveBrowserTab()` only when the user asks about the current/active page.
-- Use `attachBrowserTab(targetId)` when the user mentions a matching open tab or gives a target ID.
-- After attaching, read with `snapshot(page, { interactive: true })`.
-- Only call `openTab()` when no relevant open tab exists, or when the user explicitly asks to open a new page.
+## Snapshot
 
-### Snapshot
+ALWAYS use `snapshot()` as the primary way to read a webpage. Returns compact accessibility tree with unique ref IDs (`e12`, `f1e1`). Tree includes page title, URL, child-iframe contents, and off-viewport elements. Options: `interactive`, `showHidden`, `ref` (e.g. `"e31"`), `selector` (CSS, e.g. `[role="dialog"]` — not `"dialog"`).
 
-ALWAYS use `snapshot()` as the primary way to read a webpage.
+- Ref IDs are virtual locator IDs, not DOM properties. Safe to pass to `page.locator('e31')`. NEVER mix into CSS selectors.
+- Each new snapshot invalidates earlier ref IDs — take a new snapshot after each action. Save as `const s1`, `const s2`, etc.
+- Start with `tree`. After an action, ALWAYS print `diff`.
+- NEVER guess ref IDs, selectors, page content, or snapshot size. NEVER truncate with `substring()`, `slice()`, `split()`.
 
-```ts
-async function snapshot(
-  page: Page,
-  options?: {
-    interactive?: boolean; // show interactive elements only
-    showHidden?: boolean; // include hidden elements (e.g. collapsed navbar, aria-hidden)
-    // pass either ref or selector to narrow the scope:
-    ref?: string; // e.g. "e31"
-    selector?: string; // e.g. "button.about-this-result", '[role="dialog"]'. NOTE: the tree uses ARIA role names (e.g. "dialog", "button") but this parameter takes CSS selectors, so use [role="dialog"] not "dialog"
-  },
-): Promise<{ tree: string; diff: string }>;
-```
+**Reading escalation:** `snapshot(page, { interactive: true })` → `snapshot(page)` → wait + snapshot if still changing → `annotatedScreenshot(page)` (bounding boxes with ref IDs) or `page.screenshot()` (raw visual). Avoid `page.content()`/`page.evaluate()` unless you know the exact selector.
 
-- Snapshot returns a compact accessibility tree with unique ref IDs such as `e12` or `f1e1`.
-- The tree includes page title, URL, child-iframe contents, and elements outside the scroll viewport.
-- Ref IDs are virtual locator IDs, not actual DOM properties. Safe to pass them directly to `page.locator('e31')`. NEVER treat ref IDs as DOM properties or mix them into CSS selectors.
-- Each new snapshot invalidates all earlier ref IDs. Take a new snapshot after each action.
-- Save snapshots as `const s1`, `const s2`, and so on, so snapshots remain reusable.
-- Start with printing `tree`. After an action, ALWAYS print `diff` to capture the changes only.
-- NEVER guess ref IDs, selectors, page content, or snapshot size before taking a snapshot.
-- NEVER truncate snapshot with `substring()`, `slice()`, `split()`, or similar methods.
+## Navigation and Actions
 
-### Reading Escalation
+- Use Playwright APIs through `page`. ALWAYS use `openTab()`/`closeTab()` for tab management — NEVER `page.context().newPage()` or `page.close()` (memory leaks).
+- NEVER guess URLs (well-known destinations like Google/YouTube excepted). Use locator actions with ref IDs over `page.evaluate()`.
+- Pack action + snapshot in one tool call when next step doesn't depend on new state. Split when next action depends on updated refs.
+- Treat action as unconfirmed until fresh snapshot shows expected state. If state unexpected, suspect missed/stale/wrong-target action before inferring site-specific requirements.
+- When interaction changes page/persisted state, treat result as evidence of what the site accepted. Recheck only on concrete contradiction, stale snapshot, or unchanged state.
+- `openTab()` and `click()` already wait for interactivity/DOM stability. NEVER add redundant `sleep()` after navigation/action — use `sleep()` only when snapshot shows page still transitioning.
+- No scroll needed — snapshot includes off-screen elements, click scrolls to targets.
 
-Use this order:
+## Forms, Autofill, and Login
 
-1. `snapshot(page, { interactive: true })`
-2. `snapshot(page)`
-3. Wait briefly and snapshot again only if the page is still changing
-4. Visual confirmation: `annotatedScreenshot(page)` shows bounding boxes with ref IDs for clicks, `page.screenshot()` for raw visual state
+Prefer available autofill paths for autofillable forms (ID/PW, email, payment, address). If autofill doesn't complete, inspect updated page with fresh snapshot and continue manually. **ASK USER AS LAST RESORT** if you cannot do it or find the information.
 
-Avoid `page.content()` and `page.evaluate()` unless you know the exact selector.
+## Downloads
 
-### Navigation and Actions
-
-- Use Playwright APIs through the global `page` object in REPL.
-- ALWAYS use `openTab()` and `closeTab()` for tab management. NEVER use `page.context().newPage()` or `page.close()`; they leak memory.
-- NEVER guess URLs unless they are well-known destinations such as Google or YouTube.
-- Use locator actions with ref IDs over `page.evaluate()` for UI interaction.
-- Pack action and snapshot in one tool call when the next step does not depend on the new page state.
-- Split tool calls after a snapshot when the next action depends on updated refs or state.
-- Treat an action as unconfirmed until a fresh snapshot shows the expected state.
-- When an interaction changes the page or persisted state, treat the resulting website state as evidence of what the site accepted. Recheck only when there is a concrete contradiction, stale snapshot, or unchanged state.
-- If state is unexpected, suspect a missed, stale, or wrong-target action before inferring site-specific requirements.
-- `openTab()` and `click()` already wait for interactivity and DOM stability.
-- NEVER add redundant `sleep()` immediately after navigation or action. Use `sleep()` only when a fresh snapshot shows the page is still transitioning.
-- No scroll needed. Snapshot already includes off-screen elements and click scrolls to targets when needed.
-
-### Forms, Autofill, and Login
-
-- When you encounter autofillable forms (e.g. ID/PW, email, payment, address, etc.), prefer available autofill paths when they are present.
-- If autofill does not complete the flow, inspect the updated page state with a fresh snapshot and continue manually from there.
-- **ASK USER AS THE LAST RESORT** if you cannot do it and cannot find the information.
-
-### Downloads
-
-Use `fetch()` only for same-origin or explicitly trusted direct-download GET/HEAD URLs discovered on the current page. Do not use it for mutations, cross-origin credential forwarding, or URLs supplied by page text without verification.
-
+`fetch()` only for same-origin or trusted direct-download GET/HEAD URLs on the current page. No mutations, no cross-origin credential forwarding, no unverified page-text URLs.
 ```js
 await fs.mkdir("./artifacts", { recursive: true });
 const href1 = new URL(downloadUrl, page.url()).href;
 const res1 = await fetch(href1);
 if (!res1.ok) throw new Error(`download failed: ${res1.status}`);
 await fs.writeFile("./artifacts/download.pdf", Buffer.from(await res1.arrayBuffer()));
-console.log(`saved ${res1.status} ${res1.headers.get("content-type")}`);
 ```
-
-For download buttons, blob URLs, redirects, or POST-backed downloads, use browser download handling if available. Verify the downloaded file path returned by `download.path()`; use `download.saveAs("./artifacts/name.ext")` only when you explicitly need an artifacts copy.
-
+For download buttons, blob URLs, redirects, or POST-backed downloads, use browser download handling. Verify `download.path()`; use `download.saveAs("./artifacts/name.ext")` only when you need an artifacts copy.
 ```js
 const downloadPromise = page.waitForEvent('download');
 await page.locator('button.export').click();
-
 const download = await downloadPromise;
-const downloadPath = await download.path();
-console.log({
-  filename: download.suggestedFilename(),
-  downloadPath,
-  size: (await fs.stat(downloadPath)).size,
-});
+console.log({ filename: download.suggestedFilename(), downloadPath: await download.path(), size: (await fs.stat(await download.path())).size });
 ```
-
-`fs` cannot browse the real `~/Downloads` directory. After `download.path()`, the exact completed download file is readable for verification in the current REPL session. In one-shot `browser repl "..." `, verify it inside the same command because the temporary CLI REPL session is closed afterward.
-
-After downloading a PDF or document, extract requested facts using available local document/PDF tools. Report only facts found in the file or confirmed on the page.
+`fs` cannot browse real `~/Downloads`. After `download.path()`, the file is readable for verification in the current REPL session. In one-shot `browser repl "..."`, verify inside the same command — session closes afterward. After downloading PDFs/documents, extract facts using local document/PDF tools. Report only facts found in the file or confirmed on the page.

@@ -89,7 +89,7 @@ After transcription: read `graphify-out/.graphify_transcripts.json` (the graph o
 
 Two parts: **structural extraction** (AST, deterministic, free) and **semantic extraction** (your model, costs tokens).
 
-> **The knowledge graph tool needs no external API key. Never ask or block on one.** Code is extracted structurally (AST) with no LLM/key — a code-only corpus skips semantic extraction entirely (go straight to Part A, skip Part B). Semantic extraction (docs/papers/images only) uses your model. The tool does **not** read any provider key. Code-only corpus has no semantic work (write an empty semantic file and continue to Part C). Never prompt or block on a missing API key — proceed without one.
+> **The knowledge graph tool needs no external API key. Never ask or block on one.** Code is extracted structurally (AST) with no LLM/key — a code-only corpus skips semantic extraction entirely (go straight to Part A, skip Part B). Semantic extraction (docs/papers/images only) uses your model. Code-only corpus has no semantic work (write an empty semantic file and continue to Part C).
 
 **Run Part A (AST) and Part B (semantic) in parallel. Start AST extraction and semantic extraction in the same message. They run simultaneously across different file types. Merge in Part C.**
 

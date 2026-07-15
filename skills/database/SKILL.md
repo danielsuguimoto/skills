@@ -13,16 +13,16 @@ description: >
 
 When database tools are available (see `/docs/database-tools.md` in the project root), treat the live database as the source of truth. Schema files, migrations, seeders, factories, and operations describe intent and history; the database records current reality. Inspect the live database before relying on code artifacts for data shape, relationships, constraints, or sample values.
 
-Prefer:
-- Schema inspection tool for current tables, columns, indexes, foreign keys, views, and routines (see `/docs/database-tools.md` in the project root)
-- Query tool for row counts, sample rows, actual values, duplicates, orphans, and `EXPLAIN` plans (see `/docs/database-tools.md` in the project root)
-- REPL for Eloquent semantics, scopes, and accessors when the raw schema is not enough (see `/docs/database-tools.md` in the project root)
+Prefer (see `/docs/database-tools.md` in the project root):
+- Schema inspection tool for current tables, columns, indexes, foreign keys, views, and routines
+- Query tool for row counts, sample rows, actual values, duplicates, orphans, and `EXPLAIN` plans
+- REPL for Eloquent semantics, scopes, and accessors when the raw schema is not enough
 
 Avoid using migration files, schema dumps, seeders, or operations as proxies for the current database state.
 
 ## Tool Inventory
 
-**Database tools (read-only, see `/docs/database-tools.md` in the project root)**: Rejects mutating statements.
+**Database tools (read-only)**: Rejects mutating statements.
 
 | Operation | Purpose | Key params |
 |-----------|---------|-----------|
@@ -30,16 +30,13 @@ Avoid using migration files, schema dumps, seeders, or operations as proxies for
 | Inspect schema | Inspect tables, columns, indexes, FKs, views, routines | `summary`, `filter`, `include_column_details`, `include_views`, `include_routines`, `database` |
 | Run read-only query | Run read-only SQL (`SELECT`, `SHOW`, `EXPLAIN`, `DESCRIBE`) | `query` (required), `database` |
 
-**REPL (read/write, see `/docs/database-tools.md` in the project root)**: The only path for mutating via Eloquent. Boots the full app container — models, scopes, gates, company scoping, subscribers fire. Prefer the query tool for raw SQL (faster, no boot, sandboxed). Use the REPL only for Eloquent semantics or writes.
+**REPL (read/write)**: The only path for mutating via Eloquent. Boots the full app container — models, scopes, gates, company scoping, subscribers fire. Prefer the query tool for raw SQL (faster, no boot, sandboxed). Use the REPL only for Eloquent semantics or writes.
 
-**Targeting the testing database**: Tests may run against a separate testing database (see `/docs/database-tools.md` in the project root for environment targeting). When debugging a test failure that depends on seeded data, company IDs, or pre-existing rows, inspect the testing DB, not the local dev DB — IDs and seeded rows differ.
-
-- REPL with testing environment (see `/docs/database-tools.md` in the project root). Do NOT use the REPL with default environment for test-debugging — it hits the local dev DB.
-- Query tool against testing DB: target the testing database per `/docs/database-tools.md` in the project root. Without it, the query tool hits the default connection's local dev database.
+**Targeting the testing database**: Tests may run against a separate testing database. When debugging a test failure that depends on seeded data, company IDs, or pre-existing rows, inspect the testing DB, not the local dev DB — IDs and seeded rows differ. Target the testing environment via `/docs/database-tools.md` in the project root for both REPL and query tool; without it, both hit the default connection's local dev database.
 
 ## Discovery Workflow
 
-1. List connections — confirm the default connection (see `/docs/database-tools.md` in the project root)
+1. List connections — confirm the default connection
 2. Schema inspection (`summary: true`) — table names + column types only (cheap overview)
 3. Schema inspection (`filter: "<table-substring>"`, `include_column_details: true`) — full metadata (nullable, default, auto-increment, comments). Add `include_views: true` for datatable queries joining views, `include_routines: true` for stored procedures.
 4. Query tool — validate row counts, sample rows, and `EXPLAIN` plans against schema
@@ -57,7 +54,7 @@ Avoid using migration files, schema dumps, seeders, or operations as proxies for
 When a raw SQL count disagrees with a UI widget:
 
 1. Read the widget's query path with the code navigation tool (see `/docs/code-navigation.md` in the project root) — find the repository's `getDatatableQuery` / `getStDatatable`.
-2. Reproduce every JOIN and WHERE with the query tool `SELECT COUNT(*)` (see `/docs/database-tools.md` in the project root).
+2. Reproduce every JOIN and WHERE with the query tool `SELECT COUNT(*)`.
 3. If counts still differ, the gap is almost always in `queryAll`/`queryScope` — company precedence unions, partial-access filters, or cancelled-status exclusions the raw SQL omits.
 4. Add filters one at a time until counts match. The missing filter is the root cause.
 
@@ -92,11 +89,8 @@ Never "fix" the widget to match the raw count without identifying the filter gap
 
 ## Anti-Patterns
 
-- Using SQL schema dumps to investigate the current DB — they are historical/testing snapshots and may be stale. Use the schema inspection tool (see `/docs/database-tools.md` in the project root).
 - Using `grep`/`read` to find a model's table or fillable columns — use the schema inspection tool with `filter`.
 - Writing raw `UPDATE`/`DELETE` SQL expecting read-only query tools to run it — they are read-only; use the REPL.
-- Relying on seeders, migrations, factories, or operations to infer current data shape, relationships, or valid values — inspect the live database instead.
-- Assuming a migration ran exactly as written — verify the resulting schema and sample rows with the schema inspection tool / query tool (see `/docs/database-tools.md` in the project root).
 
 - Don't echo `EXPLAIN` output raw. Report: "Uses index X, scans N rows."
 

@@ -53,8 +53,6 @@ Mechanism is tool-specific: profile frontmatter `model` field, agent config, ent
 
 ## Parallel Execution
 
-Spawn in parallel **only when ≥3 workstreams are truly independent** (no shared file writes, no cross-stream data dependency) and the time win is clear. Below 3, dispatch + synthesis overhead exceeds the gain.
-
 **Don't parallelize** when: workstreams share file writes (serialize/merge), one stream feeds the next (serialize/fan-in), sync cost exceeds time saved, or the work is a bounded single stream.
 
 Patterns: **Fan-out / fan-in** (N≥3 independent → wait all → optional synthesis subagent), **Pipeline** (A's output feeds B → serialize), **Scatter / gather** (N≥3 subagents, parent synthesizes inline when results are small).

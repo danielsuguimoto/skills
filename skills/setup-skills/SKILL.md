@@ -19,7 +19,7 @@ Generate the `/docs` folder and all 12 spec files in the project root so every d
    - All 12 exist → ask user whether to reconfigure or abort. If abort, stop.
    - Some exist → ask user whether to regenerate all or only missing ones.
    - None exist → proceed directly to interview.
-4. **Discover MCP servers**: If the agent supports MCP, use its native server discovery to detect available servers and their tools. Store as `<mcp-inventory>`. Offer detected servers as options during the interview. If the agent does not support MCP, skip.
+4. **Discover MCP servers**: Use native MCP server discovery if available. Store as `<mcp-inventory>`. Offer detected servers as options during the interview. Skip if unsupported.
 
 ## Interview
 
@@ -52,13 +52,13 @@ Ask the user about each tool category using the agent's native user-prompting me
 | What documentation lookup tools do you use? | Doc lookup | Context7, Tavily, None |
 | Which MCP servers should be documented? | MCP servers | Auto-detect from `<mcp-inventory>`, None |
 
-For the MCP servers question: if `<mcp-inventory>` is non-empty, offer "Use detected servers" as the first option. If empty, offer "None" and "Other" (user types server names).
+For the MCP servers question: if `<mcp-inventory>` is non-empty, offer "Use detected servers" first. If empty, offer "None" and "Other".
 
 ## Generate
 
-Create `<project-root>/docs/` if it does not exist. For each of the 12 spec files, generate the file. If the user selected "None", write a stub: `**Tool**: Not configured` with a note that skills referencing this spec will use fallbacks or skip the workflow.
+Create `<project-root>/docs/` if missing. For each of the 12 spec files, generate the file. If the user selected "None", write a stub: `**Tool**: Not configured` with a note that skills referencing this spec will use fallbacks or skip.
 
-Each spec file documents the tool's interface only — no agent behavior rules. Structure:
+Each spec documents the tool's interface only — no agent behavior rules:
 
 ```markdown
 # <Category>
@@ -95,13 +95,6 @@ The 12 spec files and what they cover (see danielsuguimoto/skills README for the
 
 For `/docs/mcp-servers.md`: populate a server inventory section from `<mcp-inventory>` if the user chose to document detected servers.
 
-## Verify
+## Verify and Output
 
-1. List all files in `<project-root>/docs/`.
-2. Confirm all 12 spec files exist.
-3. Report a summary table: spec file, tool, configured or not.
-4. List files with `<!-- Fill in: ... -->` markers that need manual completion.
-
-## Output
-
-Present the summary table and next steps. Do not commit or push — the user ships separately.
+Confirm all 12 spec files exist. Report summary table: spec file, tool, configured or not. List files with `<!-- Fill in: ... -->` markers needing manual completion. Do not commit or push.

@@ -3,139 +3,79 @@ name: pr-fix
 description: "Activate when a pull request has review feedback that requires code fixes and direct thread responses."
 ---
 
-Address PR feedback by making fixes and replying directly to review threads — NEVER add standalone PR comments.
+Address PR feedback by making fixes and replying directly to review threads — NEVER standalone PR comments. Tools: git host tool (see `/docs/git-hosts.md`).
 
-## Quick Reference
+Modes: `review` (default; approval required before commit/push/reply) or `auto` (commits/pushes without approval). `<pr-ref>` is the only authoritative source for the target PR — never assume current branch determines it.
 
-- Execution modes: `review` (default; ask before commit/push) or `auto` (commits/pushes without approval). Tools: git host tool (see `/docs/git-hosts.md` in the project root).
-- ABSOLUTE RULE: Reply directly to review threads — never standalone PR comments. Follow `/docs/git-hosts.md` in the project root.
-
-The parent owns Steps 1-13.
-
-> CRITICAL: Default mode is `review` — you MUST get explicit user approval (Step 9) before committing, pushing, or replying to threads. Never infer approval.
+> CRITICAL: in `review` mode, get explicit approval (Step 9) before committing, pushing, or replying. Never infer approval.
 
 ### 1. Interpret Arguments
-
-- `auto` request → `<execution-mode>` = `auto`; PR number/URL → `<pr-ref>`; extra guidance/constraints → `<additional-context>`; otherwise → `<execution-mode>` = `review`.
-
-> The user's `<pr-ref>` is the only authoritative source for the target PR. Never assume the current branch determines the target. If `<pr-ref>` points to a different branch, check it out in Step 3.
+`auto` → `<execution-mode>` = `auto`; PR number/URL → `<pr-ref>`; extra guidance → `<additional-context>`; otherwise → `review`.
 
 ### 2. Load PR Context
+Resolve project root via `git rev-parse --show-toplevel` → `<repo-path>` (use as `cwd` for MCP calls). Primary thread source: git host list unresolved review comments (filters `isResolved=false` server-side). CLI fallback: GraphQL `reviewThreads` with `isResolved` filter. Use REST `pulls/{n}/comments` only as `databaseId` cross-reference — never as primary (returns resolved comments too).
 
-Resolve the project root via `git rev-parse --show-toplevel` (see `/docs/git-hosts.md` in the project root) → `<repo-path>`. Use it as `cwd` for every MCP call.
-
-Primary thread source: git host list unresolved review comments (see `/docs/git-hosts.md` in the project root). It filters `isResolved=false` server-side, so resolved-thread bodies never enter parent context. CLI fallback per `/docs/git-hosts.md`: GraphQL `reviewThreads` with `isResolved` filter. Use git host list review comments/REST `pulls/{n}/comments` only as a `databaseId` cross-reference — never as the primary thread source, because it returns resolved comments too.
-
-PR metadata: git host view PR (see `/docs/git-hosts.md` in the project root, fields: `number,title,body,url,headRefName,baseRefName,author,state,commits`) and git host list reviews (see `/docs/git-hosts.md` in the project root). CLI fallback per `/docs/git-hosts.md`:
+PR metadata: git host view PR + list reviews. CLI fallback:
 ```bash
 gh pr view <pr-number> --json number,title,body,url,headRefName,baseRefName,author,state,commits
 gh api repos/{owner}/{repo}/pulls/<pr-number>/reviews
 ```
-
-Extract `<pr-branch>`, `<base-branch>`, `<pr-number>`, and `<pr-url>`. Run `git branch --show-current` → `<current-branch>`. Review attachments (images, PDFs, linked files) when relevant. Note gaps if inaccessible. If no feedback, output "No changes".
+Extract `<pr-branch>`, `<base-branch>`, `<pr-number>`, `<pr-url>`. Run `git branch --show-current` → `<current-branch>`. Review attachments when relevant. No feedback → output "No changes".
 
 ### 3. Align Local Branch
-
-If `<pr-branch>` is unavailable, STOP. Otherwise check out via git host checkout PR (see `/docs/git-hosts.md` in the project root) or CLI `gh pr checkout <pr-number>` per `/docs/git-hosts.md`. Store the active branch as `<active-branch>`. If checkout fails, STOP. Don't modify code until `<active-branch>` == `<pr-branch>`.
-
-> Never skip checkout even if workspace looks related. `<pr-ref>` is authoritative.
+If `<pr-branch>` unavailable → STOP. Check out via git host checkout PR or `gh pr checkout <pr-number>`. Store as `<active-branch>`. Checkout fails → STOP. Don't modify code until `<active-branch>` == `<pr-branch>`. Never skip checkout — `<pr-ref>` is authoritative.
 
 ### 4. Load Changes
-
-Use git host PR diff (see `/docs/git-hosts.md` in the project root). CLI fallback per `/docs/git-hosts.md`: `gh pr diff <pr-number>` or `git diff <base-branch>...<active-branch>`. Store as `<changes>`.
+Git host PR diff. CLI fallback: `gh pr diff <pr-number>` or `git diff <base-branch>...<active-branch>`. Store as `<changes>`.
 
 ### 5. Analyze Feedback
-
-1. Review open, unresolved review threads; check review states (`CHANGES_REQUESTED`, `APPROVED`, etc.)
-2. Use `<changes>` to understand the current diff. Prioritize critical issues (bugs, security, broken contracts). Identify files needing changes.
-3. Effectively resolved threads (skip, don't re-fix or re-reply): not marked resolved in GitHub, but have a reply stating addressed ("Fixed...", "Done...") and a later commit implementing the fix (verify via commit diff). If in doubt, ask the user. Threads already resolved by GitHub are excluded upstream in Step 2; this step catches only the GitHub-unresolved subset.
-4. For each actionable thread, record `<comment-id>`, `<file>`, `<lines>`, `<category>`, `<suggestion>`, `<reviewer-body>`, and `<current-heading>`. Don't blindly follow every suggestion — some lead off course. Threads marked `noise` or `question` go to the `not-fixing` list with reasons; record `<reviewer-body>` only there (needed for Step 12 reply justification).
+1. Review unresolved threads; check review states (`CHANGES_REQUESTED`, `APPROVED`, etc.)
+2. Use `<changes>` to understand the diff. Prioritize critical issues (bugs, security, broken contracts).
+3. Effectively resolved threads (skip): GitHub-unresolved but have "Fixed..."/"Done..." reply + later commit implementing the fix. Verify via commit diff. If in doubt, ask.
+4. For each actionable thread, record `<comment-id>`, `<file>`, `<lines>`, `<category>`, `<suggestion>`, `<reviewer-body>`, `<current-heading>`. Don't blindly follow suggestions. `noise`/`question` threads → `not-fixing` list with reasons (record `<reviewer-body>` only there, for Step 12).
 
 ### 6. Plan Implementation
-
-Fast path: if every actionable thread is a straightforward, specific code suggestion with no conflicts, skip planning. Set `<implementation-plan>` = `trivial` and go to Step 7. Skip the fast path when any thread is ambiguous, has cross-thread dependencies, or needs judgment. Otherwise synthesize actionable threads into an internal plan (no approval gate):
-
-1. Build an ordered fix list: sort by priority (`critical` → `important` → `style`), then file, then line. Move effectively resolved, `noise`, and `current-heading: yes` threads to a separate `not-fixing` list with reasons.
-2. Evaluate validity. Mark threads `invalid` (misreading, would break behavior, contradicts PR intent) with a one-line reason and add them to the `not-fixing` list. No fix is needed, but reply explaining why in Step 12.
-3. Map dependencies between threads (shared imports, types, callers) → `<dependencies>`.
-4. Store `<implementation-plan>`: ordered fix list, `not-fixing` list, and `<dependencies>`.
+Fast path: every thread is a straightforward code suggestion with no conflicts → `<implementation-plan>` = `trivial`, skip to Step 7. Skip fast path when any thread is ambiguous, has cross-thread dependencies, or needs judgment. Otherwise: build ordered fix list (`critical` → `important` → `style`, then file, then line). Move effectively resolved/`noise`/`current-heading: yes` to `not-fixing`. Mark `invalid` threads (misreading, would break behavior, contradicts PR intent) → `not-fixing` with reason (reply why in Step 12). Map dependencies → `<dependencies>`.
 
 ### 7. Implement Fixes
-
-Fix critical issues first, follow existing patterns, use `<active-branch>`, make focused minimal changes, and be ready to explain why you maintained your heading. Store `<changes-count>`.
+Fix critical first, follow existing patterns, use `<active-branch>`, focused minimal changes. Store `<changes-count>`.
 
 ### 8. Validate Changes
+Run lint + tests on changed files. Confirm fixes address feedback. Store `<validation-results>`, `<validation-passing>` (`yes`/`no`).
 
-- Run project lint and test commands (see project config or `/docs/` in the project root) on the changed files.
-- Confirm the fixes address the feedback. Store `<validation-results>` and `<validation-passing>` (`yes`/`no`).
+### 9. Approval Gate (mandatory in `review` mode)
+Never skip. Only `decision: approved` counts — don't infer from silence. If `<validation-passing>` = `no` → STOP. If `auto` mode → skip to Step 11.
 
-### 9. Review Fixes With User — MANDATORY APPROVAL GATE
+Present gate: fix summary, changed file count, validation results. Ask (header `Approval`): "Ready to commit, push, and respond?" Options: `Go Ahead` (→ `approved`) or `Needs Review` (requires feedback → `concerns`).
 
-Never skip. Get explicit approval before commit, push, or thread replies. Don't infer approval from silence or "looks good". Only `decision: approved` counts. If `<validation-passing>` = `no`, STOP before any commit, push, or reply. If `<execution-mode>` = `auto`, skip the gate and go to Step 11. Otherwise the gate is mandatory.
-
-9a. Present gate: show the fix summary, changed file count, and validation results. Ask one question (header `Approval`): "Ready to commit, push, and respond on the PR with these changes?" Options: `Go Ahead` (accept without modifications) or `Needs Review` (requires feedback explaining what to change).
-
-9b. Normalize:
-| Selection | Side text | `decision` | `feedback` |
-|-----------|-----------|------------|------------|
-| `Go Ahead` | — | `approved` | `""` |
-| `Needs Review` | empty | invalid — re-prompt | |
-| `Needs Review` | non-empty | `concerns` | custom_text |
-
-9c. Route:
-| `decision` | Action |
-|------------|--------|
-| `approved` | Exit loop → Step 11 |
-| `concerns` + feedback | Store `<review-feedback>` → Step 10 → re-implement → re-validate → re-present gate |
-
-Approval loop (mandatory): `Needs Review` does not exit or authorize anything. Loop: apply feedback (Step 10) → re-implement (Step 7) → re-validate (Step 8) → re-present gate (9a). Repeat until `approved`. No other exit. When `<changes-count>` = 0, surface the no-change state so the user picks `Go Ahead` (no-op) or `Needs Review` with feedback.
+- `approved` → Step 11. `concerns` → store `<review-feedback>` → Step 10 → re-implement (7) → re-validate (8) → re-present gate. Repeat until `approved`.
+- When `<changes-count>` = 0, surface no-change state so user picks `Go Ahead` (no-op) or `Needs Review` with feedback.
 
 ### 10. Apply Review Feedback
+Use `<review-feedback>` to refine without widening scope. Return to Step 7. No commit/push/reply during this step.
 
-Use `<review-feedback>` to refine without widening scope unless explicitly asked. Return to Step 7, re-validate in Step 8, and re-present gate in Step 9. No commit, push, or reply during this step.
-
-### 11. Commit And Push — ONLY AFTER `approved`
-
-Run only after the approval loop exits with `approved`, or when `<execution-mode>` = `auto`. Stage (`git add -A`), commit (`git commit -m "<commit-message>"`), and push (`git push origin <active-branch>`). Follow git conventions for the commit message — never use a generic message like "address review feedback". Store `<pushed>` as `yes` or `no`.
+### 11. Commit and Push (after `approved` or in `auto` mode)
+`git add -A`, `git commit -m "<message>"`, `git push origin <active-branch>`. Never use generic messages like "address review feedback". Store `<pushed>` (`yes`/`no`).
 
 ### 12. Respond to Threads
+Reply only after commit + push succeed. ALWAYS reply via thread reply API — NEVER standalone PR comments (`gh pr review -c`, `gh pr comment`). Sole exception: flat PR comments (no line anchor) → single flat PR comment quote-replying (blockquote original + author handle, then response).
 
-Reply to addressed threads only after commit and push succeed (and were authorized).
-
-CRITICAL — NEVER VIOLATE:
-- ALWAYS reply to specific review comment threads via thread reply API
-- NEVER add standalone PR review comments (`gh pr review -c` or `gh pr comment`)
-- Every response = direct reply to existing review thread
-
-Sole exception — flat PR comments: if the reviewer left a flat PR comment (no line anchor), post a single flat PR comment that quote-replies (blockquote original + author handle, then response). This is the only permitted use of git host PR comment (see `/docs/git-hosts.md` in the project root) or `gh pr comment` (CLI) per `/docs/git-hosts.md`. Correct: use git host reply to review thread (see `/docs/git-hosts.md` in the project root, `pr_number`, `comment_id`, `body`). CLI fallback per `/docs/git-hosts.md`:
-
+Use git host reply to review thread (`pr_number`, `comment_id`, `body`). CLI fallback:
 ```bash
 gh api repos/{owner}/{repo}/pulls/<pr-number>/comments/<comment-id>/replies \
   --method POST --input - <<'EOF'
 {"body":"<reply-text>"}
 EOF
 ```
-
-Avoid `-f body=` with special characters (use `--input -`), `gh pr review -c`, and `gh pr comment` (standalone). Keep replies short and factual. Confirm what was addressed and what was intentionally not followed.
+Use `--input -` (not `-f body=`) for special characters. Keep replies short and factual.
 
 ### 13. Resolve Addressed Threads
-
-After replying to fully addressed threads, resolve them via GraphQL `resolveReviewThread` (GraphQL-only; no REST endpoint). Use git host list review threads (see `/docs/git-hosts.md` in the project root) to map comment IDs to thread node IDs (`PRRT_...`), then git host resolve review thread (see `/docs/git-hosts.md` in the project root, `thread_id`).
-
-CLI fallback:
+After replying, resolve fully addressed threads via GraphQL `resolveReviewThread` (GraphQL-only; no REST endpoint). Use git host list review threads to map comment IDs to thread node IDs (`PRRT_...`), then git host resolve review thread. CLI fallback:
 ```bash
-# List unresolved threads
 gh api graphql -f query='{ repository(owner: "<owner>", name: "<repo>") { pullRequest(number: <pr-number>) { reviewThreads(first: 100) { nodes { id isResolved comments(first: 1) { nodes { databaseId body author { login } } } } } } } }'
-
-# Resolve
 gh api graphql -f query='mutation { resolveReviewThread(input: {threadId: "<thread-node-id>"}) { thread { isResolved } } }'
 ```
-
-Match by the first comment's `databaseId` (equals REST comment ID). Rules: only resolve threads where feedback was fully addressed. Don't resolve threads you intentionally didn't follow (leave them open with reasoning). Don't resolve threads the reviewer reopened. Store the count as `<threads-resolved>`.
+Match by first comment's `databaseId`. Only resolve fully addressed threads. Don't resolve intentionally skipped or reviewer-reopened threads. Store `<threads-resolved>`.
 
 ## Output
-
-Output a summary of changes made and validation results.
-
-- At the approval gate: one line per fix applied, not full diffs. Example: "Fixed N threads across M files" + validation status.
-
+Summary of changes and validation results. At the approval gate: one line per fix, not full diffs. Example: "Fixed N threads across M files" + validation status.

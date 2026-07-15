@@ -82,12 +82,9 @@ Wait for the user's response. Revise and re-run self-review if needed. Sync only
 - [ ] Cross-cutting coverage: scaffolding (migrations, seeders, config, feature flags, permissions, translations, observers, events, jobs, cache, search, docs, tests) where impacted.
 - [ ] No hidden discovery: no item assumes the implementer will 'find out', 'investigate', or 'determine' something later.
 
-11. **Sync Ticket**: CRITICAL: Sync the spec to the ticket system. Final output: the ticket URL. See `/docs/issue-trackers.md` in the project root for the sync tool, provider-specific parameters, board/list/assignee config, and `checklists` schema.
-
-Sync via the issue tracker sync tool (see `/docs/issue-trackers.md` in the project root):
-- `title`: `<spec-title>`
-- `description`: `<spec-description>`
-- `checklists`: exactly two non-empty sections. JSON array matching `{name, items: [{name, completed}]}`:
+11. **Sync Ticket**: Sync the spec to the ticket system via the issue tracker sync tool (see `/docs/issue-trackers.md`). Final output: the ticket URL.
+- `title`: `<spec-title>`, `description`: `<spec-description>`
+- `checklists`: two non-empty sections as JSON array matching `{name, items: [{name, completed}]}`:
   - `{"name": "Implementation", "items": [{"name": "<requirement-item-encoded>", "completed": false}, ...]}`
   - `{"name": "Validation", "items": [{"name": "<validation-item>", "completed": false}, ...]}`
   - `<requirement-item-encoded>`: `S1: <title> - <file> @ <symbol>::<location> - <instruction>`. Append the full structured block (with `patch`) to `<spec-description>` so the implementation agent has the complete patch.
@@ -96,7 +93,5 @@ Sync via the issue tracker sync tool (see `/docs/issue-trackers.md` in the proje
 
 ## Notes
 
-- The ticket load tool downloads attachments to `storage/app/mcp/{source}`. Read them before planning.
-- Use the ticket list tool to discover unresolved assigned tickets first (see `AGENTS.md` → Ticket Tools).
-- During the clarification interview, ask the next question; do not restate previous answers.
+- Ticket load tool downloads attachments to `storage/app/mcp/{source}` — read before planning. Use the ticket list tool to discover unresolved assigned tickets first. During clarification, ask the next question; do not restate previous answers.
 

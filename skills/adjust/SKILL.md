@@ -54,23 +54,11 @@ If after one grilling round the intent is still undefined, **stop, list unknowns
 
 ### 3. Parse Into Actionable Items
 
-Split `<adjust-raw>` + `<request-context>` into discrete points. Each → one `<adjust-item>`:
-- `id`: `A1`, `A2`, …
-- `file`: target file(s) if locatable from the request + `<request-context>`; else `TBD`
-- `lines`: range if stated; else `TBD`
-- `category`: `critical` (bug/security/broken contract) | `important` (behavior/correctness) | `style` (naming/format/clarity)
-- `suggestion`: one-line imperative
-- `conflicts-with-design`: `yes` if the request contradicts an existing invariant, pattern, or design decision — defend the current code (record reason; do NOT apply)
-
-Build `<not-applying>` list for `noise`, `question`, or `conflicts-with-design: yes` items with one-line reasons.
+Split `<adjust-raw>` + `<request-context>` into discrete `<adjust-item>`s: `id` (`A1`, `A2`, …), `file`, `lines`, `category` (`critical` | `important` | `style`), `suggestion` (one-line imperative), `conflicts-with-design` (`yes` → defend current code, record reason, do NOT apply). Build `<not-applying>` list for `noise`, `question`, or `conflicts-with-design: yes` items.
 
 ### 4. Plan Implementation
 
-Fast path: every actionable `<adjust-item>` is a specific code suggestion with no conflicts → `<implementation-plan>` = `trivial`, skip to Step 5. Otherwise:
-
-1. Order: `critical` → `important` → `style`, then file, then line.
-2. Validate each: mark `invalid` if it would break behavior or contradict an existing contract → `<not-applying>` with reason.
-3. Map cross-item dependencies (shared files/types/callers) → `<dependencies>`.
+Fast path: every actionable `<adjust-item>` is a specific code suggestion with no conflicts → `<implementation-plan>` = `trivial`, skip to Step 5. Otherwise: order `critical` → `important` → `style`, then file, then line. Validate each (mark `invalid` if it breaks behavior or contradicts a contract → `<not-applying>`). Map cross-item dependencies → `<dependencies>`.
 
 ### 5. Grill: Confirm the Plan
 
@@ -103,23 +91,4 @@ No follow-up questions, no refinement loop, no next steps.
 
 STOP. No shipping suggestions. The user invokes other skills to ship.
 
-## Red Flags
 
-**Never:**
-- Perform any version control operation — commit, push, branch switch, PR, merge
-- Reply to review threads
-- Switch branches, worktrees, or any version control state
-- Widen scope beyond the request
-- Suggest follow-up work or shipping on completion
-- Skip validation after implementing
-- Apply an item marked `conflicts-with-design: yes` without explicit user confirmation
-- Skip a grilling section. Vague input produces wrong changes.
-- Batch grilling questions. One at a time, then wait.
-- Implement a plan the user has not confirmed in Step 5.
-
-**Always:**
-- Grill before parsing, before planning, before implementing.
-- Stay in the current workspace
-- Drive changes off parsed `<adjust-item>`s
-- Run lint + tests after changes
-- Present results and stop — no unsolicited next steps
