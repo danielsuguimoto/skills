@@ -14,7 +14,8 @@ Each subdirectory under `skills/` is a self-contained skill with a `SKILL.md` ma
 | commit-and-push | Commit and push current changes. |
 | context-gathering | MANDATORY pre-flight before any codebase exploration, reading, editing, or answering about code. |
 | database | Database inspection tools for schema, queries, and operations. |
-| feedback | Apply one round of local code-review feedback after implement. Code fixes only — no PR, commit, or push. |
+| debug | Troubleshoot and fix a user-reported bug — grill to clarify, investigate root cause, plan, and execute the fix. |
+| adjust | Apply user-requested adjustments to existing code — fixes, improvements, refactors per notes. No shipping. |
 | knowledge-graph | Turn any input (code, docs, papers, images, videos) into a persistent knowledge graph with community detection and query/path/explain tools. |
 | grill-with-codebase | Grill the user about a task or intent using the codebase as ground truth until decisions form a concrete plan. |
 | implement | Develop from a ticket — load details, gather context, implement on master. |
