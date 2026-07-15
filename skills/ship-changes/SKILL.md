@@ -5,9 +5,9 @@ description: "Use when shipping current work end-to-end — creating a branch, c
 
 Run the full shipping pipeline: branch, commit, push, and open a PR.
 
-## MCP Operations
+## Operations
 
-| Operation | Preferred MCP | CLI fallback per `/docs/git-hosts.md` |
+| Operation | Tool (see `/docs/git-hosts.md`) | CLI fallback per `/docs/git-hosts.md` |
 |-----------|--------------|--------------|
 | Pre-scan change state | git host change scan (see `/docs/git-hosts.md` in the project root) | `git branch --show-current` + `git status --short` + `git diff --stat` + `git diff --cached --stat` + `git log @{u}..HEAD --oneline` |
 
@@ -24,7 +24,7 @@ Forward git host tool availability to subskills so they skip their own change sc
 
 Run the change scan once here and forward results to every subskill so they skip their own Load/Analyze step.
 
-Run the change scan from the MCP table above. Store:
+Run the change scan from the operations table above. Store:
 - `<current-branch>` — current branch
 - `<uncommitted>` — combined status + diff stat
 - `<ahead-commits>` — ahead-commits log via range `@{u}..HEAD` (empty if none)

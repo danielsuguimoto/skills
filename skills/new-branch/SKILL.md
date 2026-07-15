@@ -7,9 +7,9 @@ description: "Use when starting new work that needs a branch — creates and swi
 
 Create and switch to a categorized branch summarizing current uncommitted work.
 
-## MCP Operations
+## Operations
 
-| Operation | Preferred MCP | CLI fallback per `/docs/git-hosts.md` |
+| Operation | Tool (see `/docs/git-hosts.md`) | CLI fallback per `/docs/git-hosts.md` |
 |-----------|--------------|--------------|
 | Load change state | git host change scan (see `/docs/git-hosts.md` in the project root) | `git branch --show-current` + `git status --short` + `git diff --cached --stat` + `git diff --stat` + `git log origin/<branch>..<branch> --oneline` |
 | Pull, create, publish | git host branch create (see `/docs/git-hosts.md` in the project root, with `branch_name`) | `git pull origin <branch>` + `git checkout -b <cat>/<slug>` + `git push -u origin <new-branch>` |
@@ -26,7 +26,7 @@ If a pre-scan was forwarded, use `<current-branch>`, `<uncommitted>`, `<ahead-co
 
 Otherwise:
 
-Step 1: Load change state via the MCP table above. Store `<current-branch>` and `<uncommitted>`.
+Step 1: Load change state via the operations table above. Store `<current-branch>` and `<uncommitted>`.
 
 Step 2: If `<uncommitted>` is empty, check commits ahead using `origin/<current-branch>..<current-branch>`. Store `<ahead-commits>`.
 
@@ -58,7 +58,7 @@ Step 3: Analyze scope:
 
 ### 5. Pull Latest from Remote
 
-Pull `origin/<current-branch>` via MCP or CLI. If the pull fails (diverged history, no remote tracking), continue with the current state and note it in the output.
+Pull `origin/<current-branch>` via git host tool or CLI. If the pull fails (diverged history, no remote tracking), continue with the current state and note it in the output.
 
 ### 6. Create and Checkout Branch
 

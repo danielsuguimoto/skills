@@ -7,7 +7,7 @@ Address PR feedback by making fixes and replying directly to review threads — 
 
 ## Quick Reference
 
-- Execution modes: `review` (default; ask before commit/push) or `auto` (commits/pushes without approval). Tools: git host tool (see `/docs/git-hosts.md` in the project root). Prefer MCP; fall back to CLI.
+- Execution modes: `review` (default; ask before commit/push) or `auto` (commits/pushes without approval). Tools: git host tool (see `/docs/git-hosts.md` in the project root).
 - ABSOLUTE RULE: Reply directly to review threads — never standalone PR comments. Follow `/docs/git-hosts.md` in the project root.
 
 The parent owns Steps 1-13.

@@ -3,7 +3,7 @@ name: pr-create
 description: "Creates a pull request for the current branch."
 ---
 
-## MCP Operations
+## Operations
 
 MCP tools take business-level inputs (title, body, base, head). Never use CLI flags. Skip `--body-file` temp-file steps when using MCP.
 

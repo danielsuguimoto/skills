@@ -3,9 +3,7 @@ name: implement
 description: "Activate when implementing a ticket or planned change directly on master."
 ---
 
-## MCP Server Preference
-
-Use the git host tool (see `/docs/git-hosts.md` in the project root). Prefer MCP over CLI; fall back silently when offline. All git host tools need `repo_path`.
+Use the git host tool (see `/docs/git-hosts.md` in the project root). All git host tools need `repo_path`.
 
 Operations: Use git host operations (see `/docs/git-hosts.md` in the project root) for branch check, switch to master, pull latest.
 

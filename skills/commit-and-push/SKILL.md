@@ -3,9 +3,9 @@ name: commit-and-push
 description: "Commit and push current changes."
 ---
 
-## MCP Operations
+## Operations
 
-| Operation | Preferred MCP | CLI fallback per `/docs/git-hosts.md` |
+| Operation | Tool (see `/docs/git-hosts.md`) | CLI fallback per `/docs/git-hosts.md` |
 |-----------|--------------|--------------|
 | Load change state | git host change scan (see `/docs/git-hosts.md` in the project root) | `git branch --show-current` + `git status --short` + `git diff --stat` + `git diff --cached --stat` + `git log @{u}..HEAD --oneline` |
 | Stage and commit | git host commit (see `/docs/git-hosts.md` in the project root, with `message`) | `git add -A` + `git commit -m "<message>"` |
@@ -24,7 +24,7 @@ If a pre-scan was already forwarded, skip to step 3.
 
 Otherwise:
 
-Step 1: Load uncommitted changes via the MCP table above. Store `<uncommitted>`.
+Step 1: Load uncommitted changes via the operations table above. Store `<uncommitted>`.
 
 Step 2: If `<uncommitted>` is empty, load commits ahead using `@{u}..HEAD`. Store `<ahead-commits>`.
 
@@ -46,9 +46,9 @@ Commit message follows git conventions.
 Commit:
 1. Stage (`-A` or specific files).
 2. Generate message from `<change-summary>` and `<additional-context>`.
-3. Commit via MCP or `git commit -m`; store `<hash>`.
+3. Commit via git host commit or `git commit -m`; store `<hash>`.
 
 ### 5. Push to Remote
 
-Push via MCP `push` or `git push`. If no upstream, retry `git push -u origin <branch>`. Store `<push-target>`. If push fails, STOP and report the error. On success, output `<hash>` and `<push-target>`.
+Push via git host push or `git push`. If no upstream, retry `git push -u origin <branch>`. Store `<push-target>`. If push fails, STOP and report the error. On success, output `<hash>` and `<push-target>`.
 
