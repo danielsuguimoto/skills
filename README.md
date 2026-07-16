@@ -28,6 +28,7 @@ Each subdirectory under `skills/` is a self-contained skill with a `SKILL.md` ma
 | session-to-memory | Extract retention-worthy knowledge from a session and persist it to the active memory provider. |
 | setup-skills | Guide users through initial configuration — creates /docs folder and generates all spec files needed by other skills. |
 | ship-changes | Ship current work end-to-end — branch, commit, push, open PR. |
+| spawn | Invoke a target skill inside a subagent so its content stays isolated to the subagent's context. |
 | subagents | Subagent spawning rules for parallel work, isolated tasks, and context offloading. |
 | to-specs | Turn a request or ticket into a spec, then sync to the ticket system. Read-only. |
 | triage | Triage a ticket — load context, gather evidence, post findings. Read-only. |
