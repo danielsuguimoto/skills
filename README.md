@@ -24,6 +24,7 @@ Each subdirectory under `skills/` is a self-contained skill with a `SKILL.md` ma
 | new-branch | Create and switch to a categorized branch summarizing current uncommitted or ahead-of-base work. |
 | pr-create | Create a pull request for the current branch. |
 | pr-fix | Address PR feedback by making fixes and responding directly to review threads. |
+| pr-fix-ci | Fix failing CI checks on a PR — read logs, fix the code, push, verify green. |
 | session-to-memory | Extract retention-worthy knowledge from a session and persist it to the active memory provider. |
 | setup-skills | Guide users through initial configuration — creates /docs folder and generates all spec files needed by other skills. |
 | ship-changes | Ship current work end-to-end — branch, commit, push, open PR. |
