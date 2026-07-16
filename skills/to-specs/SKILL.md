@@ -10,9 +10,9 @@ Turn a request or ticket into a spec, then sync to the ticket system. Read-only 
 ## Destination — the spec, decision, or change this effort delivers. One or two lines.
 ## Problem Statement — the user-facing problem or opportunity that drives the spec.
 ## Solution — the intended outcome from the user's perspective. Record each locked decision from grilling or repo inspection on one line with its source.
-## Implementation Items — numbered self-contained patches. Each item has `file`, `symbol`, `location`, `instruction`, and `patch`. Include every concrete action: code, schema, config, tests, operations.
-## Validation Items — checklist of concrete verifications. Each item maps to an implementation item or user-facing behavior.
 ## Notes — other context, dependencies, or decisions worth keeping.
+
+The description renders only the sections above. Implementation Items and Validation Items are NOT part of the description — they sync as checklists (short encoded form) and a patches comment (full structured blocks with `patch` code). See step 11.
 
 </spec-template>
 
@@ -43,7 +43,7 @@ Skip reason (when used): `Skip reason: <all 6 conditions met because ...>`. Skip
 
 9. **Shape the Spec**: Write the spec using the template. Turn `<planning-objective>`, `<operative-constraints>`, `<proposed-technical-direction>`, `<clarified-requirements>`, `<technical-approach-decision>`, repo findings, `<project-standards>`, `<doc-context>`, and `<skill-context>` into:
 - `<spec-title>`: short, useful title.
-- `<spec-description>`: the rendered spec template. Must include: (a) the destination and why it fixes scope, (b) the chosen technical approach and why, (c) key user preferences and constraints, (d) accepted trade-offs. Make it specific to this spec and user.
+- `<spec-description>`: the rendered spec template (Destination, Problem Statement, Solution, Notes only — NOT the implementation/validation items). Must include: (a) the destination and why it fixes scope, (b) the chosen technical approach and why, (c) key user preferences and constraints, (d) accepted trade-offs. Make it specific to this spec and user.
 - `<requirement-items>`: precise patch descriptions, one per spec step. Map each action from step 8 and each user preference from `<clarified-requirements>` to one or more requirement items. If you cannot express any concrete action as a requirement item, the spec is incomplete; return to step 8 or 7.
 - `<validation-items>`: validation checklist aligned with project testing conventions. Adhere to `<project-standards>`, `<doc-context>`, `<skill-context>`. Preserve valid technical details; improve incomplete ones when repo inspection provides better direction. Avoid placeholder labels.
 
@@ -72,7 +72,7 @@ Wait for the user's response. Revise and re-run self-review if needed. Sync only
 
 **Self-Review Checklist** (fix failures before syncing):
 - [ ] No placeholders, TBDs, TODOs, or vague requirements.
-- [ ] Internal consistency: checklists match description; each implementation item has validation coverage.
+- [ ] Internal consistency: checklists match `<requirement-items>`/`<validation-items>`; each implementation item has validation coverage. Description carries no items or patch code.
 - [ ] Scope: one ticket. Narrow the destination if not.
 - [ ] Code-target precision: each `<requirement-item>` has concrete `file`, `symbol`, `location` against `<repo-context>`.
 - [ ] Vertical slices: trace each item through schema → API → UI → tests; avoid horizontal layers.
@@ -83,12 +83,13 @@ Wait for the user's response. Revise and re-run self-review if needed. Sync only
 - [ ] No hidden discovery: no item assumes the implementer will 'find out', 'investigate', or 'determine' something later.
 
 11. **Sync Ticket**: Sync the spec to the ticket system via the issue tracker sync tool (see `/docs/issue-trackers.md`). Final output: the ticket URL.
-- `title`: `<spec-title>`, `description`: `<spec-description>`
+- `title`: `<spec-title>`, `description`: `<spec-description>` (Destination/Problem/Solution/Notes only — no implementation/validation items, no patch code).
 - `checklists`: two non-empty sections as JSON array matching `{name, items: [{name, completed}]}`:
   - `{"name": "Implementation", "items": [{"name": "<requirement-item-encoded>", "completed": false}, ...]}`
   - `{"name": "Validation", "items": [{"name": "<validation-item>", "completed": false}, ...]}`
-  - `<requirement-item-encoded>`: `S1: <title> - <file> @ <symbol>::<location> - <instruction>`. Append the full structured block (with `patch`) to `<spec-description>` so the implementation agent has the complete patch.
+  - `<requirement-item-encoded>`: `S1: <title> - <file> @ <symbol>::<location> - <instruction>` (no `patch` code — checklists are short tracking items).
   - Before calling, verify the `checklists` schema against the sync tool's source.
+- `patches comment`: post the full structured `<requirement-items>` blocks (with `patch` code) as a comment on the ticket via the issue tracker comment operation (see `/docs/issue-trackers.md`). This keeps the implementer's code out of the card body, which overflows ticket systems with card-body limits (e.g. Trello). Skip only when the tracker has no comment support; in that case fall back to attaching the blocks as a file.
 - `refUrl`: existing ticket URL → update; no `<ticket-url>` → omit `refUrl`, create new ticket, output the URL.
 
 ## Notes
