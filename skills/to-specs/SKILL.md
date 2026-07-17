@@ -5,6 +5,8 @@ description: Use when a request or ticket needs to be turned into a spec and syn
 
 Turn a request or ticket into a spec, then sync to the ticket system. Read-only (no code changes or implementation). Clarify requirements with the user before shaping the spec. No assumptions, guesses, or inferred intent. Treat ticket systems generically. Use `<additional-context>` for constraints and focus areas. Update existing tickets; create replacements only when asked. For big problems, name the destination first and keep all output on one ticket. Split into multiple tickets only when the user explicitly asks.
 
+**Loop with the user, never with yourself.** All iteration happens in the grilling phase (step 5) and the user-review gate (step 10) as back-and-forth with the user. Do not run internal review/refactor/re-review cycles, re-shape loops, or self-critique passes. Shape once from gathered context, present, revise only on user request.
+
 <spec-template>
 
 ## Destination — the spec, decision, or change this effort delivers. One or two lines.
@@ -24,7 +26,7 @@ The description renders only the sections above. Implementation Items and Valida
 
 4. **Gather Project Standards**: Read the relevant `/docs/` specifications in the project root (project root and module-specific). Check the active memory provider for code standards, architecture, and tech stack. Store as `<project-standards>`.
 
-5. **Clarify Requirements with User (MANDATORY)**: Run a clarification interview before shaping the spec by default. Skipping is the exception; justify it in the spec output. No assumptions, guesses, or inferred intent instead of user clarification.
+5. **Clarify Requirements with User (MANDATORY)**: Run a clarification interview before shaping the spec by default. This is the only place iteration happens before shaping — loop with the user here until shared understanding. Skipping is the exception; justify it in the spec output. No assumptions, guesses, or inferred intent instead of user clarification.
 
 Skip gate (all must be true): single atomic edit with no design decisions; `<proposed-technical-direction>` concrete and unambiguous; no earlier comments conflict; no open questions about scope, naming, placement, ordering, or behavior; repo inspected and direction matches existing patterns; user explicitly confirmed in the current conversation.
 
@@ -39,12 +41,12 @@ Skip reason (when used): `Skip reason: <all 6 conditions met because ...>`. Skip
 
 7. **Brainstorm Technical Approaches**: After inspecting the repo, brainstorm for complex tasks. Complex = touches multiple subsystems, has multiple valid high-level approaches, lacks concrete `<proposed-technical-direction>`, or user flags it. For complex tasks: ask remaining clarifying questions one at a time; propose 2-3 approaches grounded in `<repo-context>` with trade-offs; lead with a recommendation; ask the user to choose one. Record as `<technical-approach-decision>` and get explicit alignment before shaping the spec. For non-complex tasks, skip only when `<proposed-technical-direction>` is concrete and unambiguous and the user has explicitly confirmed it.
 
-8. **Build Action Inventory**: Before writing requirement items, list every concrete action needed to deliver the destination. Use the surface inventory from `<repo-context>`. For each surface (DB, model, rules, services, API, UI, infra, tests, docs, ops), decide `no change` or a concrete action (`create`, `modify`, `delete`, `run`). Record `surface`, `action`, `target`, `depends-on`, `patch-ready` (`true` when the exact code change can be written from `<repo-context>`). Convert each `patch-ready` action into a requirement item in step 9. If a required action is not `patch-ready`, do not finalize the spec. Return to step 7, 6, or 5 until the target is resolvable. Every required action must become a requirement item.
+8. **Build Action Inventory**: Before writing requirement items, list every concrete action needed to deliver the destination. Use the surface inventory from `<repo-context>`. For each surface (DB, model, rules, services, API, UI, infra, tests, docs, ops), decide `no change` or a concrete action (`create`, `modify`, `delete`, `run`). Record `surface`, `action`, `target`, `depends-on`, `patch-ready` (`true` when the exact code change can be written from `<repo-context>`). Convert each `patch-ready` action into a requirement item in step 9. Every required action must become a requirement item.
 
 9. **Shape the Spec**: Write the spec using the template. Turn `<planning-objective>`, `<operative-constraints>`, `<proposed-technical-direction>`, `<clarified-requirements>`, `<technical-approach-decision>`, repo findings, `<project-standards>`, `<doc-context>`, and `<skill-context>` into:
 - `<spec-title>`: short, useful title.
 - `<spec-description>`: the rendered spec template (Destination, Problem Statement, Solution, Notes only — NOT the implementation/validation items). Must include: (a) the destination and why it fixes scope, (b) the chosen technical approach and why, (c) key user preferences and constraints, (d) accepted trade-offs. Make it specific to this spec and user.
-- `<requirement-items>`: precise patch descriptions, one per spec step. Map each action from step 8 and each user preference from `<clarified-requirements>` to one or more requirement items. If you cannot express any concrete action as a requirement item, the spec is incomplete; return to step 8 or 7.
+- `<requirement-items>`: precise patch descriptions, one per spec step. Map each action from step 8 and each user preference from `<clarified-requirements>` to one or more requirement items.
 - `<validation-items>`: validation checklist aligned with project testing conventions. Adhere to `<project-standards>`, `<doc-context>`, `<skill-context>`. Preserve valid technical details; improve incomplete ones when repo inspection provides better direction. Avoid placeholder labels.
 
 **Requirement Item Format**: Each `<requirement-item>` is a self-contained block that an implementation agent can apply as a patch. No item may describe an outcome without naming where the code changes. Required fields: `id` (stable spec-step-id like `S1` or short slug), `file` (repo-root-relative path(s); use a locator rule if multiple candidates), `symbol` (function/class/method/component; fully-qualified when ambiguous), `location` (exact insertion or modification point), `instruction` (one short imperative sentence: `add`/`remove`/`modify`/`replace`), `patch` (minimal code snippet or unified diff; required when target is known; keep to the delta).
@@ -63,24 +65,12 @@ Skip reason (when used): `Skip reason: <all 6 conditions met because ...>`. Skip
   ```
 ```
 
-Rules: One item = one single-purpose patch. Split compound changes into separate items. For broader changes, use sub-items (`S1a`, `S1b`). Verify paths and symbols against `<repo-context>`; no guesses. If you cannot confirm a target, mark not `patch-ready` and do not finalize. No exploratory steps ("investigate X", "consider Y", "ensure X", "update X as needed"). No alternative designs or re-evaluation after the user agrees on direction.
+Rules: One item = one single-purpose patch. Split compound changes into separate items. For broader changes, use sub-items (`S1a`, `S1b`). Verify paths and symbols against `<repo-context>`; no guesses. If you cannot confirm a target, flag it in the item and let the user catch it at step 10 review. No exploratory steps ("investigate X", "consider Y", "ensure X", "update X as needed"). No alternative designs or re-evaluation after the user agrees on direction.
 
-10. **User Review**: Before self-review, reflect the user's inputs back: list 3-5 key decisions or constraints and where they appear (cite requirement/validation items); confirm the spec covers all concrete actions; ask if preferences were captured correctly. Wait for confirmation. Revise and repeat if needed. Then run self-review and present the spec:
+10. **User Review**: Reflect the user's inputs back: list 3-5 key decisions or constraints and where they appear (cite requirement/validation items); confirm the spec covers all concrete actions; ask if preferences were captured correctly. Wait for confirmation, then present the spec:
 > Spec ready: `<spec-title>`. Implementation: N items. Validation: N items. Want me to sync to the ticket system or make changes?
 
-Wait for the user's response. Revise and re-run self-review if needed. Sync only after approval.
-
-**Self-Review Checklist** (fix failures before syncing):
-- [ ] No placeholders, TBDs, TODOs, or vague requirements.
-- [ ] Internal consistency: checklists match `<requirement-items>`/`<validation-items>`; each implementation item has validation coverage. Description carries no items or patch code.
-- [ ] Scope: one ticket. Narrow the destination if not.
-- [ ] Code-target precision: each `<requirement-item>` has concrete `file`, `symbol`, `location` against `<repo-context>`.
-- [ ] Vertical slices: trace each item through schema → API → UI → tests; avoid horizontal layers.
-- [ ] No-replan: no alternative designs, re-evaluation, or exploratory steps.
-- [ ] Complete action inventory: every concrete action is a requirement item.
-- [ ] Patch coverage: each requirement item with a known target includes a `patch`.
-- [ ] Cross-cutting coverage: scaffolding (migrations, seeders, config, feature flags, permissions, translations, observers, events, jobs, cache, search, docs, tests) where impacted.
-- [ ] No hidden discovery: no item assumes the implementer will 'find out', 'investigate', or 'determine' something later.
+Wait for the user's response. Revise if asked. Sync only after approval.
 
 11. **Sync Ticket**: Sync the spec to the ticket system via the issue tracker sync tool (see `/docs/issue-trackers.md`). Final output: the ticket URL.
 - `title`: `<spec-title>`, `description`: `<spec-description>` (Destination/Problem/Solution/Notes only — no implementation/validation items, no patch code).
