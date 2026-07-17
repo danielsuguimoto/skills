@@ -3,6 +3,12 @@ name: new-branch
 description: "Use when starting new work that needs a branch — creates and switches to a categorized branch summarizing current uncommitted or ahead-of-base work. Invoke when the user says 'new branch', 'start a branch', or begins a new task."
 ---
 
+## Required `/docs` reads
+
+Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+
+- `/docs/git-hosts.md`
+
 # Branch From Work
 
 Create and switch to a categorized branch summarizing current uncommitted work.

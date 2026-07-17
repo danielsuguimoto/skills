@@ -7,6 +7,12 @@ description: >
   and context, then persists it to the active memory provider.
 ---
 
+## Required `/docs` reads
+
+Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+
+- `/docs/memory-providers.md`
+
 This skill decides what to extract. `memory-usage` decides when writing is warranted. The active memory-provider skill supplies driver mechanics (tool names, args; see `/docs/memory-providers.md` in the project root).
 
 ## When to Run

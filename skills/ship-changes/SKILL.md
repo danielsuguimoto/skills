@@ -3,6 +3,12 @@ name: ship-changes
 description: "Use when shipping current work end-to-end — creating a branch, committing, pushing, and opening a PR. Invoke when the user says 'ship this', 'create a PR', or when work is complete and ready for review."
 ---
 
+## Required `/docs` reads
+
+Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+
+- `/docs/git-hosts.md`
+
 Run the full shipping pipeline: branch, commit, push, and open a PR.
 
 ## Operations

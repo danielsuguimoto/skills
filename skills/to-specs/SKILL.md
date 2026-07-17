@@ -3,6 +3,15 @@ name: to-specs
 description: Use when a request or ticket needs to be turned into a spec and synced to the ticket system. Read-only (no code changes or implementation).
 ---
 
+## Required `/docs` reads
+
+Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+
+- `/docs/code-navigation.md`
+- `/docs/database-tools.md`
+- `/docs/doc-lookup.md`
+- `/docs/issue-trackers.md`
+
 Turn a request or ticket into a spec, then sync to the ticket system. Read-only (no code changes or implementation). Clarify requirements with the user before shaping the spec. No assumptions, guesses, or inferred intent. Treat ticket systems generically. Use `<additional-context>` for constraints and focus areas. Update existing tickets; create replacements only when asked. For big problems, name the destination first and keep all output on one ticket. Split into multiple tickets only when the user explicitly asks.
 
 **Loop with the user, never with yourself.** All iteration happens in the grilling phase (step 5) and the user-review gate (step 10) as back-and-forth with the user. Do not run internal review/refactor/re-review cycles, re-shape loops, or self-critique passes. Shape once from gathered context, present, revise only on user request.

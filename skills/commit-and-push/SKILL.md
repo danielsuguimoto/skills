@@ -3,6 +3,12 @@ name: commit-and-push
 description: "Commit and push current changes."
 ---
 
+## Required `/docs` reads
+
+Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+
+- `/docs/git-hosts.md`
+
 ## Operations
 
 | Operation | Tool (see `/docs/git-hosts.md`) | CLI fallback per `/docs/git-hosts.md` |

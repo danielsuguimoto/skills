@@ -8,6 +8,13 @@ description: >
   known file paths, or non-code files — use grep/glob/read there.
 ---
 
+## Required `/docs` reads
+
+Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+
+- `/docs/code-navigation.md`
+- `/docs/memory-providers.md`
+
 Code navigation tools provide LSP-backed semantic operations (see `/docs/code-navigation.md` in the project root). Prefer them over `grep`/`read` for symbol-level work; they are token-efficient and accurate.
 
 ## Project Activation (MANDATORY first step)

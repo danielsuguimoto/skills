@@ -3,6 +3,15 @@ name: context-gathering
 description: MANDATORY skill. Invoke BEFORE any codebase exploration, code reading, writing, editing, or answering about code. If not active in the current conversation, DO NOT explore/read/edit code or answer code questions.
 ---
 
+## Required `/docs` reads
+
+Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+
+- `/docs/code-navigation.md`
+- `/docs/database-tools.md`
+- `/docs/doc-lookup.md`
+- `/docs/knowledge-graphs.md`
+
 ## Core Principle
 
 Never write code from assumptions. Gather context first, then act.

@@ -3,6 +3,13 @@ name: using-terminal
 description: MANDATORY skill for safe and efficient terminal/shell command execution.
 ---
 
+## Required `/docs` reads
+
+Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+
+- `/docs/container-clis.md`
+- `/docs/terminal-wrappers.md`
+
 # Terminal Token Compression
 
 ## Pre-flight checklist

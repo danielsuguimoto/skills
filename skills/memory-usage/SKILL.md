@@ -4,6 +4,12 @@ description: >
   Use when reading or writing persistent project memory before, during, or after non-trivial work.
 ---
 
+## Required `/docs` reads
+
+Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+
+- `/docs/memory-providers.md`
+
 Persistent memory holds facts that are expensive to re-derive and survive across sessions.
 
 ## When to Use Memory

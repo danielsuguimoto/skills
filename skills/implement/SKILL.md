@@ -3,6 +3,14 @@ name: implement
 description: "Activate when implementing a ticket or planned change directly on master."
 ---
 
+## Required `/docs` reads
+
+Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+
+- `/docs/code-navigation.md`
+- `/docs/git-hosts.md`
+- `/docs/issue-trackers.md`
+
 Use the git host tool (see `/docs/git-hosts.md` in the project root). All git host tools need `repo_path`.
 
 Operations: Use git host operations (see `/docs/git-hosts.md` in the project root) for branch check, switch to master, pull latest.

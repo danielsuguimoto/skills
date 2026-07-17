@@ -3,6 +3,18 @@ name: debug
 description: "Use when a user reports a bug, error, or unexpected behavior and wants it troubleshot and fixed. Interactive: grills the user to clarify the problem, then investigates, plans, and executes the fix."
 ---
 
+## Required `/docs` reads
+
+Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+
+- `/docs/bug-trackers.md`
+- `/docs/code-navigation.md`
+- `/docs/database-tools.md`
+- `/docs/doc-lookup.md`
+- `/docs/memory-providers.md`
+- `/docs/observability-tools.md`
+- `/docs/terminal-wrappers.md`
+
 Troubleshoot and fix a user-reported issue. Three phases, each with a grilling section. This skill **executes fixes**; for read-only root-cause reporting use `triage`.
 
 ## Tool Agnosticism

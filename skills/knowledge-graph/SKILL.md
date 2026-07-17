@@ -4,6 +4,12 @@ description: "Use for any question about a codebase, its architecture, file rela
 argument-hint: "[path|query|subcommand]"
 ---
 
+## Required `/docs` reads
+
+Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+
+- `/docs/knowledge-graphs.md`
+
 # /graphify (see `/docs/knowledge-graphs.md` in the project root for tool interface)
 
 Turn any folder into a navigable knowledge graph with community detection, an audit trail, and three outputs: interactive HTML, GraphRAG-ready JSON, and a plain-language GRAPH_REPORT.md.

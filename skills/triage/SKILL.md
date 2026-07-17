@@ -3,6 +3,15 @@ name: triage
 description: "Use when answering a ticket question, debugging an issue, or when a ticket needs investigation or a response. READ-ONLY — no code changes."
 ---
 
+## Required `/docs` reads
+
+Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+
+- `/docs/code-navigation.md`
+- `/docs/database-tools.md`
+- `/docs/doc-lookup.md`
+- `/docs/issue-trackers.md`
+
 Load ticket context, determine mode (ask or debug), gather evidence, draft findings, sync back. READ-ONLY — no code changes, no commits.
 
 ## Additional Context

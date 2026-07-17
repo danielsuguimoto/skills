@@ -4,6 +4,12 @@ description: >
   Code reading and editing conventions. Activate when reading, writing, or editing code. Invoke alongside using-code-navigation for any code change task.
 ---
 
+## Required `/docs` reads
+
+Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+
+- `/docs/code-navigation.md`
+
 ## 1. Think Before Coding
 
 Don't assume. Don't hide confusion. Surface tradeoffs.

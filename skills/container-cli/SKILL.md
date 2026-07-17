@@ -3,6 +3,12 @@ name: container-cli
 description: "Container CLI usage reference. Invoke when the project uses a container CLI (config file present) and a container command is needed — start/stop/restart, exec, logs, run scripts, share tunnels."
 ---
 
+## Required `/docs` reads
+
+Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+
+- `/docs/container-clis.md`
+
 Container CLIs wrap docker-compose (see `/docs/container-clis.md` in the project root). They manage container lifecycle, run commands inside services, execute project scripts from a config file (e.g., `kool.yml`), and share local environments via HTTP tunnels.
 
 - see `/docs/container-clis.md` in the project root for tool-specific documentation

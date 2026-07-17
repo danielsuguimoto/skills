@@ -7,6 +7,13 @@ description: >
   models/repositories — use code navigation tools there.
 ---
 
+## Required `/docs` reads
+
+Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+
+- `/docs/code-navigation.md`
+- `/docs/database-tools.md`
+
 # Database Analysis & Operations
 
 ## Database as Source of Truth

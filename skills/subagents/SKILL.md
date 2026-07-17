@@ -6,6 +6,12 @@ description: >
   splittable into parallel independent tasks.
 ---
 
+## Required `/docs` reads
+
+Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+
+- `/docs/code-navigation.md`
+
 Discover profiles through the tool's native mechanism. Don't assume a fixed list or path.
 
 ## Dispatch Rationales

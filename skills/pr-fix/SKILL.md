@@ -3,6 +3,12 @@ name: pr-fix
 description: "Activate when a pull request has review feedback that requires code fixes and direct thread responses."
 ---
 
+## Required `/docs` reads
+
+Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+
+- `/docs/git-hosts.md`
+
 Address PR feedback by making fixes and replying directly to review threads — NEVER standalone PR comments. Tools: git host tool (see `/docs/git-hosts.md`).
 
 Modes: `review` (default; approval required before commit/push/reply) or `auto` (commits/pushes without approval). `<pr-ref>` is the only authoritative source for the target PR — never assume current branch determines it.

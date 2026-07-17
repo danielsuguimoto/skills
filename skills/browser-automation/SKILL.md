@@ -3,6 +3,12 @@ name: browser-automation
 description: Use for browser automation (QA, element interaction, screencapture/snapshot, network capture) or to work across the user's logged-in accounts, apps, memory, and browsing history.
 ---
 
+## Required `/docs` reads
+
+Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+
+- `/docs/browser-automation.md`
+
 # Browser Automation
 
 Browser automation tools (see `/docs/browser-automation.md`) provide agent-driven and REPL-driven browser control for complex tasks across user's logged-in accounts, cookies, websites, SaaS tools, and browsing histories.

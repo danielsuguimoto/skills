@@ -3,6 +3,12 @@ name: pr-fix-ci
 description: "Activate when a pull request has failing CI checks that require code fixes."
 ---
 
+## Required `/docs` reads
+
+Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+
+- `/docs/git-hosts.md`
+
 Fix failing CI checks on a PR by reading check logs, fixing the code, pushing, and verifying green. Tools: git host tool (see `/docs/git-hosts.md` in the project root). Check source: `gh pr checks` / `gh pr view --json statusCheckRollup` (CLI fallback per `/docs/git-hosts.md`).
 
 Modes: `review` (default; approval required before commit/push) or `auto` (commits/pushes without approval). `<pr-ref>` is the only authoritative source for the target PR — never assume current branch determines it.
