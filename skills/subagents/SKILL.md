@@ -16,15 +16,23 @@ Discover profiles through the tool's native mechanism. Don't assume a fixed list
 
 ## Dispatch Rationales
 
-Spawn a subagent **only** when at least one holds. First two are strict — when in doubt, stay inline. Third always wins.
+Spawn a subagent **only** when at least one holds. First two are strict — when in doubt, stay inline.
 
 | Rationale | When to delegate |
 |-----------|------------------|
 | Parallel time win | **≥3 independent workstreams**, no shared writes. Below 3, coordination overhead eats the gain. |
-| Context offloading | Task demands **project scanning** (multi-file exploration, doc fetches, memory bodies, Q&A transcripts) whose raw output would pollute parent context with material the parent never needs verbatim. |
+| Context offloading | Task demands **project scanning** whose raw output is **verifiably large** (state the estimated token/line count before dispatch) AND the parent needs only a distilled brief, never the raw bytes. Speculative "might bloat" is not a rationale. |
 | Explicit user request | User asks to spawn / delegate / parallelize. Honor even when neither gate fires. |
 
-**Default to inline.** Subagents cost dispatch overhead, a stateless round-trip, and a synthesis step. Pay that only for a clear parallel win (≥3 streams) or to keep parent context clean.
+**Default to inline.**
+
+## Do NOT spawn for
+
+- Anything answerable from context already in this session.
+- A single file edit, single symbol lookup, or known file path + line range.
+- A bounded next step where the parent holds all inputs.
+- "Just in case" parallelism with <3 truly independent streams.
+- Avoiding a thinking step you'd rather offload.
 
 ## Foreground Preference
 
@@ -35,7 +43,7 @@ Use background **only** when all hold:
 - Needed tools already pre-approved or read-only (grep, glob, read)
 - Parent has productive work while waiting
 
-Otherwise spawn foreground. Parent pauses but the subagent gets full tool access and can prompt for permissions.
+Otherwise spawn foreground.
 
 Verify profile availability before delegating. If missing, fall back to inline.
 
@@ -51,7 +59,7 @@ Route by task shape. Strong models cost latency and tokens; weak models fail com
 | Memory extraction, to-specs planning | Mid–strong | Judgment + structured output |
 | Test suite execution | Fast | Mechanical run + report |
 
-Mechanism is tool-specific: profile frontmatter `model` field, agent config, enterprise "subagent router" setting, or unsupported (inherits parent model). Discover via the tool's native profile/config system.
+Discover via the tool's native profile/config system.
 
 **Defaults:** no `model` set → inherit parent session model; tool auto-routes → trust the router, override only on clear task-shape mismatch; unsupported → inline or accept inheritance, never spawn a second subagent to work around it.
 
@@ -76,11 +84,9 @@ Read-only reconnaissance. Subagent returns a distilled brief; parent never reads
 
 Fallback on `BLOCKED`: if a subagent returns `BLOCKED` / `NO_*` / `UNAVAILABLE`, do that work inline. Don't retry.
 
-## Mandatory Offloading Threshold
+## Offloading Exception (narrow)
 
-Hard gate (overrides "default to inline"): if a task needs **more than 3 file reads** OR spans **more than 1 module** for exploration/tracing, dispatch a read-only scout BEFORE any inline `read`/`grep`/code navigation query (see `/docs/code-navigation.md` in the project root). The parent acts on the brief; raw file contents never enter parent context.
-
-Exploration tokens are the largest avoidable parent-context cost. Once read, they stay in context for the whole session. A scout's distilled brief costs a fraction and is discardable.
+Hard gate (overrides "default to inline"): if a task needs **more than 5 file reads AND spans more than 2 modules** for exploration/tracing, dispatch a read-only scout BEFORE any inline `read`/`grep`/code navigation query (see `/docs/code-navigation.md` in the project root). The parent acts on the brief; raw file contents never enter parent context.
 
 **Cold scan vs. warm read (decides inline vs. subagent):**
 
@@ -89,17 +95,12 @@ Exploration tokens are the largest avoidable parent-context cost. Once read, the
 | Cold scan | Doesn't hold the target area yet | Multi-file / multi-module exploration | Subagent scout — raw output would bloat parent |
 | Warm read | Already holds the bulk of context for the task | Small partial scan (a few lines, one symbol, one file) to confirm or double-check | Inline — offloading costs more in dispatch overhead than it saves |
 
-Subagents exist to keep cold-scan raw output out of parent context. A warm read adds negligible tokens because the parent already carries the surrounding context — dispatch overhead exceeds the savings.
-
 Other exceptions (inline allowed): exact file path and line range already known; a single code navigation symbol lookup / reference trace call (see `/docs/code-navigation.md` in the project root) answers it; target file under ~50 lines and fully isolated.
 
 ## Failure Modes
 
+- **Lazy delegation / over-spawn** — parent dispatches for work it already holds context for, or for a single bounded step. Before every spawn ask: "Can I do this inline with what I already carry?" If yes, inline.
 - **Premature completion** — parent skips the dispatch gates to "just do it inline". Check the Dispatch Rationales first. Only inline if no rationale fires.
 - **Vague return shape** — subagent dumps raw content. State the return shape in the prompt before dispatch.
 - **Read-only / write mismatch** — subagent edits when it should read, or vice versa. State read-only vs. write in every dispatch prompt.
 - **Retry loop** — parent re-dispatches a subagent that returned `BLOCKED`. Do the work inline. Don't retry.
-
-**Never:** delegate without stating read-only vs. write; retry a `BLOCKED` subagent; let a scout dump raw file contents; parallelize workstreams that share file writes.
-
-**Always:** front-load all context; check dispatch gates before inline work; parent retains all git/gh and side-effecting operations; delegate unbounded-cost work (docs, memory dumps, Q&A transcripts).
