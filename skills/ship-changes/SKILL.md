@@ -55,3 +55,5 @@ Commit and push changes. Pass `<additional-context>`, `<uncommitted>`, `<ahead-c
 
 Create a pull request. Pass `<change-summary>` (reuse the pre-scan summary; scan the post-commit git state itself but reuse the semantic summary). If `<ticket-url>` is defined, pass it. If `<base>` is defined, pass it as the base branch. Output the PR URL when complete.
 
+**Mandatory:** ensure the pr-create subskill runs its PR-template check (Step 6) before composing the body. Forwarded `<change-summary>` triggers the skip path in pr-create Step 4 — that does NOT exempt the template check. Do not accept `<pr-template>` = `none` unless the subskill confirms it probed the repo.
+
