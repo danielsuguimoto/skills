@@ -76,7 +76,7 @@ Skip reason (when used): `Skip reason: <all 6 conditions met because ...>`. Skip
 
 Rules: One item = one single-purpose patch. Split compound changes into separate items. For broader changes, use sub-items (`S1a`, `S1b`). Verify paths and symbols against `<repo-context>`; no guesses. If you cannot confirm a target, flag it in the item and let the user catch it at step 10 review. No exploratory steps ("investigate X", "consider Y", "ensure X", "update X as needed"). No alternative designs or re-evaluation after the user agrees on direction.
 
-10. **User Review**: Reflect the user's inputs back: list 3-5 key decisions or constraints and where they appear (cite requirement/validation items); confirm the spec covers all concrete actions; ask if preferences were captured correctly. Wait for confirmation, then present the spec:
+10. **User Review**: Present the spec for approval in a single gate. Reflect the user's inputs back: list 3-5 key decisions or constraints and where they appear (cite requirement/validation items); confirm the spec covers all concrete actions; then ask:
 > Spec ready: `<spec-title>`. Implementation: N items. Validation: N items. Want me to sync to the ticket system or make changes?
 
 Wait for the user's response. Revise if asked. Sync only after approval.
