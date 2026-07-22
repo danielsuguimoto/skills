@@ -3,11 +3,11 @@ name: new-branch
 description: "Use when starting new work that needs a branch — creates and switches to a categorized branch summarizing current uncommitted or ahead-of-base work. Invoke when the user says 'new branch', 'start a branch', or begins a new task."
 ---
 
-## Required `/docs` reads
+## Required `<project-root>/docs` reads
 
 Read these project-root spec files before creating or switching to the branch (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
 
-- `/docs/git-hosts.md`
+- `<project-root>/docs/git-hosts.md`
 
 # Branch From Work
 
@@ -15,12 +15,12 @@ Create and switch to a categorized branch summarizing current uncommitted work.
 
 ## Operations
 
-| Operation | Tool (see `/docs/git-hosts.md`) | CLI fallback per `/docs/git-hosts.md` |
+| Operation | Tool (see `<project-root>/docs/git-hosts.md`) | CLI fallback per `<project-root>/docs/git-hosts.md` |
 |-----------|--------------|--------------|
-| Load change state | git host change scan (see `/docs/git-hosts.md` in the project root) | `git branch --show-current` + `git status --short` + `git diff --cached --stat` + `git diff --stat` + `git log origin/<branch>..<branch> --oneline` |
-| Pull, create, publish | git host branch create (see `/docs/git-hosts.md` in the project root, with `branch_name`) | `git pull origin <branch>` + `git checkout -b <cat>/<slug>` + `git push -u origin <new-branch>` |
+| Load change state | git host change scan (see `<project-root>/docs/git-hosts.md` in the project root) | `git branch --show-current` + `git status --short` + `git diff --cached --stat` + `git diff --stat` + `git log origin/<branch>..<branch> --oneline` |
+| Pull, create, publish | git host branch create (see `<project-root>/docs/git-hosts.md` in the project root, with `branch_name`) | `git pull origin <branch>` + `git checkout -b <cat>/<slug>` + `git push -u origin <new-branch>` |
 
-Follow `/docs/git-hosts.md` in the project root for all git/gh operations.
+Follow `<project-root>/docs/git-hosts.md` in the project root for all git/gh operations.
 
 ### 1. Interpret Arguments
 
@@ -68,9 +68,9 @@ Pull `origin/<current-branch>` via git host tool or CLI. If the pull fails (dive
 
 ### 6. Create and Checkout Branch
 
-Create `<branch-category>/<branch-slug>` via git host branch create (see `/docs/git-hosts.md` in the project root) or `git checkout -b` per `/docs/git-hosts.md`. If the branch exists, retry once with a numeric suffix (`-2`). Store as `<new-branch>`.
+Create `<branch-category>/<branch-slug>` via git host branch create (see `<project-root>/docs/git-hosts.md` in the project root) or `git checkout -b` per `<project-root>/docs/git-hosts.md`. If the branch exists, retry once with a numeric suffix (`-2`). Store as `<new-branch>`.
 
 ### 7. Publish Branch to Remote
 
-Push with upstream via git host branch create (see `/docs/git-hosts.md` in the project root) or `git push -u origin <new-branch>` per `/docs/git-hosts.md`. `git push` only pushes committed changes; uncommitted changes stay local. Store `<published>` as `true` or `false`. Output the new branch name when created.
+Push with upstream via git host branch create (see `<project-root>/docs/git-hosts.md` in the project root) or `git push -u origin <new-branch>` per `<project-root>/docs/git-hosts.md`. `git push` only pushes committed changes; uncommitted changes stay local. Store `<published>` as `true` or `false`. Output the new branch name when created.
 

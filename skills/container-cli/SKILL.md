@@ -3,19 +3,19 @@ name: container-cli
 description: "Container CLI usage reference. Invoke when the project uses a container CLI (config file present) and a container command is needed — start/stop/restart, exec, logs, run scripts, share tunnels."
 ---
 
-## Required `/docs` reads
+## Required `<project-root>/docs` reads
 
 Read these project-root spec files before running any container CLI command (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
 
-- `/docs/container-clis.md`
+- `<project-root>/docs/container-clis.md`
 
-Container CLIs wrap docker-compose (see `/docs/container-clis.md` in the project root). They manage container lifecycle, run commands inside services, execute project scripts from a config file (e.g., `kool.yml`), and share local environments via HTTP tunnels.
+Container CLIs wrap docker-compose (see `<project-root>/docs/container-clis.md` in the project root). They manage container lifecycle, run commands inside services, execute project scripts from a config file (e.g., `kool.yml`), and share local environments via HTTP tunnels.
 
-- see `/docs/container-clis.md` in the project root for tool-specific documentation
+- see `<project-root>/docs/container-clis.md` in the project root for tool-specific documentation
 
 ## Command Summary
 
-The container CLI's commands (see `/docs/container-clis.md` in the project root for exact commands):
+The container CLI's commands (see `<project-root>/docs/container-clis.md` in the project root for exact commands):
 
 | Area | Commands |
 | --- | --- |
@@ -32,7 +32,7 @@ Presets: Laravel, Laravel+Octane, Symfony, CodeIgniter, AdonisJs, NestJS, NextJS
 
 ## Before Running Any Container CLI Command
 
-- Read the container CLI config file (e.g., `kool.yml`) first to discover scripts, and `docker-compose.yml` to discover service names. Never guess; verify they exist (see `/docs/container-clis.md` in the project root).
+- Read the container CLI config file (e.g., `kool.yml`) first to discover scripts, and `docker-compose.yml` to discover service names. Never guess; verify they exist (see `<project-root>/docs/container-clis.md` in the project root).
 - Use `kool run` (or `--json`) to list scripts and `kool status` to list running services when unsure.
 - If the container CLI config file or `docker-compose.yml` is missing, stop and ask — the project may not use this container CLI.
 

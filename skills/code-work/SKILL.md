@@ -4,11 +4,11 @@ description: >
   Code reading and editing conventions. Activate when reading, writing, or editing code. Invoke alongside using-code-navigation for any code change task.
 ---
 
-## Required `/docs` reads
+## Required `<project-root>/docs` reads
 
 Read these project-root spec files before reading, writing, or editing code (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
 
-- `/docs/code-navigation.md`
+- `<project-root>/docs/code-navigation.md`
 
 ## 1. Think Before Coding
 
@@ -62,9 +62,9 @@ For multi-step tasks, state a brief plan:
 
 ## Code Reading
 
-- Code navigation tools are MANDATORY for symbol-level work (see `/docs/code-navigation.md` in the project root). Use symbol lookup and reference tracing first, not `grep`/`read`.
+- Code navigation tools are MANDATORY for symbol-level work (see `<project-root>/docs/code-navigation.md` in the project root). Use symbol lookup and reference tracing first, not `grep`/`read`.
 - Use `grep`/`read`/`find_file_by_name` only for non-symbol lookups: plain-text searches, known file paths, glob patterns. Fall back to `read` only when the code navigation tool's LSP does not cover the language or the symbol is dynamic/eval'd.
-- Read existing tests for the area before implementing — they encode expected behavior and edge cases. Trace side effects via code navigation references (see `/docs/code-navigation.md` in the project root), never by guessing.
+- Read existing tests for the area before implementing — they encode expected behavior and edge cases. Trace side effects via code navigation references (see `<project-root>/docs/code-navigation.md` in the project root), never by guessing.
 - Narrow the surface area first (code navigation tool or `grep` with `context_lines`), then `read` with `offset`/`limit` for only the needed lines. Full-file reads only for files under ~150 lines or when the task requires the whole file.
 
 ## Code Editing

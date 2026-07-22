@@ -3,13 +3,13 @@ name: pr-fix-ci
 description: "Activate when a pull request has failing CI checks that require code fixes."
 ---
 
-## Required `/docs` reads
+## Required `<project-root>/docs` reads
 
 Read these project-root spec files before fixing failing CI checks (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
 
-- `/docs/git-hosts.md`
+- `<project-root>/docs/git-hosts.md`
 
-Fix failing CI checks on a PR by reading check logs, fixing the code, pushing, and verifying green. Tools: git host tool (see `/docs/git-hosts.md` in the project root). Check source: `gh pr checks` / `gh pr view --json statusCheckRollup` (CLI fallback per `/docs/git-hosts.md`).
+Fix failing CI checks on a PR by reading check logs, fixing the code, pushing, and verifying green. Tools: git host tool (see `<project-root>/docs/git-hosts.md` in the project root). Check source: `gh pr checks` / `gh pr view --json statusCheckRollup` (CLI fallback per `<project-root>/docs/git-hosts.md`).
 
 Modes: `review` (default; approval required before commit/push) or `auto` (commits/pushes without approval). `<pr-ref>` is the only authoritative source for the target PR — never assume current branch determines it.
 
@@ -19,7 +19,7 @@ Modes: `review` (default; approval required before commit/push) or `auto` (commi
 `auto` → `<execution-mode>` = `auto`; PR number/URL → `<pr-ref>`; extra guidance → `<additional-context>`; otherwise → `review`.
 
 ### 2. Load PR Context
-Verify git host auth (see `/docs/git-hosts.md`). Resolve project root via `git rev-parse --show-toplevel` → `<repo-path>` (use as `cwd`). View PR via git host view PR (includes checks) or CLI fallback:
+Verify git host auth (see `<project-root>/docs/git-hosts.md`). Resolve project root via `git rev-parse --show-toplevel` → `<repo-path>` (use as `cwd`). View PR via git host view PR (includes checks) or CLI fallback:
 ```bash
 gh pr view <pr-number> --json number,title,headRefName,baseRefName,url,state,statusCheckRollup
 ```

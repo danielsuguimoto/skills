@@ -8,21 +8,21 @@ description: >
   known file paths, or non-code files — use grep/glob/read there.
 ---
 
-## Required `/docs` reads
+## Required `<project-root>/docs` reads
 
 Read these project-root spec files before any code navigation lookup (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
 
-- `/docs/code-navigation.md`
-- `/docs/memory-providers.md`
+- `<project-root>/docs/code-navigation.md`
+- `<project-root>/docs/memory-providers.md`
 
-Code navigation tools provide LSP-backed semantic operations (see `/docs/code-navigation.md` in the project root). Prefer them over `grep`/`read` for symbol-level work; they are token-efficient and accurate.
+Code navigation tools provide LSP-backed semantic operations (see `<project-root>/docs/code-navigation.md` in the project root). Prefer them over `grep`/`read` for symbol-level work; they are token-efficient and accurate.
 
 ## Project Activation (MANDATORY first step)
 
 Every code navigation tool requires an active project. No exceptions.
 
-1. List tools on the code navigation server once per session (not per call) (see `/docs/code-navigation.md` in the project root).
-2. Activate project with the project name (folder name, not full path) (see `/docs/code-navigation.md` in the project root). Accepts full path too if unsure.
+1. List tools on the code navigation server once per session (not per call) (see `<project-root>/docs/code-navigation.md` in the project root).
+2. Activate project with the project name (folder name, not full path) (see `<project-root>/docs/code-navigation.md` in the project root). Accepts full path too if unsure.
 3. Read the response — it lists existing memories.
 
 Re-activate: start of every new session, after `cwd` changes to a different repo, or if any tool returns `No active project` (pick the matching name from the error). Treating `No active project` as a server outage is a missing-activation error — activate and retry.
@@ -43,11 +43,11 @@ Re-activate: start of every new session, after `cwd` changes to a different repo
 | Lint/type errors for a file | Get diagnostics for file | Use before/after edits |
 | Persist project knowledge | Write memory | Recall with read memory / list memories |
 
-See `/docs/code-navigation.md` in the project root for exact tool names and arguments.
+See `<project-root>/docs/code-navigation.md` in the project root for exact tool names and arguments.
 
 ## Name Paths
 
-`find_symbol` matches against the in-file symbol tree, not the filesystem. See `/docs/code-navigation.md` in the project root for implementation details.
+`find_symbol` matches against the in-file symbol tree, not the filesystem. See `<project-root>/docs/code-navigation.md` in the project root for implementation details.
 
 - Simple: `"method"` → any symbol named `method`
 - Relative: `"Class/method"` → matches suffix
@@ -67,9 +67,9 @@ See `/docs/code-navigation.md` in the project root for exact tool names and argu
 
 ## Memories
 
-The code navigation tool may provide memory capabilities (see `/docs/memory-providers.md` in the project root). Memories are persistent, per-project markdown notes in memory storage (see `/docs/memory-providers.md` in the project root).
+The code navigation tool may provide memory capabilities (see `<project-root>/docs/memory-providers.md` in the project root). Memories are persistent, per-project markdown notes in memory storage (see `<project-root>/docs/memory-providers.md` in the project root).
 
-Memory tools require an active project (same activate project call). Write tools (write memory, edit memory, delete memory, rename memory) require `editing` mode — if they return `Tool ... is not active`, the code navigation config must include `editing` in `base_modes`/`default_modes` (see `/docs/code-navigation.md` in the project root).
+Memory tools require an active project (same activate project call). Write tools (write memory, edit memory, delete memory, rename memory) require `editing` mode — if they return `Tool ... is not active`, the code navigation config must include `editing` in `base_modes`/`default_modes` (see `<project-root>/docs/code-navigation.md` in the project root).
 
 | Operation | Tool |
 | --- | --- |

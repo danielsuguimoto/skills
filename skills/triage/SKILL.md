@@ -3,14 +3,14 @@ name: triage
 description: "Use when answering a ticket question, debugging an issue, or when a ticket needs investigation or a response. READ-ONLY — no code changes."
 ---
 
-## Required `/docs` reads
+## Required `<project-root>/docs` reads
 
 Read these project-root spec files before investigating the ticket (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
 
-- `/docs/code-navigation.md`
-- `/docs/database-tools.md`
-- `/docs/doc-lookup.md`
-- `/docs/issue-trackers.md`
+- `<project-root>/docs/code-navigation.md`
+- `<project-root>/docs/database-tools.md`
+- `<project-root>/docs/doc-lookup.md`
+- `<project-root>/docs/issue-trackers.md`
 
 Load ticket context, determine mode (ask or debug), gather evidence, draft findings, sync back. READ-ONLY — no code changes, no commits.
 
@@ -29,7 +29,7 @@ Load ticket context, determine mode (ask or debug), gather evidence, draft findi
 
 ### Load Ticket Context
 
-- `<ticket-url>` defined: load via issue tracker tool (see `/docs/issue-trackers.md`) with `source: <ticket-url>`, `comments: true` → `<ticket-context>`. Read all attachments with `relativePath` via `read` (images → describe; documents → extract key info → `<attachment-insights>`). Note gaps if inaccessible.
+- `<ticket-url>` defined: load via issue tracker tool (see `<project-root>/docs/issue-trackers.md`) with `source: <ticket-url>`, `comments: true` → `<ticket-context>`. Read all attachments with `relativePath` via `read` (images → describe; documents → extract key info → `<attachment-insights>`). Note gaps if inaccessible.
 - Otherwise: treat relevant request/conversation as `<ticket-context>`.
 - Missing or unloadable → STOP.
 
@@ -44,9 +44,9 @@ Ambiguous → ask for clarification. Both apply → default to debug (root-cause
 
 ### Gather Evidence
 
-**ask mode:** Gather distilled brief (entry points, callers, conventions, file:line citations) using `grep`/`find_file_by_name`/code navigation tool (see `/docs/code-navigation.md`). Pass `<question>`, relevant entities, module path → `<repo-context>`. For API/version questions, use doc lookup (see `/docs/doc-lookup.md`) → `<doc-context>`.
+**ask mode:** Gather distilled brief (entry points, callers, conventions, file:line citations) using `grep`/`find_file_by_name`/code navigation tool (see `<project-root>/docs/code-navigation.md`). Pass `<question>`, relevant entities, module path → `<repo-context>`. For API/version questions, use doc lookup (see `<project-root>/docs/doc-lookup.md`) → `<doc-context>`.
 
-**debug mode:** Run context-gathering: code navigation for symbols, database tools (see `/docs/database-tools.md`) for data, doc lookup for framework docs. Trace code path user action → failure; identify where actual diverges from expected. Live database is ground truth — verify schema, counts, sample rows directly; don't rely on seeders/migrations/operations. Store as `<investigation-findings>`.
+**debug mode:** Run context-gathering: code navigation for symbols, database tools (see `<project-root>/docs/database-tools.md`) for data, doc lookup for framework docs. Trace code path user action → failure; identify where actual diverges from expected. Live database is ground truth — verify schema, counts, sample rows directly; don't rely on seeders/migrations/operations. Store as `<investigation-findings>`.
 
 ### Draft Findings
 
@@ -64,11 +64,11 @@ Ambiguous → ask for clarification. Both apply → default to debug (root-cause
 
 ### Ticket Framing
 
-See `/docs/issue-trackers.md` for provider-specific framing rules. Internal audience: technical language, cite code paths, no client-facing tone (no "Hi", "Thanks", second-person to customer). Do NOT modify/create/delete files; no git commit or push.
+See `<project-root>/docs/issue-trackers.md` for provider-specific framing rules. Internal audience: technical language, cite code paths, no client-facing tone (no "Hi", "Thanks", second-person to customer). Do NOT modify/create/delete files; no git commit or push.
 
 ### Sync
 
-Always sync findings back — the spec phase reads prior comments; skipping breaks the pipeline. Sync via issue tracker sync tool (see `/docs/issue-trackers.md`): `refUrl` = `<ticket-url>`, `comments` = array with single markdown string. Debug: combine `<note-title>` (as `##` heading) + structured findings. Ask: pass `<ticket-findings>` directly. Follow provider-specific sync rules. If sync fails, report error and provide findings in chat.
+Always sync findings back — the spec phase reads prior comments; skipping breaks the pipeline. Sync via issue tracker sync tool (see `<project-root>/docs/issue-trackers.md`): `refUrl` = `<ticket-url>`, `comments` = array with single markdown string. Debug: combine `<note-title>` (as `##` heading) + structured findings. Ask: pass `<ticket-findings>` directly. Follow provider-specific sync rules. If sync fails, report error and provide findings in chat.
 
 ## Notes
 

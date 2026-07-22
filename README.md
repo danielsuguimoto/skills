@@ -26,7 +26,7 @@ Each subdirectory under `skills/` is a self-contained skill with a `SKILL.md` ma
 | pr-fix | Address PR feedback by making fixes and responding directly to review threads. |
 | pr-fix-ci | Fix failing CI checks on a PR — read logs, fix the code, push, verify green. |
 | session-to-memory | Extract retention-worthy knowledge from a session and persist it to the active memory provider. |
-| setup-skills | Guide users through initial configuration — creates /docs folder and generates all spec files needed by other skills. |
+| setup-skills | Guide users through initial configuration — creates `<project-root>/docs` folder and generates all spec files needed by other skills. |
 | ship-changes | Ship current work end-to-end — branch, commit, push, open PR. |
 | spawn | Invoke a target skill inside a subagent so its content stays isolated to the subagent's context. |
 | subagents | Subagent spawning rules for parallel work, isolated tasks, and context offloading. |
@@ -35,28 +35,32 @@ Each subdirectory under `skills/` is a self-contained skill with a `SKILL.md` ma
 | using-code-navigation | Use code navigation tools for symbol-level code work instead of grep/read. |
 | using-terminal | MANDATORY pre-flight before sending any command to the terminal/shell. |
 
-## Tool Specifications (`/docs`)
+## Tool Specifications (`<project-root>/docs`)
 
-Skills are tool-agnostic. They reference tool specifications in a `/docs` folder that lives in the **project root** of each consuming project — not in this skills repo.
+Skills are tool-agnostic. They reference tool specifications in a `<project-root>/docs` folder that lives in the **project root** of each consuming project — not in this skills repo.
 
-Each project using these skills must create a `/docs` folder with markdown files documenting the interface and expected behavior of the tools available in that project. Skills reference these specs by path (e.g., `/docs/issue-trackers.md`), allowing agents to accomplish workflows using any tool implementation that conforms to the documented interface.
+Each project using these skills must create a `<project-root>/docs` folder with markdown files documenting the interface and expected behavior of the tools available in that project. Skills reference these specs by path (e.g., `<project-root>/docs/issue-trackers.md`), allowing agents to accomplish workflows using any tool implementation that conforms to the documented interface.
+
+### Path resolution
+
+`<project-root>` is a placeholder. Before reading or passing any `<project-root>/docs/...` path to a tool, substitute it with the consuming project's root — resolved via `git rev-parse --show-toplevel`, or fall back to the agent's current working directory when not inside a git repo. Never resolve `<project-root>` to the filesystem root `/`; the leading-slash form (`/docs/...`) is intentionally avoided because agents misread it as a machine-root absolute path.
 
 ### Expected spec files
 
 | File | Covers |
 |------|--------|
-| `/docs/issue-trackers.md` | Issue/ticket tracking tools — load, sync, list tickets |
-| `/docs/bug-trackers.md` | Bug tracking and error monitoring tools — query errors, stack traces |
-| `/docs/mcp-servers.md` | MCP server interaction — list tools, call tools, discovery protocol |
-| `/docs/git-hosts.md` | Git hosting platforms — PRs, reviews, issues, branches, commits |
-| `/docs/database-tools.md` | Database inspection — schema, queries, REPL operations |
-| `/docs/code-navigation.md` | LSP-backed code navigation — find symbols, trace references, refactor |
-| `/docs/browser-automation.md` | Browser automation — snapshots, element interaction, downloads |
-| `/docs/knowledge-graphs.md` | Knowledge graph tools — build, query, path, explain |
-| `/docs/container-clis.md` | Container CLI wrappers — lifecycle, exec, logs, scripts |
-| `/docs/memory-providers.md` | Persistent memory — list, read, write, edit, delete memories |
-| `/docs/terminal-wrappers.md` | Terminal token compression wrappers — command prefixing, output filtering |
-| `/docs/doc-lookup.md` | Documentation lookup — framework/library/SDK docs, search fallbacks |
+| `<project-root>/docs/issue-trackers.md` | Issue/ticket tracking tools — load, sync, list tickets |
+| `<project-root>/docs/bug-trackers.md` | Bug tracking and error monitoring tools — query errors, stack traces |
+| `<project-root>/docs/mcp-servers.md` | MCP server interaction — list tools, call tools, discovery protocol |
+| `<project-root>/docs/git-hosts.md` | Git hosting platforms — PRs, reviews, issues, branches, commits |
+| `<project-root>/docs/database-tools.md` | Database inspection — schema, queries, REPL operations |
+| `<project-root>/docs/code-navigation.md` | LSP-backed code navigation — find symbols, trace references, refactor |
+| `<project-root>/docs/browser-automation.md` | Browser automation — snapshots, element interaction, downloads |
+| `<project-root>/docs/knowledge-graphs.md` | Knowledge graph tools — build, query, path, explain |
+| `<project-root>/docs/container-clis.md` | Container CLI wrappers — lifecycle, exec, logs, scripts |
+| `<project-root>/docs/memory-providers.md` | Persistent memory — list, read, write, edit, delete memories |
+| `<project-root>/docs/terminal-wrappers.md` | Terminal token compression wrappers — command prefixing, output filtering |
+| `<project-root>/docs/doc-lookup.md` | Documentation lookup — framework/library/SDK docs, search fallbacks |
 
 Each spec file must define: the operations available, their input/output schemas, and expected behavior rules. Agents read these files to learn how to interact with the project's specific tool implementations.
 

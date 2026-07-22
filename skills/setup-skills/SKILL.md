@@ -2,14 +2,14 @@
 name: setup-skills
 description: >
   Guide users through initial configuration to enable all danielsuguimoto/skills
-  skills. Creates the /docs folder and generates spec files for each tool category.
+  skills. Creates the <project-root>/docs folder and generates spec files for each tool category.
   Invoke when the user says 'setup skills', 'configure skills', 'initialize skills',
-  or when /docs spec files are missing or incomplete.
+  or when <project-root>/docs spec files are missing or incomplete.
 ---
 
 # Setup Skills
 
-Generate the `/docs` folder and all 12 spec files in the project root so every danielsuguimoto/skills skill can function. Skills reference these specs by path (e.g., `/docs/git-hosts.md`); without them, skills cannot locate the tools they need.
+Generate the `<project-root>/docs` folder and all 12 spec files in the project root so every danielsuguimoto/skills skill can function. Skills reference these specs by path (e.g., `<project-root>/docs/git-hosts.md`); without them, skills cannot locate the tools they need.
 
 ## Pre-flight
 
@@ -80,20 +80,20 @@ The 12 spec files and what they cover (see danielsuguimoto/skills README for the
 
 | File | Covers |
 |------|--------|
-| `/docs/issue-trackers.md` | Load, sync, list tickets |
-| `/docs/bug-trackers.md` | Query errors, stack traces |
-| `/docs/mcp-servers.md` | List tools, call tools, discovery protocol |
-| `/docs/git-hosts.md` | PRs, reviews, issues, branches, commits |
-| `/docs/database-tools.md` | Schema, queries, REPL operations |
-| `/docs/code-navigation.md` | Find symbols, trace references, refactor |
-| `/docs/browser-automation.md` | Snapshots, element interaction, downloads |
-| `/docs/knowledge-graphs.md` | Build, query, path, explain |
-| `/docs/container-clis.md` | Lifecycle, exec, logs, scripts |
-| `/docs/memory-providers.md` | List, read, write, edit, delete memories |
-| `/docs/terminal-wrappers.md` | Command prefixing, output filtering |
-| `/docs/doc-lookup.md` | Framework/library/SDK docs, search fallbacks |
+| `<project-root>/docs/issue-trackers.md` | Load, sync, list tickets |
+| `<project-root>/docs/bug-trackers.md` | Query errors, stack traces |
+| `<project-root>/docs/mcp-servers.md` | List tools, call tools, discovery protocol |
+| `<project-root>/docs/git-hosts.md` | PRs, reviews, issues, branches, commits |
+| `<project-root>/docs/database-tools.md` | Schema, queries, REPL operations |
+| `<project-root>/docs/code-navigation.md` | Find symbols, trace references, refactor |
+| `<project-root>/docs/browser-automation.md` | Snapshots, element interaction, downloads |
+| `<project-root>/docs/knowledge-graphs.md` | Build, query, path, explain |
+| `<project-root>/docs/container-clis.md` | Lifecycle, exec, logs, scripts |
+| `<project-root>/docs/memory-providers.md` | List, read, write, edit, delete memories |
+| `<project-root>/docs/terminal-wrappers.md` | Command prefixing, output filtering |
+| `<project-root>/docs/doc-lookup.md` | Framework/library/SDK docs, search fallbacks |
 
-For `/docs/mcp-servers.md`: populate a server inventory section from `<mcp-inventory>` if the user chose to document detected servers.
+For `<project-root>/docs/mcp-servers.md`: populate a server inventory section from `<mcp-inventory>` if the user chose to document detected servers.
 
 ## Verify and Output
 

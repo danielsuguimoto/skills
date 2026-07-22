@@ -6,11 +6,11 @@ description: >
   splittable into parallel independent tasks.
 ---
 
-## Required `/docs` reads
+## Required `<project-root>/docs` reads
 
 Read these project-root spec files before spawning any subagent (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
 
-- `/docs/code-navigation.md`
+- `<project-root>/docs/code-navigation.md`
 
 Discover profiles through the tool's native mechanism. Don't assume a fixed list or path.
 
@@ -86,7 +86,7 @@ Fallback on `BLOCKED`: if a subagent returns `BLOCKED` / `NO_*` / `UNAVAILABLE`,
 
 ## Offloading Exception (narrow)
 
-Hard gate (overrides "default to inline"): if a task needs **more than 5 file reads AND spans more than 2 modules** for exploration/tracing, dispatch a read-only scout BEFORE any inline `read`/`grep`/code navigation query (see `/docs/code-navigation.md` in the project root). The parent acts on the brief; raw file contents never enter parent context.
+Hard gate (overrides "default to inline"): if a task needs **more than 5 file reads AND spans more than 2 modules** for exploration/tracing, dispatch a read-only scout BEFORE any inline `read`/`grep`/code navigation query (see `<project-root>/docs/code-navigation.md` in the project root). The parent acts on the brief; raw file contents never enter parent context.
 
 **Cold scan vs. warm read (decides inline vs. subagent):**
 
@@ -95,7 +95,7 @@ Hard gate (overrides "default to inline"): if a task needs **more than 5 file re
 | Cold scan | Doesn't hold the target area yet | Multi-file / multi-module exploration | Subagent scout — raw output would bloat parent |
 | Warm read | Already holds the bulk of context for the task | Small partial scan (a few lines, one symbol, one file) to confirm or double-check | Inline — offloading costs more in dispatch overhead than it saves |
 
-Other exceptions (inline allowed): exact file path and line range already known; a single code navigation symbol lookup / reference trace call (see `/docs/code-navigation.md` in the project root) answers it; target file under ~50 lines and fully isolated.
+Other exceptions (inline allowed): exact file path and line range already known; a single code navigation symbol lookup / reference trace call (see `<project-root>/docs/code-navigation.md` in the project root) answers it; target file under ~50 lines and fully isolated.
 
 ## Failure Modes
 

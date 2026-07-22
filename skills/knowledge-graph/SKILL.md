@@ -4,19 +4,19 @@ description: "Use for any question about a codebase, its architecture, file rela
 argument-hint: "[path|query|subcommand]"
 ---
 
-## Required `/docs` reads
+## Required `<project-root>/docs` reads
 
 Read these project-root spec files before any knowledge graph query or build (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
 
-- `/docs/knowledge-graphs.md`
+- `<project-root>/docs/knowledge-graphs.md`
 
-# /graphify (see `/docs/knowledge-graphs.md` in the project root for tool interface)
+# /graphify (see `<project-root>/docs/knowledge-graphs.md` in the project root for tool interface)
 
 Turn any folder into a navigable knowledge graph with community detection, an audit trail, and three outputs: interactive HTML, GraphRAG-ready JSON, and a plain-language GRAPH_REPORT.md.
 
 ## Usage
 
-The knowledge graph tool's commands (see `/docs/knowledge-graphs.md` in the project root):
+The knowledge graph tool's commands (see `<project-root>/docs/knowledge-graphs.md` in the project root):
 
 | Command | Purpose |
 |---------|---------|
@@ -50,7 +50,7 @@ Follow steps in order. Do not skip.
 
 If the import succeeds, print nothing and go to Step 2.
 
-**In every subsequent bash block, replace `python3` with the detected Python interpreter (see `/docs/knowledge-graphs.md` in the project root).**
+**In every subsequent bash block, replace `python3` with the detected Python interpreter (see `<project-root>/docs/knowledge-graphs.md` in the project root).**
 
 ### Step 2 - Detect files
 
@@ -79,13 +79,13 @@ Then act:
 
 Skip if `detect` returned zero `video` files. Transcribe to text and treat as docs in Step 3.
 
-**Strategy:** Read god nodes from the detect/analysis output, write a one-sentence domain hint, and pass it to Whisper as the initial prompt (see `/docs/knowledge-graphs.md` in the project root for Whisper configuration). If the corpus has *only* video files (no docs/code), use fallback: `"Use proper punctuation and paragraph breaks."`
+**Strategy:** Read god nodes from the detect/analysis output, write a one-sentence domain hint, and pass it to Whisper as the initial prompt (see `<project-root>/docs/knowledge-graphs.md` in the project root for Whisper configuration). If the corpus has *only* video files (no docs/code), use fallback: `"Use proper punctuation and paragraph breaks."`
 
 **Step 1 - Write Whisper prompt:** Read top god node labels and compose a domain hint (e.g., `transformer, attention` → `"Machine learning research on transformer architectures. Use proper punctuation."`). Set as `GRAPHIFY_WHISPER_PROMPT`.
 
 **Step 2 - Transcribe:** <!-- script: see references/scripts.md §Step 2.5 - Transcribe video / audio files -->
 
-After transcription: read `graphify-out/.graphify_transcripts.json` (the graph output directory, e.g. `graphify-out/` — see `/docs/knowledge-graphs.md` in the project root), add to the docs list for Step 3B, print `Transcribed N video file(s) -> treating as docs`. Warn on failures and continue.
+After transcription: read `graphify-out/.graphify_transcripts.json` (the graph output directory, e.g. `graphify-out/` — see `<project-root>/docs/knowledge-graphs.md` in the project root), add to the docs list for Step 3B, print `Transcribed N video file(s) -> treating as docs`. Warn on failures and continue.
 
 **Whisper model:** Default `base`. If `--whisper-model <name>` was passed, set `GRAPHIFY_WHISPER_MODEL=<name>`.
 
@@ -101,7 +101,7 @@ Two parts: **structural extraction** (AST, deterministic, free) and **semantic e
 
 #### Part A - Structural extraction for code files
 
-For any code files detected, run AST extraction in parallel with Part B (see `/docs/knowledge-graphs.md` in the project root):
+For any code files detected, run AST extraction in parallel with Part B (see `<project-root>/docs/knowledge-graphs.md` in the project root):
 
 <!-- script: see references/scripts.md §Step 3 Part A - Structural extraction (AST) -->
 
@@ -294,7 +294,7 @@ Print the output directly in chat. If `total_words <= 5000`, skip silently — f
 
 Tell the user (omit the `obsidian/` line unless `--obsidian` was given; omit the `wiki/` line unless `--wiki` was given):
 ```
-Graph complete. Outputs in PATH_TO_DIR/graphify-out/ (the graph output directory — see `/docs/knowledge-graphs.md` in the project root)
+Graph complete. Outputs in PATH_TO_DIR/graphify-out/ (the graph output directory — see `<project-root>/docs/knowledge-graphs.md` in the project root)
 
   graph.html            - interactive graph, open in browser
   GRAPH_REPORT.md       - audit report
@@ -423,7 +423,7 @@ Run once per project to make the knowledge graph tool always-on in Devin session
 
 <!-- script: see references/scripts.md §Devin always-on context -->
 
-This writes a `## graphify` section to `.windsurf/rules/graphify.md` that instructs Devin to check the graph before answering codebase questions and rebuild it after code changes (see `/docs/knowledge-graphs.md` in the project root).
+This writes a `## graphify` section to `.windsurf/rules/graphify.md` that instructs Devin to check the graph before answering codebase questions and rebuild it after code changes (see `<project-root>/docs/knowledge-graphs.md` in the project root).
 
 <!-- script: see references/scripts.md §Devin always-on context -->
 

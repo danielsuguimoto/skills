@@ -3,14 +3,14 @@ name: context-gathering
 description: MANDATORY skill. Invoke BEFORE any codebase exploration, code reading, writing, editing, or answering about code. If not active in the current conversation, DO NOT explore/read/edit code or answer code questions.
 ---
 
-## Required `/docs` reads
+## Required `<project-root>/docs` reads
 
 Read these project-root spec files before any codebase exploration, code reading, writing, editing, or answering about code (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
 
-- `/docs/code-navigation.md`
-- `/docs/database-tools.md`
-- `/docs/doc-lookup.md`
-- `/docs/knowledge-graphs.md`
+- `<project-root>/docs/code-navigation.md`
+- `<project-root>/docs/database-tools.md`
+- `<project-root>/docs/doc-lookup.md`
+- `<project-root>/docs/knowledge-graphs.md`
 
 ## Core Principle
 
@@ -20,7 +20,7 @@ Flow: clarify target → map (codebase + database) → fetch docs → analyze co
 
 ## Pre-flight checkpoint
 
-Before any codebase exploration, `read`/`edit`/`write` on a code file, any code navigation tool call (see `/docs/code-navigation.md` in the project root), or any answer about code, verify:
+Before any codebase exploration, `read`/`edit`/`write` on a code file, any code navigation tool call (see `<project-root>/docs/code-navigation.md` in the project root), or any answer about code, verify:
 1. The target (file path, symbol, or question) is defined — if ambiguous, ask before exploring.
 
 ### 1. Clarify the target
@@ -29,17 +29,17 @@ A wrong target wastes the whole gather. If the request is ambiguous, ask BEFORE 
 
 ### 2. Discover symbols (Serena-first)
 
-Code navigation tools are PRIMARY for symbol-level work (see `/docs/code-navigation.md` in the project root): symbol lookup, reference tracing, class member/signature/parent/interface listing. Use `grep`/`read`/`find_file_by_name` ONLY for non-symbol lookups: plain-text searches (config keys, lang keys, strings), known file paths, glob patterns.
+Code navigation tools are PRIMARY for symbol-level work (see `<project-root>/docs/code-navigation.md` in the project root): symbol lookup, reference tracing, class member/signature/parent/interface listing. Use `grep`/`read`/`find_file_by_name` ONLY for non-symbol lookups: plain-text searches (config keys, lang keys, strings), known file paths, glob patterns.
 
 ### 3. Map the codebase
 
-- If a knowledge graph output exists (see `/docs/knowledge-graphs.md` in the project root), query it before raw source browsing. Fallback to the knowledge graph wiki/report for broad navigation and architecture review (see `/docs/knowledge-graphs.md` in the project root).
+- If a knowledge graph output exists (see `<project-root>/docs/knowledge-graphs.md` in the project root), query it before raw source browsing. Fallback to the knowledge graph wiki/report for broad navigation and architecture review (see `<project-root>/docs/knowledge-graphs.md` in the project root).
 - Locate entry points, related modules, dependencies. Trace cross-module wiring via contracts and repositories. Identify callers and callees. Read existing implementations of similar features for patterns.
-- Query the database when the target touches persisted state: schema, row counts, EXPLAIN plans, sample rows. Use database tools (see `/docs/database-tools.md` in the project root). Database state is ground truth — verify it alongside code. Do not rely on seeders, migrations, factories, or operations for current data shape.
+- Query the database when the target touches persisted state: schema, row counts, EXPLAIN plans, sample rows. Use database tools (see `<project-root>/docs/database-tools.md` in the project root). Database state is ground truth — verify it alongside code. Do not rely on seeders, migrations, factories, or operations for current data shape.
 
 ### 4. Fetch current documentation
 
-Assume internal knowledge is outdated for any framework/library/SDK. Use documentation lookup tools (see `/docs/doc-lookup.md` in the project root). Verify API signatures, current best practices, version-specific behavior, and gotchas.
+Assume internal knowledge is outdated for any framework/library/SDK. Use documentation lookup tools (see `<project-root>/docs/doc-lookup.md` in the project root). Verify API signatures, current best practices, version-specific behavior, and gotchas.
 
 ### 5. Analyze conventions
 

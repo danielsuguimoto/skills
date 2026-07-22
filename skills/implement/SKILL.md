@@ -3,17 +3,17 @@ name: implement
 description: "Activate when implementing a ticket or planned change directly on master."
 ---
 
-## Required `/docs` reads
+## Required `<project-root>/docs` reads
 
 Read these project-root spec files before implementing the ticket or planned change (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
 
-- `/docs/code-navigation.md`
-- `/docs/git-hosts.md`
-- `/docs/issue-trackers.md`
+- `<project-root>/docs/code-navigation.md`
+- `<project-root>/docs/git-hosts.md`
+- `<project-root>/docs/issue-trackers.md`
 
-Use the git host tool (see `/docs/git-hosts.md` in the project root). All git host tools need `repo_path`.
+Use the git host tool (see `<project-root>/docs/git-hosts.md` in the project root). All git host tools need `repo_path`.
 
-Operations: Use git host operations (see `/docs/git-hosts.md` in the project root) for branch check, switch to master, pull latest.
+Operations: Use git host operations (see `<project-root>/docs/git-hosts.md` in the project root) for branch check, switch to master, pull latest.
 
 1. **Ensure Clean Master**: Load branch + status. Store `<current-branch>`.
 - Not `master`/`main` → switch to master
@@ -25,10 +25,10 @@ Operations: Use git host operations (see `/docs/git-hosts.md` in the project roo
 - Ticket URL → use directly
 - Mention without URL → ask for link
 
-3. **Load Ticket + Build Todo List**: Load the ticket via the issue tracker tool (see `/docs/issue-trackers.md` in the project root). Ticket is bulky. Pass `<ticket-url>` and todo-list rules.
+3. **Load Ticket + Build Todo List**: Load the ticket via the issue tracker tool (see `<project-root>/docs/issue-trackers.md` in the project root). Ticket is bulky. Pass `<ticket-url>` and todo-list rules.
 
 Steps:
-1. List tools on the issue tracker (see `/docs/issue-trackers.md` in the project root) → confirm ticket load tool available. Missing → return `BLOCKED` with `NO_MCP_ACCESS`.
+1. List tools on the issue tracker (see `<project-root>/docs/issue-trackers.md` in the project root) → confirm ticket load tool available. Missing → return `BLOCKED` with `NO_MCP_ACCESS`.
 2. Load ticket via the issue tracker tool with `source: <ticket-url>`.
 3. Read every attachment with `relativePath` via `read` (images → describe; documents → extract key requirements → `<attachment-insights>`).
 4. Analyze requirements from name, description, comments, checklists, attachment insights.
@@ -47,7 +47,7 @@ If ticket load fails or returns `BLOCKED`: list tools, load ticket, ingest attac
 
 4. **Gather Codebase Context**: Pass `<feature-area>`, `<related-entities>`, `<acceptance-criteria>`, module path, and inherited code-target triples. Validate each inherited target against current code (file exists, symbol at location, patch applies) and report drift. Only resolve `TBD` targets for non-plan cards. Require distilled brief: entry points, related modules, callers, conventions, file:line citations. Store as `<context-files>`.
 
-If `BLOCKED`: `grep` for model/route/feature-flag names, `find_file_by_name` for controllers/repositories/resources, code navigation tool (see `/docs/code-navigation.md`) as alternative. Read 1-2 key files. Resolve `TBD` items, update todo list. Store paths as `<context-files>`.
+If `BLOCKED`: `grep` for model/route/feature-flag names, `find_file_by_name` for controllers/repositories/resources, code navigation tool (see `<project-root>/docs/code-navigation.md`) as alternative. Read 1-2 key files. Resolve `TBD` items, update todo list. Store paths as `<context-files>`.
 
 5. **Resolve Open Questions (optional)**: After Step 3 and Step 4, doubts may surface — plan/code drift, ambiguous acceptance criteria, conflicting patterns, unresolved `<gaps>`/`<blockers>`, or multiple viable shapes for one todo item. When any remain, grill the user before implementing.
 
@@ -64,20 +64,20 @@ Grilling rules: follow `grill-with-codebase` discipline (one question at a time 
 Stop grilling when every open question resolves. Don't re-open settled decisions. Proceed to Step 6.
 
 6. **Implement on Master**: Focused, minimal changes on `master`. Drive off `<todo-list>`: pick next `pending` item, mark `in_progress`, apply change at inherited `file`/`symbol`/`location` (use `patch` as starting delta when present; adapt to drift from Step 4 or resolution from Step 5), verify, mark `completed`, move on. Exactly one item `in_progress` at a time. After each meaningful chunk:
-- PHP: Run the project's lint command (see project config or `/docs/` in the project root).
-- Tests: Run the project's test command (see project config or `/docs/` in the project root).
+- PHP: Run the project's lint command (see project config or `<project-root>/docs/` in the project root).
+- Tests: Run the project's test command (see project config or `<project-root>/docs/` in the project root).
 
 **Test todo items**: when the `in_progress` item is a test, scout existing tests, base classes, factories, and assertion style. Write the test using the inherited `file`/`symbol`/`location`/`patch`, the production code under test, and a distilled brief of conventions from Step 4. Verify: lint + run tests per the bullets above.
 
 7. **Present Implementation**: Complete and validated → present changes and STOP. No approval, no commit, no push.
 
-Load status + diff stat (git host change scan; see `/docs/git-hosts.md` in the project root).
+Load status + diff stat (git host change scan; see `<project-root>/docs/git-hosts.md` in the project root).
 
 CRITICAL: STOP here. Never commit, push, or request approval. User invokes separate skills (commit-and-push, ship-changes) to ship.
 
 ## Notes
 
-- The ticket load tool downloads attachments to the issue tracker's attachment download location (see `/docs/issue-trackers.md` in the project root). Read before planning.
+- The ticket load tool downloads attachments to the issue tracker's attachment download location (see `<project-root>/docs/issue-trackers.md` in the project root). Read before planning.
 - Context gathering + implementation + presentation only. Shipping is separate.
 
 ## Red Flags

@@ -3,23 +3,23 @@ name: debug
 description: "Use when a user reports a bug, error, or unexpected behavior and wants it troubleshot and fixed. Interactive: grills the user to clarify the problem, then investigates, plans, and executes the fix."
 ---
 
-## Required `/docs` reads
+## Required `<project-root>/docs` reads
 
 Read these project-root spec files before investigating the bug (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
 
-- `/docs/bug-trackers.md`
-- `/docs/code-navigation.md`
-- `/docs/database-tools.md`
-- `/docs/doc-lookup.md`
-- `/docs/memory-providers.md`
-- `/docs/observability-tools.md`
-- `/docs/terminal-wrappers.md`
+- `<project-root>/docs/bug-trackers.md`
+- `<project-root>/docs/code-navigation.md`
+- `<project-root>/docs/database-tools.md`
+- `<project-root>/docs/doc-lookup.md`
+- `<project-root>/docs/memory-providers.md`
+- `<project-root>/docs/observability-tools.md`
+- `<project-root>/docs/terminal-wrappers.md`
 
 Troubleshoot and fix a user-reported issue. Three phases, each with a grilling section. This skill **executes fixes**; for read-only root-cause reporting use `triage`.
 
 ## Tool Agnosticism
 
-Reference `/docs` specs, never hardcode tool names: code symbols → `/docs/code-navigation.md`, DB → `/docs/database-tools.md`, framework docs → `/docs/doc-lookup.md`, error logs → `/docs/bug-trackers.md`, observability → `/docs/observability-tools.md`, terminal → `/docs/terminal-wrappers.md`, memory → `/docs/memory-providers.md`. Missing spec → fall back to native tools, note the gap.
+Reference `<project-root>/docs` specs, never hardcode tool names: code symbols → `<project-root>/docs/code-navigation.md`, DB → `<project-root>/docs/database-tools.md`, framework docs → `<project-root>/docs/doc-lookup.md`, error logs → `<project-root>/docs/bug-trackers.md`, observability → `<project-root>/docs/observability-tools.md`, terminal → `<project-root>/docs/terminal-wrappers.md`, memory → `<project-root>/docs/memory-providers.md`. Missing spec → fall back to native tools, note the gap.
 
 ## Grilling Discipline
 
@@ -31,7 +31,7 @@ Don't explore until the symptom is clear.
 
 **1.1 Grill: Clarify the Symptom** — rotate until each settles: Symptom (quote error verbatim) · Expected vs actual · Reproduction (exact steps; no repro → last known-working + what changed) · Environment (version, branch, deployment, data state, feature flags) · Scope (who affected, when started) · Frequency (always, intermittent, load/time-dependent). Store as `<issue-context>`. Still undefined after one round → stop, list unknowns.
 
-**1.2 Gather Evidence** — `<issue-context>` settled, collect don't guess: Reproduce against exact symptom (nearby failure isn't the bug; repro fails → say so, list attempts). Trace code path user action → failure (`/docs/code-navigation.md`). Inspect DB when state persists (`/docs/database-tools.md`) — live data is ground truth, don't trust seeders/migrations/factories. Pull error logs (`/docs/bug-trackers.md`), read full trace. Inspect app runtime (`/docs/observability-tools.md`). Check memory for prior pitfalls (`/docs/memory-providers.md`). Fetch framework docs when behavior hinges on version/API (`/docs/doc-lookup.md`). Store as `<investigation-findings>` with file:line citations.
+**1.2 Gather Evidence** — `<issue-context>` settled, collect don't guess: Reproduce against exact symptom (nearby failure isn't the bug; repro fails → say so, list attempts). Trace code path user action → failure (`<project-root>/docs/code-navigation.md`). Inspect DB when state persists (`<project-root>/docs/database-tools.md`) — live data is ground truth, don't trust seeders/migrations/factories. Pull error logs (`<project-root>/docs/bug-trackers.md`), read full trace. Inspect app runtime (`<project-root>/docs/observability-tools.md`). Check memory for prior pitfalls (`<project-root>/docs/memory-providers.md`). Fetch framework docs when behavior hinges on version/API (`<project-root>/docs/doc-lookup.md`). Store as `<investigation-findings>` with file:line citations.
 
 **Done when:** symptom reproduced or attempted · code path traced · DB verified (when relevant) · traces read in full · context + findings stored.
 

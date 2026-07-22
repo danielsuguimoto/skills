@@ -3,22 +3,22 @@ name: browser-automation
 description: Use for browser automation (QA, element interaction, screencapture/snapshot, network capture) or to work across the user's logged-in accounts, apps, memory, and browsing history.
 ---
 
-## Required `/docs` reads
+## Required `<project-root>/docs` reads
 
 Read these project-root spec files before any browser automation action (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
 
-- `/docs/browser-automation.md`
+- `<project-root>/docs/browser-automation.md`
 
 # Browser Automation
 
-Browser automation tools (see `/docs/browser-automation.md`) provide agent-driven and REPL-driven browser control for complex tasks across user's logged-in accounts, cookies, websites, SaaS tools, and browsing histories.
+Browser automation tools (see `<project-root>/docs/browser-automation.md`) provide agent-driven and REPL-driven browser control for complex tasks across user's logged-in accounts, cookies, websites, SaaS tools, and browsing histories.
 
 ## Choose the Surface
 
 - **Browser exec** (autonomous agent): spawns an agent session like a subagent. Use for whole-task delegation across logged-in accounts, apps, memory, browsing history. Poll and give user status updates every ~60 seconds — the user can't see the CLI background.
 - **Browser REPL**: persistent ES2023+ JS REPL with Playwright-compatible, low-level browser interaction. Use for direct evidence, downloads, screenshots, exact verification, deterministic UI steps, sensitive logged-in work. Top-level `const`/`let` bindings persist — use fresh variable names.
 
-Both open ephemeral sessions. Use interactive PTY for CLI commands — session deleted when CLI exits. Inspect current CLI usage before running (see `/docs/browser-automation.md`).
+Both open ephemeral sessions. Use interactive PTY for CLI commands — session deleted when CLI exits. Inspect current CLI usage before running (see `<project-root>/docs/browser-automation.md`).
 
 ## REPL Globals
 

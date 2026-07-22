@@ -3,21 +3,21 @@ name: commit-and-push
 description: "Commit and push current changes."
 ---
 
-## Required `/docs` reads
+## Required `<project-root>/docs` reads
 
 Read these project-root spec files before committing or pushing (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
 
-- `/docs/git-hosts.md`
+- `<project-root>/docs/git-hosts.md`
 
 ## Operations
 
-| Operation | Tool (see `/docs/git-hosts.md`) | CLI fallback per `/docs/git-hosts.md` |
+| Operation | Tool (see `<project-root>/docs/git-hosts.md`) | CLI fallback per `<project-root>/docs/git-hosts.md` |
 |-----------|--------------|--------------|
-| Load change state | git host change scan (see `/docs/git-hosts.md` in the project root) | `git branch --show-current` + `git status --short` + `git diff --stat` + `git diff --cached --stat` + `git log @{u}..HEAD --oneline` |
-| Stage and commit | git host commit (see `/docs/git-hosts.md` in the project root, with `message`) | `git add -A` + `git commit -m "<message>"` |
-| Push to remote | git host push (see `/docs/git-hosts.md` in the project root) | `git push` (retry `git push -u origin <branch>` if no upstream) |
+| Load change state | git host change scan (see `<project-root>/docs/git-hosts.md` in the project root) | `git branch --show-current` + `git status --short` + `git diff --stat` + `git diff --cached --stat` + `git log @{u}..HEAD --oneline` |
+| Stage and commit | git host commit (see `<project-root>/docs/git-hosts.md` in the project root, with `message`) | `git add -A` + `git commit -m "<message>"` |
+| Push to remote | git host push (see `<project-root>/docs/git-hosts.md` in the project root) | `git push` (retry `git push -u origin <branch>` if no upstream) |
 
-Follow `/docs/git-hosts.md` in the project root for all git/gh operations.
+Follow `<project-root>/docs/git-hosts.md` in the project root for all git/gh operations.
 
 ### 1. Interpret Arguments
 

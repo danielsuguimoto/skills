@@ -3,21 +3,21 @@ name: ship-changes
 description: "Use when shipping current work end-to-end — creating a branch, committing, pushing, and opening a PR. Invoke when the user says 'ship this', 'create a PR', or when work is complete and ready for review."
 ---
 
-## Required `/docs` reads
+## Required `<project-root>/docs` reads
 
 Read these project-root spec files before shipping end-to-end (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
 
-- `/docs/git-hosts.md`
+- `<project-root>/docs/git-hosts.md`
 
 Run the full shipping pipeline: branch, commit, push, and open a PR.
 
 ## Operations
 
-| Operation | Tool (see `/docs/git-hosts.md`) | CLI fallback per `/docs/git-hosts.md` |
+| Operation | Tool (see `<project-root>/docs/git-hosts.md`) | CLI fallback per `<project-root>/docs/git-hosts.md` |
 |-----------|--------------|--------------|
-| Pre-scan change state | git host change scan (see `/docs/git-hosts.md` in the project root) | `git branch --show-current` + `git status --short` + `git diff --stat` + `git diff --cached --stat` + `git log @{u}..HEAD --oneline` |
+| Pre-scan change state | git host change scan (see `<project-root>/docs/git-hosts.md` in the project root) | `git branch --show-current` + `git status --short` + `git diff --stat` + `git diff --cached --stat` + `git log @{u}..HEAD --oneline` |
 
-Forward git host tool availability to subskills so they skip their own change scan and PR diff calls when possible. Follow `/docs/git-hosts.md` in the project root for all git/gh operations.
+Forward git host tool availability to subskills so they skip their own change scan and PR diff calls when possible. Follow `<project-root>/docs/git-hosts.md` in the project root for all git/gh operations.
 
 ### 1. Interpret Arguments
 
