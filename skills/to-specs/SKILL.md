@@ -14,7 +14,7 @@ Read these project-root spec files before turning the request into a spec (use s
 
 Turn a request or ticket into a spec, then sync to the ticket system. Read-only (no code changes or implementation). Clarify requirements with the user before shaping the spec. No assumptions, guesses, or inferred intent. Treat ticket systems generically. Use `<additional-context>` for constraints and focus areas. Update existing tickets; create replacements only when asked. For big problems, name the destination first and keep all output on one ticket. Split into multiple tickets only when the user explicitly asks.
 
-**Loop with the user, never with yourself.** All iteration happens in the grilling phase (step 5) and the user-review gate (step 10) as back-and-forth with the user. Do not run internal review/refactor/re-review cycles, re-shape loops, or self-critique passes. Shape once from gathered context, present, revise only on user request.
+**Loop with the user, never with yourself.** All iteration happens in the grilling phase (step 5) and the user-review gate (step 10) as back-and-forth with the user. Do not run internal review/refactor/re-review cycles, re-shape loops, or self-critique passes. Shape once from gathered context, present the spec to the user exactly once (step 10), revise only on user request. Steps 8-9 are internal build steps — do not present a draft, brief, plan, or partial spec to the user there. The user approves only the final shaped spec, once, before syncing.
 
 <spec-template>
 
@@ -52,7 +52,7 @@ Skip reason (when used): `Skip reason: <all 6 conditions met because ...>`. Skip
 
 8. **Build Action Inventory**: Before writing requirement items, list every concrete action needed to deliver the destination. Use the surface inventory from `<repo-context>`. For each surface (DB, model, rules, services, API, UI, infra, tests, docs, ops), decide `no change` or a concrete action (`create`, `modify`, `delete`, `run`). Record `surface`, `action`, `target`, `depends-on`, `patch-ready` (`true` when the exact code change can be written from `<repo-context>`). Convert each `patch-ready` action into a requirement item in step 9. Every required action must become a requirement item.
 
-9. **Shape the Spec**: Write the spec using the template. Turn `<planning-objective>`, `<operative-constraints>`, `<proposed-technical-direction>`, `<clarified-requirements>`, `<technical-approach-decision>`, repo findings, `<project-standards>`, `<doc-context>`, and `<skill-context>` into:
+9. **Shape the Spec** (internal — do not present to the user): Write the spec using the template. Turn `<planning-objective>`, `<operative-constraints>`, `<proposed-technical-direction>`, `<clarified-requirements>`, `<technical-approach-decision>`, repo findings, `<project-standards>`, `<doc-context>`, and `<skill-context>` into:
 - `<spec-title>`: short, useful title.
 - `<spec-description>`: the rendered spec template (Destination, Problem Statement, Solution, Notes only — NOT the implementation/validation items). Must include: (a) the destination and why it fixes scope, (b) the chosen technical approach and why, (c) key user preferences and constraints, (d) accepted trade-offs. Make it specific to this spec and user.
 - `<requirement-items>`: precise patch descriptions, one per spec step. Map each action from step 8 and each user preference from `<clarified-requirements>` to one or more requirement items.
@@ -76,7 +76,7 @@ Skip reason (when used): `Skip reason: <all 6 conditions met because ...>`. Skip
 
 Rules: One item = one single-purpose patch. Split compound changes into separate items. For broader changes, use sub-items (`S1a`, `S1b`). Verify paths and symbols against `<repo-context>`; no guesses. If you cannot confirm a target, flag it in the item and let the user catch it at step 10 review. No exploratory steps ("investigate X", "consider Y", "ensure X", "update X as needed"). No alternative designs or re-evaluation after the user agrees on direction.
 
-10. **User Review**: Present the spec for approval in a single gate. Reflect the user's inputs back: list 3-5 key decisions or constraints and where they appear (cite requirement/validation items); confirm the spec covers all concrete actions; then ask:
+10. **User Review** (the only spec presentation): Present the full shaped spec to the user exactly once — `<spec-title>`, `<spec-description>`, `<requirement-items>`, `<validation-items>`. Do not show a brief or summary version first and then the full version; one presentation only. In that same gate, reflect the user's inputs back: list 3-5 key decisions or constraints and where they appear (cite requirement/validation items); confirm the spec covers all concrete actions; then ask:
 > Spec ready: `<spec-title>`. Implementation: N items. Validation: N items. Want me to sync to the ticket system or make changes?
 
 Wait for the user's response. Revise if asked. Sync only after approval.
