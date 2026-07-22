@@ -5,7 +5,7 @@ description: MANDATORY skill. Invoke BEFORE any codebase exploration, code readi
 
 ## Required `/docs` reads
 
-Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+Read these project-root spec files before any codebase exploration, code reading, writing, editing, or answering about code (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
 
 - `/docs/code-navigation.md`
 - `/docs/database-tools.md`

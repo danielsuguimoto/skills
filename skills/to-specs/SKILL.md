@@ -5,7 +5,7 @@ description: Use when a request or ticket needs to be turned into a spec and syn
 
 ## Required `/docs` reads
 
-Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+Read these project-root spec files before turning the request into a spec (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
 
 - `/docs/code-navigation.md`
 - `/docs/database-tools.md`

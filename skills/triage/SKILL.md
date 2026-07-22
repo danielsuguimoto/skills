@@ -5,7 +5,7 @@ description: "Use when answering a ticket question, debugging an issue, or when 
 
 ## Required `/docs` reads
 
-Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+Read these project-root spec files before investigating the ticket (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
 
 - `/docs/code-navigation.md`
 - `/docs/database-tools.md`

@@ -9,7 +9,7 @@ description: >
 
 ## Required `/docs` reads
 
-Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+Read these project-root spec files before extracting or persisting session knowledge (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
 
 - `/docs/memory-providers.md`
 

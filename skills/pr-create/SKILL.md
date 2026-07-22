@@ -5,7 +5,7 @@ description: "Creates a pull request for the current branch."
 
 ## Required `/docs` reads
 
-Read these project-root spec files before acting (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+Read these project-root spec files before creating the PR (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
 
 - `/docs/git-hosts.md`
 
