@@ -61,13 +61,10 @@ Present gate: failing checks fixed, changed file count, local validation results
 - When `<changes-count>` = 0 (all non-`code`), surface no-change state so user picks `Go Ahead` (no-op) or `Needs Review`.
 
 ### 11. Commit and Push (after `approved` or in `auto` mode)
-`git add -A`, `git commit -m "<message>"` (lowercase, `<prefix>: <summary>`, under 50 chars), `git push origin <active-branch>`. Never use generic messages like "fix ci". Store `<pushed>` (`yes`/`no`).
-
-### 12. Verify CI Green
-Push triggers CI. Poll `gh pr checks <pr-number>` (or `gh pr view --json statusCheckRollup`) until all previously-failing `<check>`s are `SUCCESS`/`NEUTRAL`, or a reasonable timeout. For `flaky` checks, re-run the failed run via `gh run rerun <run-id> --failed` before polling. If a previously-passing check now fails (new regression), loop back to Step 4 with the new failure. Store `<ci-final>` (`green`/`failing`).
+`git add -A`, `git commit -m "<message>"` (lowercase, `<prefix>: <summary>`, under 50 chars), `git push origin <active-branch>`. Never use generic messages like "fix ci". Do not poll CI, wait for results, or loop back to earlier steps. Session ends after push.
 
 ## Output
-Summary of fixed checks, local validation, and final CI state. At the approval gate: one line per fix, not full diffs. Example: "Fixed N failing checks across M files" + local validation + (after Step 12) final CI status.
+Summary of fixed checks, local validation, and pushed state. At the approval gate: one line per fix, not full diffs. Example: "Fixed N failing checks across M files" + local validation + "pushed to `<active-branch>`". Do not claim CI is green — it has not been verified.
 
 ## Red Flags
 **Never:**
@@ -80,4 +77,3 @@ Summary of fixed checks, local validation, and final CI state. At the approval g
 **Always:**
 - Triage before fixing — not every red check is a code problem
 - Cite the failing file/test/command from the actual log
-- Poll CI to confirm green after push
