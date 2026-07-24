@@ -77,7 +77,9 @@ Skip reason (when used): `Skip reason: <all 6 conditions met because ...>`. Skip
 Rules: One item = one single-purpose patch. Split compound changes into separate items. For broader changes, use sub-items (`S1a`, `S1b`). Verify paths and symbols against `<repo-context>`; no guesses. If you cannot confirm a target, flag it in the item and let the user catch it at step 10 review. No exploratory steps ("investigate X", "consider Y", "ensure X", "update X as needed"). No alternative designs or re-evaluation after the user agrees on direction.
 
 10. **User Review** (the only spec presentation): Present the full shaped spec to the user exactly once — `<spec-title>`, `<spec-description>`, `<requirement-items>`, `<validation-items>`. Do not show a brief or summary version first and then the full version; one presentation only. In that same gate, reflect the user's inputs back: list 3-5 key decisions or constraints and where they appear (cite requirement/validation items); confirm the spec covers all concrete actions; then ask:
-> Spec ready: `<spec-title>`. Implementation: N items. Validation: N items. Want me to sync to the ticket system or make changes?
+> Spec ready: `<spec-title>`. Implementation: N items. Validation: N items. Sync to the ticket system, or revise the spec?
+
+This workflow is read-only. The only two outcomes of this gate are syncing the spec or revising it. Never offer to apply, implement, or execute the spec — that is a separate workflow. If the user asks to implement, decline and tell them to run the implementation workflow instead.
 
 Wait for the user's response. Revise if asked. Sync only after approval.
 
