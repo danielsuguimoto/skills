@@ -72,6 +72,7 @@ Always sync findings back — the spec phase reads prior comments; skipping brea
 
 ## Notes
 
+- **Traceability (required):** If `<question>` or `<additional-context>` originated from skill arguments rather than the ticket body, the ticket reader cannot see what prompted the answer — so the synced note becomes disconnected. In that case, the findings MUST explicitly restate the provided `<question>` / `<additional-context>` (as a quoted preamble or "Question:" / "Context:" block) before the answer, so the response is traceable to its source. Skip this only when the question is already visible in the ticket body or comments.
 - Ticket load tool downloads attachments to `storage/app/mcp/{source}` — read before triaging.
 - Private note: technical, concise, cite file:line, no full code blocks.
 - Final output: ticket URL (+ note title for debug). Don't paste full findings back.
