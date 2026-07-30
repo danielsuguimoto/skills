@@ -45,9 +45,13 @@ Forward to every subskill: `<current-branch>`, `<uncommitted>`, `<ahead-commits>
 
 ### 3. Create Work Branch
 
-Create a new branch. Pass `<additional-context>`, `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, and `<branch-category>`. Store the resulting branch as `<new-branch>`. If the result is "Nothing to branch from" or "Branching skipped", STOP and report.
+Gate: skip this step if `<current-branch>` is not `master` AND `<current-branch>` is already ticket-related. If skipped, set `<new-branch>` to `<current-branch>`.
+
+Otherwise, create a new branch. Pass `<additional-context>`, `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, and `<branch-category>`. Store the resulting branch as `<new-branch>`. If the result is "Nothing to branch from" or "Branching skipped", STOP and report.
 
 ### 4. Commit and Push
+
+Gate: if `<uncommitted>` is empty, skip the commit substep; still push the branch if `<ahead-commits>` is non-empty. If both are empty, the pre-scan blocker already stops.
 
 Commit and push changes. Pass `<additional-context>`, `<uncommitted>`, `<ahead-commits>`, and `<change-summary>`. Store the commit hash as `<hash>` and the push target as `<push-target>`. If the result is "Nothing to commit or push", STOP and report.
 
