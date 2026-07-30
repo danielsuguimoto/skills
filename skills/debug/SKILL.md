@@ -14,6 +14,7 @@ Read these project-root spec files before investigating the bug (use shell `cat`
 - `<project-root>/docs/memory-providers.md`
 - `<project-root>/docs/observability-tools.md`
 - `<project-root>/docs/terminal-wrappers.md`
+- `<project-root>/docs/terminal-tools.md`
 
 Troubleshoot and fix a user-reported issue. Three phases, each with a grilling section. This skill **executes fixes**; for read-only root-cause reporting use `triage`.
 

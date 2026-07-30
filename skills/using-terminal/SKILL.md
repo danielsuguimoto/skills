@@ -9,6 +9,7 @@ Read these project-root spec files before running any terminal/shell command (us
 
 - `<project-root>/docs/container-clis.md`
 - `<project-root>/docs/terminal-wrappers.md`
+- `<project-root>/docs/terminal-tools.md`
 
 # Terminal Token Compression
 

@@ -9,12 +9,12 @@ description: >
 
 # Setup Skills
 
-Generate the `<project-root>/docs` folder and all 12 spec files in the project root so every danielsuguimoto/skills skill can function. Skills reference these specs by path (e.g., `<project-root>/docs/git-hosts.md`); without them, skills cannot locate the tools they need.
+Generate the `<project-root>/docs` folder and all 13 spec files in the project root so every danielsuguimoto/skills skill can function. Skills reference these specs by path (e.g., `<project-root>/docs/git-hosts.md`); without them, skills cannot locate the tools they need.
 
 ## Pre-flight
 
 1. **Detect project root**: `git rev-parse --show-toplevel` or fall back to `cwd`. Store as `<project-root>`.
-2. **Check existing state**: List `<project-root>/docs/` if it exists. Check which of the 12 expected spec files already exist.
+2. **Check existing state**: List `<project-root>/docs/` if it exists. Check which of the 13 expected spec files already exist.
 3. **Decision gate**:
    - All 12 exist → ask user whether to reconfigure or abort. If abort, stop.
    - Some exist → ask user whether to regenerate all or only missing ones.
@@ -56,7 +56,7 @@ For the MCP servers question: if `<mcp-inventory>` is non-empty, offer "Use dete
 
 ## Generate
 
-Create `<project-root>/docs/` if missing. For each of the 12 spec files, generate the file. If the user selected "None", write a stub: `**Tool**: Not configured` with a note that skills referencing this spec will use fallbacks or skip.
+Create `<project-root>/docs/` if missing. For each of the 13 spec files, generate the file. If the user selected "None", write a stub: `**Tool**: Not configured` with a note that skills referencing this spec will use fallbacks or skip.
 
 Each spec documents the tool's interface only — no agent behavior rules:
 
@@ -76,7 +76,7 @@ Each spec documents the tool's interface only — no agent behavior rules:
 <!-- Fill in: MCP server name + tool names, or CLI commands, or API endpoints -->
 ```
 
-The 12 spec files and what they cover (see danielsuguimoto/skills README for the canonical list):
+The 13 spec files and what they cover (see danielsuguimoto/skills README for the canonical list):
 
 | File | Covers |
 |------|--------|
@@ -91,10 +91,11 @@ The 12 spec files and what they cover (see danielsuguimoto/skills README for the
 | `<project-root>/docs/container-clis.md` | Lifecycle, exec, logs, scripts |
 | `<project-root>/docs/memory-providers.md` | List, read, write, edit, delete memories |
 | `<project-root>/docs/terminal-wrappers.md` | Command prefixing, output filtering |
+| `<project-root>/docs/terminal-tools.md` | Non-standard terminal tools replacing usual defaults |
 | `<project-root>/docs/doc-lookup.md` | Framework/library/SDK docs, search fallbacks |
 
 For `<project-root>/docs/mcp-servers.md`: populate a server inventory section from `<mcp-inventory>` if the user chose to document detected servers.
 
 ## Verify and Output
 
-Confirm all 12 spec files exist. Report summary table: spec file, tool, configured or not. List files with `<!-- Fill in: ... -->` markers needing manual completion. Do not commit or push.
+Confirm all 13 spec files exist. Report summary table: spec file, tool, configured or not. List files with `<!-- Fill in: ... -->` markers needing manual completion. Do not commit or push.
