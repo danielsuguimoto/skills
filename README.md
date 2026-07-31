@@ -20,6 +20,7 @@ Each subdirectory under `skills/` is a self-contained skill with a `SKILL.md` ma
 | grill-with-codebase | Grill the user about a task or intent using the codebase as ground truth until decisions form a concrete plan. |
 | implement | Develop from a ticket — load details, gather context, implement on master. |
 | container-cli | Container CLI usage reference — start/stop/restart, exec, logs, run scripts, share tunnels. |
+| draft-reply | Draft a reply to a ticket and post it as a private note for review. Read-only. |
 | memory-usage | Read or write persistent project memory before, during, or after non-trivial work. |
 | new-branch | Create and switch to a categorized branch summarizing current uncommitted or ahead-of-base work. |
 | pr-create | Create a pull request for the current branch. |
