@@ -13,7 +13,7 @@ Read these project-root spec files before implementing the ticket or planned cha
 
 Use the git host tool (see `<project-root>/docs/git-hosts.md` in the project root). All git host tools need `repo_path`.
 
-Operations: Use git host operations (see `<project-root>/docs/git-hosts.md` in the project root) for branch check, detect/switch to existing feature/fix branch, pull latest.
+Operations: Use git host operations (see `<project-root>/docs/git-hosts.md` in the project root) for branch check, pull latest.
 
 1. **Capture Ticket Reference**: Extract `<ticket-url>` from the user's input (URL → use directly; mention without URL → ask for link).
 
@@ -31,11 +31,12 @@ Planning-phase tickets are approved plans — proceed to implementation. No desi
 
 If ticket load fails or returns `BLOCKED`: list tools, load ticket, ingest attachments, analyze requirements per rules above.
 
-3. **Detect & Use Working Branch**: Using the loaded ticket's `<ticket-title>` and `<ticket-summary>`, load branch + status, store `<current-branch>`, and detect an existing feature/fix branch related to this ticket before falling back to `master`. Branch matching uses ticket content (title/summary slug), not the ticket id — same derivation as the `new-branch` skill.
-- Relevance test: branch name's slug matches a slug derived from `<ticket-title>` or `<ticket-summary>`, or the branch falls under `feature/*`|`fix/*`|`feat/*` with a slug derived from the ticket content. Branch name unrelated to the ticket content → ignore it, treat as no working branch.
-- On a relevant feature/fix branch → stay on it; this is the working branch. Pull/rebase onto its base only if behind.
-- On `master`/`main` or an unrelated branch → check remote + local for an existing feature/fix branch whose slug matches the ticket content. Found → switch to it. Not found → stay on `master`/`main` as the working branch.
-- Uncommitted changes on the resolved working branch → STOP, ask user to stash/commit first. Uncommitted changes on an unrelated branch → STOP, ask user to stash/commit/switch first; do not discard.
+3. **Detect & Use Working Branch**: Using the loaded ticket's `<ticket-title>` and `<ticket-summary>`, load branch + status, store `<current-branch>`, and check whether the **current** branch is already a feature/fix branch related to this ticket. Do not search for or switch to other branches. Relevance test uses ticket content (title/summary slug), not the ticket id — same derivation as the `new-branch` skill.
+- Relevance test: the current branch name's slug matches a slug derived from `<ticket-title>` or `<ticket-summary>`, or the current branch falls under `feature/*`|`fix/*`|`feat/*` with a slug derived from the ticket content.
+- Current branch is a relevant feature/fix branch → stay on it; this is the working branch. Pull/rebase onto its base only if behind.
+- Current branch is `master`/`main` → stay on it as the working branch.
+- Current branch is unrelated to the ticket → switch to `master`/`main`; that becomes the working branch. Do not search remote/local for matching branches.
+- Uncommitted changes on the current branch → STOP, ask user to stash/commit first; do not discard.
 - Only when the working branch is `master`/`main`: pull latest `git pull origin master`.
 - Confirm clean state on the resolved working branch before proceeding.
 
