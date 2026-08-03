@@ -31,11 +31,18 @@ Planning-phase tickets are approved plans — proceed to implementation. No desi
 
 If ticket load fails or returns `BLOCKED`: list tools, load ticket, ingest attachments, analyze requirements per rules above.
 
-3. **Detect & Use Working Branch**: Using the loaded ticket's `<ticket-title>` and `<ticket-summary>`, load branch + status, store `<current-branch>`, and check whether the **current** branch is already a feature/fix branch related to this ticket. Do not search for or switch to other branches. Relevance test uses ticket content (title/summary slug), not the ticket id — same derivation as the `new-branch` skill.
+3. **Detect & Use Working Branch**: Using the loaded ticket's `<ticket-title>` and `<ticket-summary>`, load branch + status, store `<current-branch>`, and check whether the **current** branch is already a feature/fix branch related to this ticket. Relevance test uses ticket content (title/summary slug), not the ticket id — same derivation as the `new-branch` skill.
+
+**Hard rules — no exceptions:**
+- NEVER create a new branch. No `git checkout -b`, no branch-create tool, no invoking `new-branch`. Branch creation is the user's job via the `new-branch` skill, invoked separately.
+- NEVER check out a branch other than `master`/`main`. Do not search local or remote for matching branches. Do not switch to an existing feature/fix branch even if it appears to match the ticket.
+- The only branch you may switch to is `master`/`main`, and only when the current branch is unrelated to the ticket.
+
+**Resolution:**
 - Relevance test: the current branch name's slug matches a slug derived from `<ticket-title>` or `<ticket-summary>`, or the current branch falls under `feature/*`|`fix/*`|`feat/*` with a slug derived from the ticket content.
 - Current branch is a relevant feature/fix branch → stay on it; this is the working branch. Pull/rebase onto its base only if behind.
 - Current branch is `master`/`main` → stay on it as the working branch.
-- Current branch is unrelated to the ticket → switch to `master`/`main`; that becomes the working branch. Do not search remote/local for matching branches.
+- Current branch is unrelated to the ticket → switch to `master`/`main`; that becomes the working branch.
 - Uncommitted changes on the current branch → STOP, ask user to stash/commit first; do not discard.
 - Only when the working branch is `master`/`main`: pull latest `git pull origin master`.
 - Confirm clean state on the resolved working branch before proceeding.
@@ -85,6 +92,8 @@ CRITICAL: STOP here. Never commit, push, or request approval. User invokes separ
 
 ## Red Flags
 **Never:**
+- Create a new branch (`git checkout -b`, branch-create tool, or `new-branch` skill) — branch creation is the user's job
+- Check out a branch other than `master`/`main` — do not search/switch to existing feature/fix branches
 - Commit or push without explicit user confirmation
 - Skip context-gathering before implementing
 - Implement beyond ticket scope
