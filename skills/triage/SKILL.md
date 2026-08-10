@@ -22,6 +22,15 @@ Load ticket context, determine mode (ask or debug), gather evidence, draft findi
 
 **Determining the mode is the skill.** Read the ticket, then decide: question to answer or issue to debug?
 
+### Blockers
+
+When you hit a blocker (missing context, ambiguity, inaccessible resource, unclear requirements), escalate in order:
+
+1. **Ask the user first.** You can interact with the user directly — many blockers are resolved with a quick question. Do this before posting anything to the ticket.
+2. **Post to the ticket only when the user cannot resolve it** — e.g., needs input from another team, customer-side information, or a decision outside the user's authority.
+
+Posting a blocker to the ticket when the user could have answered it in seconds adds a round-trip the user now has to unwind. Default to asking.
+
 ### Interpret Arguments
 
 - Ticket reference/URL → `<ticket-url>`; extra focus/constraints → `<additional-context>`; no arguments → derive from conversation.
@@ -31,7 +40,7 @@ Load ticket context, determine mode (ask or debug), gather evidence, draft findi
 
 - `<ticket-url>` defined: load via issue tracker tool (see `<project-root>/docs/issue-trackers.md`) with `source: <ticket-url>`, `comments: true` → `<ticket-context>`. Read all attachments with `relativePath` via `read` (images → describe; documents → extract key info → `<attachment-insights>`). Note gaps if inaccessible.
 - Otherwise: treat relevant request/conversation as `<ticket-context>`.
-- Missing or unloadable → STOP.
+- Missing or unloadable → ask the user for the ticket content or an alternative source; STOP only if the user cannot provide it.
 
 ### Determine Mode
 
@@ -40,7 +49,7 @@ Read the ticket body and every comment in order. Classify:
 - **ask** — ticket contains a question needing an answer (most recent unanswered question; explicit `<question>` from arguments takes precedence).
 - **debug** — ticket reports a bug/error/unexpected behavior needing root-cause investigation. Derive `<issue-description>`, `<expected-behavior>`, `<actual-behavior>`, `<reproduction-steps>`, `<error-messages>`, `<environment-context>`. Don't discard earlier comments.
 
-Ambiguous → ask for clarification. Both apply → default to debug (root-cause answers the question too). Store as `<triage-mode>`.
+Ambiguous → ask the user for clarification before posting to the ticket. Both apply → default to debug (root-cause answers the question too). Store as `<triage-mode>`.
 
 ### Gather Evidence
 
