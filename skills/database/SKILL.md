@@ -55,6 +55,7 @@ Avoid using migration files, schema dumps, seeders, or operations as proxies for
 - Respect soft deletes. Raw SQL must add `AND <alias>.deleted_at IS NULL` manually — read-only query tools won't apply global scopes. Mirror Eloquent `joinRelationship()` semantics before writing JOINs.
 - Company scoping is not applied by read-only query tools. The query tool runs literal SQL with no global scopes. To match a Filament widget/datatable, replicate its `queryAll`/`queryScope` filters explicitly (status exclusions, partial-access scoping, precedence unions). See *Reconciling Counts* below.
 - Limit large results. Add `LIMIT` to exploratory `SELECT`s. Query tools return full result sets; unbounded joins over large tables flood the response.
+- Report `EXPLAIN` results as prose ("Uses index X, scans N rows"), never raw output.
 
 ## Reconciling Counts (widget vs. raw SQL)
 
@@ -93,11 +94,4 @@ Never "fix" the widget to match the raw count without identifying the filter gap
 - Schema inspection `summary` omits indexes and FKs; re-call with `filter` + `include_column_details` for real work.
 - Views and routines are hidden by default; set `include_views` / `include_routines` when queries reference them.
 - The REPL boots the full app — slow startup (~seconds). Batch questions into one session.
-
-## Anti-Patterns
-
-- Using `grep`/`read` to find a model's table or fillable columns — use the schema inspection tool with `filter`.
-- Writing raw `UPDATE`/`DELETE` SQL expecting read-only query tools to run it — they are read-only; use the REPL.
-
-- Don't echo `EXPLAIN` output raw. Report: "Uses index X, scans N rows."
 

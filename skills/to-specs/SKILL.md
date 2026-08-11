@@ -12,7 +12,7 @@ Read these project-root spec files before turning the request into a spec (use s
 - `<project-root>/docs/doc-lookup.md`
 - `<project-root>/docs/issue-trackers.md`
 
-Turn a request or ticket into a spec, then sync to the ticket system. Read-only (no code changes or implementation). Clarify requirements with the user before shaping the spec. No assumptions, guesses, or inferred intent. Treat ticket systems generically. Use `<additional-context>` for constraints and focus areas. Update existing tickets; create replacements only when asked. For big problems, name the destination first and keep all output on one ticket. Split into multiple tickets only when the user explicitly asks.
+Turn a request or ticket into a spec, then sync to the ticket system. Read-only (no code changes or implementation). Clarify requirements with the user before shaping the spec — no assumptions, guesses, or inferred intent. Treat ticket systems generically. Use `<additional-context>` for constraints and focus areas. Update existing tickets; create replacements only when asked. For big problems, name the destination first and keep all output on one ticket. Split into multiple tickets only when the user explicitly asks.
 
 **Loop with the user, never with yourself.** All iteration happens in the grilling phase (step 5) and the user-review gate (step 10) as back-and-forth with the user. Do not run internal review/refactor/re-review cycles, re-shape loops, or self-critique passes. Shape once from gathered context, present the spec to the user exactly once (step 10), revise only on user request. Steps 8-9 are internal build steps — do not present a draft, brief, plan, or partial spec to the user there. The user approves only the final shaped spec, once, before syncing.
 
@@ -35,7 +35,7 @@ The description renders only the sections above. Implementation Items and Valida
 
 4. **Gather Project Standards**: Read the relevant `<project-root>/docs/` specifications in the project root (project root and module-specific). Check the active memory provider for code standards, architecture, and tech stack. Store as `<project-standards>`.
 
-5. **Clarify Requirements with User (MANDATORY)**: Run a clarification interview before shaping the spec by default. This is the only place iteration happens before shaping — loop with the user here until shared understanding. Skipping is the exception; justify it in the spec output. No assumptions, guesses, or inferred intent instead of user clarification.
+5. **Clarify Requirements with User (MANDATORY)**: Run a clarification interview before shaping the spec by default. This is the only place iteration happens before shaping — loop with the user here until shared understanding. Skipping is the exception; justify it in the spec output.
 
 Skip gate (all must be true): single atomic edit with no design decisions; `<proposed-technical-direction>` concrete and unambiguous; no earlier comments conflict; no open questions about scope, naming, placement, ordering, or behavior; repo inspected and direction matches existing patterns; user explicitly confirmed in the current conversation.
 

@@ -12,11 +12,11 @@ Read these project-root spec files before reading, writing, or editing code (use
 
 ## 1. Think Before Coding
 
-Don't assume. Don't hide confusion. Surface tradeoffs.
+State assumptions explicitly. Surface confusion and tradeoffs.
 
 Before implementing:
 * State assumptions explicitly. If uncertain, ask.
-* If multiple interpretations exist, present them — don't pick silently.
+* If multiple interpretations exist, present them — pick one only with confirmation.
 * If a simpler approach exists, say so. Push back when warranted.
 * If something is unclear, stop. Name the confusion. Ask.
 

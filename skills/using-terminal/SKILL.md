@@ -77,6 +77,8 @@ terminal-wrapper rewrite <cmd>     # Print the terminal wrapper equivalent of a 
 - Container CLI (see `<project-root>/docs/container-clis.md`): the container CLI wraps Docker/docker-compose invocations and manages its own output formatting. Wrapping it breaks script resolution and output handling. Run container CLI commands directly.
 - A project rule or the user explicitly disables the terminal wrapper for a command.
 
+## Preferences
+
 - Prefer wrapper subcommands over raw binaries.
 - Pipe through `head`/`tail`/`grep`/`wc` for a slice of large output: `terminal-wrapper logs app | tail -50`.
 - Invoke the container CLI skill before any container CLI command.

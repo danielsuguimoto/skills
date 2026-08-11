@@ -82,7 +82,3 @@ Post the private note via the issue tracker sync tool (see `<project-root>/docs/
 - Ticket load tool downloads attachments to `storage/app/mcp/{source}` — read before drafting.
 - Final output: ticket URL of the posted note. Do not paste the full draft back into chat; one line confirming the post is enough.
 - If the user asks to revise after posting: edit the note in place per provider rules; do not post a second draft note.
-
-## Red Flags
-**Never:** make code changes, commit, push, or post a public reply to the requester — READ-ONLY draft.
-**Always:** ground claims in ticket facts or gathered context · match audience tone · flag ungrounded claims `[NEEDS-REVIEW]` · post as a private note for human review.

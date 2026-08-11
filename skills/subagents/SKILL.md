@@ -96,11 +96,3 @@ Hard gate (overrides "default to inline"): if a task needs **more than 5 file re
 | Warm read | Already holds the bulk of context for the task | Small partial scan (a few lines, one symbol, one file) to confirm or double-check | Inline — offloading costs more in dispatch overhead than it saves |
 
 Other exceptions (inline allowed): exact file path and line range already known; a single code navigation symbol lookup / reference trace call (see `<project-root>/docs/code-navigation.md` in the project root) answers it; target file under ~50 lines and fully isolated.
-
-## Failure Modes
-
-- **Lazy delegation / over-spawn** — parent dispatches for work it already holds context for, or for a single bounded step. Before every spawn ask: "Can I do this inline with what I already carry?" If yes, inline.
-- **Premature completion** — parent skips the dispatch gates to "just do it inline". Check the Dispatch Rationales first. Only inline if no rationale fires.
-- **Vague return shape** — subagent dumps raw content. State the return shape in the prompt before dispatch.
-- **Read-only / write mismatch** — subagent edits when it should read, or vice versa. State read-only vs. write in every dispatch prompt.
-- **Retry loop** — parent re-dispatches a subagent that returned `BLOCKED`. Do the work inline. Don't retry.

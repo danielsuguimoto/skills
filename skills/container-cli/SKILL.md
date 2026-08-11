@@ -11,8 +11,6 @@ Read these project-root spec files before running any container CLI command (use
 
 Container CLIs wrap docker-compose (see `<project-root>/docs/container-clis.md` in the project root). They manage container lifecycle, run commands inside services, execute project scripts from a config file (e.g., `kool.yml`), and share local environments via HTTP tunnels.
 
-- see `<project-root>/docs/container-clis.md` in the project root for tool-specific documentation
-
 ## Command Summary
 
 The container CLI's commands (see `<project-root>/docs/container-clis.md` in the project root for exact commands):
@@ -45,8 +43,7 @@ Presets: Laravel, Laravel+Octane, Symfony, CodeIgniter, AdonisJs, NestJS, NextJS
 - Scripts in the container CLI config file aren't full bash. Use `kool docker <image> bash -c "..."` for pipes and conditionals.
 - `--purge` is destructive: removes all persistent data from volumes.
 - `--json` on `kool run` only works without a script argument (lists scripts, doesn't run one).
-
 - Use `--json` when parsing output (e.g., `kool run --json` to list scripts). JSON is more compact and parseable than human-readable tables.
-- Read the container CLI config file once. Don't re-read it before every `kool run`; recall the scripts already discovered.
-- Don't paste full `kool logs` output. Filter with `| tail -N` or `| grep` and report only the error or signal.
+- Read the container CLI config file once. Recall the scripts already discovered; re-read only when it changes.
+- Filter `kool logs` with `| tail -N` or `| grep` and report only the error or signal.
 

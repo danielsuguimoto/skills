@@ -5,9 +5,9 @@ description: Use when the user brings a task, ticket, or vague intent touching a
 
 I have a task or intent, not a finished plan. Interview me one question at a time until the answers form a concrete plan. Resolve dependencies between decisions one-by-one. Give a recommended answer with each question.
 
-Ask one question at a time. Wait for feedback before continuing. Don't ask multiple questions at once.
+Ask one question at a time. Wait for feedback before continuing.
 
-Don't enact the plan until I confirm the plan is concrete.
+Enact the plan only after I confirm it is concrete.
 
 ## Codebase is the ground truth
 
@@ -32,6 +32,6 @@ Start by establishing the task's scope and success state, then rotate through th
 
 Record each decision. When every branch resolves, present the concrete plan: file-by-file changes, new artifacts, migrations, tests, and open risks. Ask for confirmation before enactment.
 
-- One question at a time. Don't dump 5 questions in one message. Ask, wait, then next.
-- Recommended answer: one line. Don't justify it.
-- This skill is read-only. Don't edit, refactor, or fix anything while grilling. The output is a plan, not a change.
+- One question at a time. Ask, wait, then next.
+- Recommended answer: one line, no justification.
+- This skill is read-only. The output is a plan, not a change.

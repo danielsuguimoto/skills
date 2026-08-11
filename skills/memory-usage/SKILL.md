@@ -78,5 +78,5 @@ Many memory drivers require an active project before listing or reading. Verify 
 
 - Cite, don't paste: reference memories by `mem:<name>`, never paste the body.
 
-- Don't read memories you won't use. Infer relevance from the name; don't dump every memory into context "just in case."
+- Read only memories you will use. Infer relevance from the name; avoid dumping every memory into context "just in case."
 

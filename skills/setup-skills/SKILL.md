@@ -16,7 +16,7 @@ Generate the `<project-root>/docs` folder and all 13 spec files in the project r
 1. **Detect project root**: `git rev-parse --show-toplevel` or fall back to `cwd`. Store as `<project-root>`.
 2. **Check existing state**: List `<project-root>/docs/` if it exists. Check which of the 13 expected spec files already exist.
 3. **Decision gate**:
-   - All 12 exist → ask user whether to reconfigure or abort. If abort, stop.
+   - All 13 exist → ask user whether to reconfigure or abort. If abort, stop.
    - Some exist → ask user whether to regenerate all or only missing ones.
    - None exist → proceed directly to interview.
 4. **Discover MCP servers**: Use native MCP server discovery if available. Store as `<mcp-inventory>`. Offer detected servers as options during the interview. Skip if unsupported.

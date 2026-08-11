@@ -65,15 +65,3 @@ Present gate: failing checks fixed, changed file count, local validation results
 
 ## Output
 Summary of fixed checks, local validation, and pushed state. At the approval gate: one line per fix, not full diffs. Example: "Fixed N failing checks across M files" + local validation + "pushed to `<active-branch>`". Do not claim CI is green — it has not been verified.
-
-## Red Flags
-**Never:**
-- Commit or push before the approval gate in `review` mode
-- Disable a failing test to make CI green — fix the root cause
-- Assume current branch is the PR branch — `<pr-ref>` is authoritative
-- Skip local validation (Step 9) when the failing command can run locally
-- Re-run a `code` failure instead of fixing it
-
-**Always:**
-- Triage before fixing — not every red check is a code problem
-- Cite the failing file/test/command from the actual log

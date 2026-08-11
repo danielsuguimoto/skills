@@ -91,10 +91,3 @@ Memory tools require an active project (same activate project call). Write tools
 - Use `depth` before `include_body=true`. Request bodies only for specific method(s) needed.
 - Batch related queries — call find symbol, find references, and find implementations in parallel when independent.
 
-## Anti-Patterns
-
-- Don't `read` an entire file to find one method — use find symbol with `include_body=true`.
-- Don't `grep` for a class name or method usages — use find symbol / find referencing symbols.
-- Don't manually find-and-replace for a rename — use rename symbol.
-- Don't call initial instructions more than once per session.
-

@@ -85,7 +85,3 @@ Always sync findings back — the spec phase reads prior comments; skipping brea
 - Ticket load tool downloads attachments to `storage/app/mcp/{source}` — read before triaging.
 - Private note: technical, concise, cite file:line, no full code blocks.
 - Final output: ticket URL (+ note title for debug). Don't paste full findings back.
-
-## Red Flags
-**Never:** make code changes — READ-ONLY.
-**Always:** publish per provider visibility rules · ground in actual findings · cite file paths and line numbers.
