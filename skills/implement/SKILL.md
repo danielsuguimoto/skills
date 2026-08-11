@@ -69,7 +69,7 @@ Trigger this step ONLY when at least one holds:
 
 If none hold, skip this step — proceed to Step 7. Don't manufacture questions.
 
-Grilling rules: follow `grill-with-codebase` discipline (one question at a time with a recommended answer, ground in code, cite `file:lineRange`, explore before asking). When the user proposes a shape that contradicts an existing pattern or invariant, surface the conflict with the decisive snippet before moving on. Record each resolved decision back into the affected todo item (`file`/`symbol`/`location`/`patch` or a one-line note). Re-sync the todo list, not the ticket card.
+Grilling rules: one question at a time with a recommended answer, ground in code, cite `file:lineRange`, explore before asking. When the user proposes a shape that contradicts an existing pattern or invariant, surface the conflict with the decisive snippet before moving on. Record each resolved decision back into the affected todo item (`file`/`symbol`/`location`/`patch` or a one-line note). Re-sync the todo list, not the ticket card.
 
 Stop grilling when every open question resolves. Don't re-open settled decisions. Proceed to Step 7.
 
