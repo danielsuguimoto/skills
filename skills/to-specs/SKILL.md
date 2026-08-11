@@ -39,7 +39,7 @@ The description renders only the sections above. Implementation Items and Valida
 
 Skip gate (all must be true): single atomic edit with no design decisions; `<proposed-technical-direction>` concrete and unambiguous; no earlier comments conflict; no open questions about scope, naming, placement, ordering, or behavior; repo inspected and direction matches existing patterns; user explicitly confirmed in the current conversation.
 
-If the request is unclear or any gate is false or uncertain, invoke a clarification interview. Pass planning context, `<planning-objective>`, `<operative-constraints>`, `<proposed-technical-direction>`, `<open-questions>`, and relevant module path(s). Store resolved decisions as `<clarified-requirements>`. Continue only after shared understanding. Reflect `<clarified-requirements>` in `<spec-description>`, `<requirement-items>`, or `<validation-items>`. Do not proceed to step 6 until you capture all user inputs.
+If the request is unclear or any gate is false or uncertain, invoke a clarification interview. If an accessible grilling or interview skill exists, load it and follow its discipline. Pass planning context, `<planning-objective>`, `<operative-constraints>`, `<proposed-technical-direction>`, `<open-questions>`, and relevant module path(s). Store resolved decisions as `<clarified-requirements>`. Continue only after shared understanding. Reflect `<clarified-requirements>` in `<spec-description>`, `<requirement-items>`, or `<validation-items>`. Do not proceed to step 6 until you capture all user inputs.
 
 Skip reason (when used): `Skip reason: <all 6 conditions met because ...>`. Skipping without justification is a process violation.
 
