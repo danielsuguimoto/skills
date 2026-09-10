@@ -26,6 +26,18 @@ Spawn a subagent **only** when at least one holds. First two are strict — when
 
 **Default to inline.**
 
+## Pre-Spawn Checklist (mandatory, before every dispatch)
+
+Before spawning, fill this inline in the reply. Any missing or "N/A" answer → stay inline.
+
+1. **Rationale** — which of the three gates fires? (parallel-time-win / context-offloading / explicit-user-request). State it.
+2. **Parallelism** — if parallel-time-win: list the ≥3 independent workstreams and confirm no shared writes.
+3. **Offload size** — if context-offloading: state the estimated token/line count of the raw output and confirm the parent only needs the distilled brief.
+4. **Profile** — name the subagent profile and confirm it matches the task shape (scout ≠ strong model, synthesis ≠ fast model).
+5. **Foreground/background** — foreground by default; background only if all three background conditions hold (state them).
+
+If you cannot fill all five, do not spawn. Do the work inline.
+
 ## Do NOT spawn for
 
 - Anything answerable from context already in this session.
@@ -33,6 +45,7 @@ Spawn a subagent **only** when at least one holds. First two are strict — when
 - A bounded next step where the parent holds all inputs.
 - "Just in case" parallelism with <3 truly independent streams.
 - Avoiding a thinking step you'd rather offload.
+- **Invoking a skill workflow** (commit, push, PR-create, ship-changes, branch creation, etc.). Skills run inline in the parent unless a dispatch rationale above independently fires. The existence of the `spawn` skill is a mechanism, not a rationale — spawning a subagent *to invoke a skill* is the most common anti-pattern; invoke the skill inline instead.
 
 ## Foreground Preference
 
