@@ -23,6 +23,7 @@ Each subdirectory under `skills/` is a self-contained skill with a `SKILL.md` ma
 | draft-reply | Draft a reply to a ticket and post it as a private note for review. Read-only. |
 | memory-usage | Read or write persistent project memory before, during, or after non-trivial work. |
 | new-branch | Create and switch to a categorized branch summarizing current uncommitted or ahead-of-base work. |
+| new-workspace | Companion skill — set up an isolated workspace first, then run the requested skill or task inside it (e.g. `/new-workspace /implement card`). |
 | pr-create | Create a pull request for the current branch. |
 | pr-fix | Address PR feedback by making fixes and responding directly to review threads. |
 | pr-fix-ci | Fix failing CI checks on a PR — read logs, fix the code, push, verify green. |
@@ -35,6 +36,7 @@ Each subdirectory under `skills/` is a self-contained skill with a `SKILL.md` ma
 | triage | Triage a ticket — load context, gather evidence, post findings. Read-only. |
 | using-code-navigation | Use code navigation tools for symbol-level code work instead of grep/read. |
 | using-terminal | MANDATORY pre-flight before sending any command to the terminal/shell. |
+| using-workspaces | Set up an isolated workspace — configured mechanism, harness-provided capability, or the spec's documented fallback. |
 
 ## Tool Specifications (`<project-root>/docs`)
 
@@ -61,6 +63,8 @@ Each project using these skills must create a `<project-root>/docs` folder with 
 | `<project-root>/docs/container-clis.md` | Container CLI wrappers — lifecycle, exec, logs, scripts |
 | `<project-root>/docs/memory-providers.md` | Persistent memory — list, read, write, edit, delete memories |
 | `<project-root>/docs/terminal-wrappers.md` | Terminal token compression wrappers — command prefixing, output filtering |
+| `<project-root>/docs/terminal-tools.md` | Non-standard terminal tools replacing usual defaults |
+| `<project-root>/docs/workspace-isolation.md` | Isolated workspace mechanisms — detect, create, list, remove workspaces |
 | `<project-root>/docs/doc-lookup.md` | Documentation lookup — framework/library/SDK docs, search fallbacks |
 
 Each spec file must define: the operations available, their input/output schemas, and expected behavior rules. Agents read these files to learn how to interact with the project's specific tool implementations.

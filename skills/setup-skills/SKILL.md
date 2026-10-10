@@ -9,21 +9,21 @@ description: >
 
 # Setup Skills
 
-Generate the `<project-root>/docs` folder and all 13 spec files in the project root so every danielsuguimoto/skills skill can function. Skills reference these specs by path (e.g., `<project-root>/docs/git-hosts.md`); without them, skills cannot locate the tools they need.
+Generate the `<project-root>/docs` folder and all 14 spec files in the project root so every danielsuguimoto/skills skill can function. Skills reference these specs by path (e.g., `<project-root>/docs/git-hosts.md`); without them, skills cannot locate the tools they need.
 
 ## Pre-flight
 
 1. **Detect project root**: `git rev-parse --show-toplevel` or fall back to `cwd`. Store as `<project-root>`.
-2. **Check existing state**: List `<project-root>/docs/` if it exists. Check which of the 13 expected spec files already exist.
+2. **Check existing state**: List `<project-root>/docs/` if it exists. Check which of the 14 expected spec files already exist.
 3. **Decision gate**:
-   - All 13 exist → ask user whether to reconfigure or abort. If abort, stop.
+   - All 14 exist → ask user whether to reconfigure or abort. If abort, stop.
    - Some exist → ask user whether to regenerate all or only missing ones.
    - None exist → proceed directly to interview.
 4. **Discover MCP servers**: Use native MCP server discovery if available. Store as `<mcp-inventory>`. Offer detected servers as options during the interview. Skip if unsupported.
 
 ## Interview
 
-Ask the user about each tool category using the agent's native user-prompting mechanism. Three batches of four questions. Each question offers common options plus a "None / not used" option. Include the detected MCP server as an option when relevant. Present one batch at a time. Wait for all answers before proceeding to the next batch. Record every answer as `<tool-selections>`.
+Ask the user about each tool category using the agent's native user-prompting mechanism. Three batches. Each question offers common options plus a "None / not used" option. Include the detected MCP server as an option when relevant. Present one batch at a time. Wait for all answers before proceeding to the next batch. Record every answer as `<tool-selections>`.
 
 ### Batch 1 — Tracking, Git, Database
 
@@ -43,12 +43,13 @@ Ask the user about each tool category using the agent's native user-prompting me
 | What knowledge graph tool do you use? | Knowledge graph | Graphify, None |
 | What container CLI do you use? | Container CLI | Kool, Docker Compose, None |
 
-### Batch 3 — Memory, Terminal, Docs, MCP
+### Batch 3 — Memory, Terminal, Workspaces, Docs, MCP
 
 | Question | Header | Options |
 |----------|--------|---------|
 | What persistent memory provider do you use? | Memory | Serena memory, Mem0, None |
 | What terminal token compression wrapper do you use? | Terminal | RTK, None |
+| What isolated workspace tool do you use? | Workspaces | git worktree, None |
 | What documentation lookup tools do you use? | Doc lookup | Context7, Tavily, None |
 | Which MCP servers should be documented? | MCP servers | Auto-detect from `<mcp-inventory>`, None |
 
@@ -56,7 +57,7 @@ For the MCP servers question: if `<mcp-inventory>` is non-empty, offer "Use dete
 
 ## Generate
 
-Create `<project-root>/docs/` if missing. For each of the 13 spec files, generate the file. If the user selected "None", write a stub: `**Tool**: Not configured` with a note that skills referencing this spec will use fallbacks or skip.
+Create `<project-root>/docs/` if missing. For each of the 14 spec files, generate the file. If the user selected "None", write a stub: `**Tool**: Not configured` with a note that skills referencing this spec will use fallbacks or skip.
 
 Each spec documents the tool's interface only — no agent behavior rules:
 
@@ -76,7 +77,7 @@ Each spec documents the tool's interface only — no agent behavior rules:
 <!-- Fill in: MCP server name + tool names, or CLI commands, or API endpoints -->
 ```
 
-The 13 spec files and what they cover (see danielsuguimoto/skills README for the canonical list):
+The 14 spec files and what they cover (see danielsuguimoto/skills README for the canonical list):
 
 | File | Covers |
 |------|--------|
@@ -89,6 +90,7 @@ The 13 spec files and what they cover (see danielsuguimoto/skills README for the
 | `<project-root>/docs/browser-automation.md` | Snapshots, element interaction, downloads |
 | `<project-root>/docs/knowledge-graphs.md` | Build, query, path, explain |
 | `<project-root>/docs/container-clis.md` | Lifecycle, exec, logs, scripts |
+| `<project-root>/docs/workspace-isolation.md` | Detect, create, list, remove isolated workspaces |
 | `<project-root>/docs/memory-providers.md` | List, read, write, edit, delete memories |
 | `<project-root>/docs/terminal-wrappers.md` | Command prefixing, output filtering |
 | `<project-root>/docs/terminal-tools.md` | Non-standard terminal tools replacing usual defaults |
@@ -98,4 +100,4 @@ For `<project-root>/docs/mcp-servers.md`: populate a server inventory section fr
 
 ## Verify and Output
 
-Confirm all 13 spec files exist. Report summary table: spec file, tool, configured or not. List files with `<!-- Fill in: ... -->` markers needing manual completion. Do not commit or push.
+Confirm all 14 spec files exist. Report summary table: spec file, tool, configured or not. List files with `<!-- Fill in: ... -->` markers needing manual completion. Do not commit or push.
