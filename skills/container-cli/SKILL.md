@@ -9,41 +9,33 @@ Read these project-root spec files before running any container CLI command (use
 
 - `<project-root>/docs/container-clis.md`
 
-Container CLIs wrap docker-compose (see `<project-root>/docs/container-clis.md` in the project root). They manage container lifecycle, run commands inside services, execute project scripts from a config file (e.g., `kool.yml`), and share local environments via HTTP tunnels.
+Container CLIs wrap container runtimes. They manage container lifecycle, run commands inside services, execute project scripts, and sometimes share local environments via HTTP tunnels.
 
 ## Command Summary
 
-The container CLI's commands (see `<project-root>/docs/container-clis.md` in the project root for exact commands):
+The spec names the tool and documents its exact commands (see `<project-root>/docs/container-clis.md` in the project root). Typical operation areas:
 
-| Area | Commands |
+| Area | Operations |
 | --- | --- |
-| Lifecycle | `kool start`, `kool stop [--purge]`, `kool restart [--rebuild]`, `kool status` |
-| Exec in container | `kool exec <service> <cmd>`, `-e VAR=val`, `-d` (detached) |
-| One-off containers | `kool docker [OPTS] IMAGE [CMD]` — opts: `-e`, `-n`, `-p`, `-v` |
-| Logs | `kool logs [-f] [-t N]` (`-t 0` = all lines) |
-| Scripts (kool.yml) | `kool run`, `kool run <script>`, `kool run <script> -- <args>` |
-| Share tunnel | `kool share [--service S] [--port P] [--subdomain X]` |
-| Setup | `kool create PRESET FOLDER`, `kool preset`, `kool recipe`, `kool info`, `kool self-update` |
-| Global | `-w <path>`, `--verbose` |
-
-Presets: Laravel, Laravel+Octane, Symfony, CodeIgniter, AdonisJs, NestJS, NextJS, NuxtJS, NodeJS, ExpressJS, Hugo, WordPress, PHP, Monorepo NestJS+NextJS.
+| Lifecycle | start, stop, restart, status |
+| Exec in container | run a command inside a named service |
+| One-off containers | ephemeral run against an image or service |
+| Logs | tail/stream service logs |
+| Scripts | named commands defined in the tool's config file |
+| Share tunnel | expose a local service via HTTP tunnel (not all tools) |
 
 ## Before Running Any Container CLI Command
 
-- Read the container CLI config file (e.g., `kool.yml`) first to discover scripts, and `docker-compose.yml` to discover service names. Never guess; verify they exist (see `<project-root>/docs/container-clis.md` in the project root).
-- Use `kool run` (or `--json`) to list scripts and `kool status` to list running services when unsure.
-- If the container CLI config file or `docker-compose.yml` is missing, stop and ask — the project may not use this container CLI.
+- Confirm the tool's config file exists (the spec names it). If missing, stop and ask — the project may not use this container CLI.
+- Read the config file first to discover service names and script names. Never guess; verify they exist.
+- Use the tool's list/status operations to enumerate scripts and running services when unsure.
 
 ## Important Rules
 
-- Always run from the project root (the one with `docker-compose.yml` and the container CLI config file, e.g., `kool.yml`) or use `-w`.
-- Service names come from `docker-compose.yml`.
-- Script names come from the container CLI config file (e.g., `kool.yml`). Never invent them; confirm by reading the file or running `kool run`.
-- Script args only work with single-line scripts. Multi-line scripts reject extra args (`ErrExtraArguments`).
-- Scripts in the container CLI config file aren't full bash. Use `kool docker <image> bash -c "..."` for pipes and conditionals.
-- `--purge` is destructive: removes all persistent data from volumes.
-- `--json` on `kool run` only works without a script argument (lists scripts, doesn't run one).
-- Use `--json` when parsing output (e.g., `kool run --json` to list scripts). JSON is more compact and parseable than human-readable tables.
-- Read the container CLI config file once. Recall the scripts already discovered; re-read only when it changes.
-- Filter `kool logs` with `| tail -N` or `| grep` and report only the error or signal.
-
+- Always run from the project root (the directory holding the config file) or use the tool's working-directory flag.
+- Service names come from the config/compose file — never invent them.
+- Script names come from the tool's config file. Confirm by reading the file or the tool's list operation.
+- Purge/`-v`/destroy flags are destructive — they delete persistent volume data.
+- Prefer JSON output when parsing (a `--json` flag or machine-readable mode).
+- Filter logs with `| tail -N` or `| grep` and report only the error or signal.
+- Read the config file once. Recall the scripts already discovered; re-read only when it changes.
