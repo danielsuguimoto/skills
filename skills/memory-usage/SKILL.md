@@ -10,7 +10,9 @@ Read these project-root spec files before reading or writing persistent project 
 
 - `<project-root>/docs/memory-providers.md`
 
-Persistent memory holds facts that are expensive to re-derive and survive across sessions.
+Persistent memory holds facts that are expensive to re-derive and survive across sessions: lessons learned while working with the user, written as short notes — not session summaries.
+
+This skill owns when, where, and how to write, plus in-session maintenance. `session-to-memory` owns bulk extraction at session end — invoke it when a session produced several lessons or the user asks to remember the session.
 
 ## When to Use Memory
 
@@ -29,14 +31,35 @@ Persistent memory holds facts that are expensive to re-derive and survive across
 | Non-obvious invariant or convention | Write it under a topic-specific name. |
 | Tricky pitfall that required real investigation | Write it under a `pitfalls/` path. |
 | Architectural decision with lasting rationale | Write it under a `decisions/` path. |
+| User corrects you or states a preference | Write the correction plus the rule to follow next time. |
 | User explicitly asks to remember something | Write it with the requested name. |
+
+Write at the moment of learning — a correction, preference, or hard-won lesson is freshest in context. Defer only bulk review to `session-to-memory`.
 
 ### Do NOT write
 
-- Conversation state, task progress, or session scratchpads.
+- Conversation state, task progress, session summaries, or scratchpads — memory stores lessons, not history.
 - Facts trivially recoverable from code, tests, or docs in seconds.
 - Transient data (current branch, in-flight PR numbers, today's ticket ID).
+- Secrets, credentials, or PII.
 - Duplicates of an existing memory. Edit the existing one instead.
+
+## Entry Format
+
+- Short one-line bullets under topic headings. Carry provenance per entry: `— [source: <session or task ref>; added: YYYY-MM-DD]`.
+- `project_overview` doubles as the index: general preferences plus `mem:` pointers to topic entries. Keep it current when adding, renaming, or deleting entries.
+- Read the index first, then load topic entries on demand — never dump the whole store into context.
+
+## Maintain As You Go
+
+Memory work includes improving the store, not only appending. Whenever you read or write memory:
+
+- Consolidate overlapping entries into the better-named one.
+- Delete stale entries — transient details, reversed decisions, notes no session would use.
+- Repair broken `mem:` references and stale index pointers.
+- Prefer edit over delete-and-recreate to keep `mem:` references stable.
+- Preserve provenance and explicit user preferences when consolidating or pruning — never drop them during cleanup.
+- Boundary check: a lesson that is a repeatable procedure belongs in a skill; memory holds learned context, preferences, and decisions.
 
 ## Core Rules
 
@@ -45,7 +68,7 @@ Persistent memory holds facts that are expensive to re-derive and survive across
 - Keep memories structured with headings, bullets, and tables. Split entries past ~100 lines.
 - Use stable slash-separated topic paths (e.g., `modules/placements/lifecycle`, not `placements_info`).
 - Cross-reference with `mem:<name>`.
-- Maintain actively: edit stale memories, delete obsolete ones, prefer editing over delete-and-recreate.
+- A memory written this session applies to future sessions — act on what you learned now; don't rely on re-reading it.
 
 ## Memory Naming Conventions
 

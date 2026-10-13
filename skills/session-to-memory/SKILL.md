@@ -13,7 +13,7 @@ Read these project-root spec files before extracting or persisting session knowl
 
 - `<project-root>/docs/memory-providers.md`
 
-This skill decides what to extract. `memory-usage` decides when writing is warranted. The active memory-provider skill supplies driver mechanics (tool names, args; see `<project-root>/docs/memory-providers.md` in the project root).
+This skill owns bulk extraction at session end. `memory-usage` owns write triggers, naming, entry format, and in-session maintenance — defer to it for each. The active memory-provider skill supplies driver mechanics (tool names, args; see `<project-root>/docs/memory-providers.md` in the project root).
 
 ## When to Run
 
@@ -40,6 +40,8 @@ Pull only what clears the `memory-usage` write bar: reusable, hard-won, non-obvi
 | --- | --- | --- |
 | Invariants | Non-obvious constraints the code enforces | Comments that restate code |
 | Conventions | Naming, layout, and patterns the project mandates | Style recoverable from one file |
+| Corrections | User corrections, written as the rule to follow next time | The mistake narrative itself |
+| Preferences | How the user wants the agent to work or communicate | One-off phrasing choices |
 | Pitfalls | Traps that required real investigation | One-off typos |
 | Decisions | Architectural choices with lasting rationale | Reversible preferences |
 | Module facts | Shape, seams, ownership, lifecycle | Trivial structure |
@@ -47,15 +49,16 @@ Pull only what clears the `memory-usage` write bar: reusable, hard-won, non-obvi
 
 ## Procedure
 
-1. **Survey + Filter** — scan the session's conversation history, tool outputs, and touched file paths. Build a distilled candidate list of `(topic-path, one-line substance, source citation)` entries that clear the `memory-usage` write bar. Discard the rest.
+1. **Survey + Filter** — scan the session's conversation history, tool outputs, and touched file paths, including lessons the session never wrote down. Build a distilled candidate list of `(topic-path, one-line substance, source citation)` entries that clear the `memory-usage` write bar. Discard the rest.
 2. **Dedupe** — list existing memories (`memory-usage` workflow step 1; see `<project-root>/docs/memory-providers.md` in the project root). For each candidate, edit the existing entry if it overlaps; write a new entry only if the topic path is absent.
-3. **Structure** — name entries with stable slash-separated topic paths (`modules/<name>/<subtopic>`, `pitfalls/<topic>`, `decisions/<topic>`). Cross-reference with `mem:<name>`.
-4. **Persist** — hand each write to the active memory-provider skill's driver. The parent owns persistence.
-5. **Report** — one line per entry written or edited: `topic-path — verb (wrote|edited) — source citation`. If nothing cleared the bar, say so.
+3. **Consolidate + Prune** — leave the store better than you found it: merge overlapping entries, delete stale or transient ones, repair `mem:` references, and update the `project_overview` index. Preserve provenance and explicit user preferences during cleanup.
+4. **Structure** — name entries with stable slash-separated topic paths (`modules/<name>/<subtopic>`, `pitfalls/<topic>`, `decisions/<topic>`). Write entries as one-line bullets with `— [source: <this session>; added: YYYY-MM-DD]`. Cross-reference with `mem:<name>`.
+5. **Persist** — hand each write to the active memory-provider skill's driver. The parent owns persistence.
+6. **Report** — one line per entry written, edited, consolidated, or deleted: `topic-path — verb — source citation`. If nothing cleared the bar, say so.
 
 ## Output Contract
 
-Return a compact changelog listing entries written/edited with source citations. Do not paste memory bodies.
+Return a compact changelog listing entries written, edited, consolidated, or deleted with source citations. Do not paste memory bodies.
 
 ## Hard Rules
 
@@ -65,6 +68,7 @@ Return a compact changelog listing entries written/edited with source citations.
 - Never write secrets, credentials, or PII.
 - One topic per entry. Split entries past ~100 lines.
 - Edit over delete-and-recreate to keep `mem:` references stable.
+- Preserve `[source: …; added: …]` provenance and explicit user preferences when consolidating or pruning.
 - If the active memory provider is unavailable, report `BLOCKED` and stop.
   Don't invent a fallback store.
 
