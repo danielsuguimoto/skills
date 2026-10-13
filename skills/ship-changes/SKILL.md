@@ -8,6 +8,7 @@ description: "Use when shipping current work end-to-end — creating a branch, c
 Read these project-root spec files before shipping end-to-end (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
 
 - `<project-root>/docs/git-hosts.md`
+- `<project-root>/docs/issue-trackers.md`
 
 Run the full shipping pipeline: branch, commit, push, and open a PR.
 
@@ -57,7 +58,7 @@ Commit and push changes. Pass `<additional-context>`, `<uncommitted>`, `<ahead-c
 
 ### 5. Create Pull Request
 
-Create a pull request. Pass `<change-summary>` (reuse the pre-scan summary; scan the post-commit git state itself but reuse the semantic summary). If `<ticket-url>` is defined, pass it. If `<base>` is defined, pass it as the base branch. Output the PR URL when complete.
+Create a pull request. Pass `<change-summary>` (reuse the pre-scan summary; scan the post-commit git state itself but reuse the semantic summary). If `<ticket-url>` is defined, pass it. If `<base>` is defined, pass it as the base branch. Output the PR URL when complete. Verify the pr-create subskill posted the `<pr-url>` mention in every referenced ticket (pr-create Step 10); if skipped, run it now.
 
 **Mandatory:** ensure the pr-create subskill runs its PR-template check (Step 6) before composing the body. Forwarded `<change-summary>` triggers the skip path in pr-create Step 4 — that does NOT exempt the template check. Do not accept `<pr-template>` = `none` unless the subskill confirms it probed the repo.
 

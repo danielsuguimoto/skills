@@ -8,12 +8,13 @@ description: "Creates a pull request for the current branch."
 Read these project-root spec files before creating the PR (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
 
 - `<project-root>/docs/git-hosts.md`
+- `<project-root>/docs/issue-trackers.md`
 
 ## Operations
 
 MCP tools take business-level inputs (title, body, base, head). Never use CLI flags. Skip `--body-file` temp-file steps when using MCP.
 
-Operations: detect branch+default base, check uncommitted, fetch base+compute diff, push branch, create issue, create PR, view PR, check auth — all git host operations (see `<project-root>/docs/git-hosts.md` in the project root). CLI fallback per `<project-root>/docs/git-hosts.md` for each operation.
+Operations: detect branch+default base, check uncommitted, fetch base+compute diff, push branch, create issue, create PR, view PR, check auth — all git host operations (see `<project-root>/docs/git-hosts.md` in the project root). CLI fallback per `<project-root>/docs/git-hosts.md` for each operation. Ticket commenting uses the issue tracker update-ticket operation (see `<project-root>/docs/issue-trackers.md` in the project root).
 
 Follow `<project-root>/docs/git-hosts.md` in the project root for all git/gh operations.
 
@@ -80,4 +81,10 @@ Use `<pr-title>` and `<pr-body>` from Step 7. `<pr-body>` already reflects `<pr-
 <checklist-items>
 ```
 When `<pr-template>` ≠ `none`, use the filled template from Step 7 as the body. No attribution lines. Preserve markdown newlines (single-line strings render `\n` literally). Prefer git host create PR (see `<project-root>/docs/git-hosts.md` in the project root, title, body, base, head, assignee `@me`). CLI fallback per `<project-root>/docs/git-hosts.md`: write the body to a temp file, then run `gh pr create --title "<pr-title>" --body-file /tmp/pr-body.md --base "<resolved-base>" --head "<current-branch>" --assignee "@me"`. If the PR exists, use git host view PR (see `<project-root>/docs/git-hosts.md` in the project root, pr_ref=`<current-branch>`, fields=`url,number`) or `gh pr view <current-branch> --json url,number` per `<project-root>/docs/git-hosts.md`. Store the URL as `<pr-url>`. Verify the rendered body via git host view PR (fields=`body`) or `gh pr view <current-branch> --json body | jq -r '.body'` per `<project-root>/docs/git-hosts.md`; re-edit if needed. Output the PR URL when created or if it already exists.
+
+### 10. Link PR in Ticket(s)
+
+Gate: skip when `<ticket-url>` = `SKIPPED` AND `<pr-body>` references no issues.
+
+Collect every unique issue reference: `<ticket-url>` (when not `SKIPPED`) plus any other issue URLs or `#N`/`OWNER/REPO#N` references in `<pr-body>` (`#N` resolves against the current repo). For each, post the comment `PR: <pr-url>` via the issue tracker update-ticket operation (see `<project-root>/docs/issue-trackers.md` in the project root). CLI fallback per `<project-root>/docs/issue-trackers.md`: `gh issue comment <issue-ref> --body "PR: <pr-url>"`. Report any ticket lacking a matching tracker operation instead of skipping silently.
 
