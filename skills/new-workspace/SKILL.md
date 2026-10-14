@@ -15,7 +15,12 @@ Companion skill: isolate first, then run whatever came next. Parse the invocatio
 
 ## 1. Parse the Invocation
 
-Everything after `new-workspace` is the downstream request — a skill invocation (`/implement <card>`), a named skill with args, or a plain task description. Store it as `<downstream>`. Empty `<downstream>` → standalone mode: set up the workspace, report the path, and stop — subsequent instructions run inside the workspace.
+Everything after `new-workspace` is the downstream input. Classify it:
+
+- **Work request** — a skill invocation (`/implement <card>`), a named skill with args, or an explicit task description ("fix the logout bug"). Store it as `<downstream>`.
+- **Context only** — a bare URL, ticket link, file path, or reference with no requested action. Use it to inform workspace setup (e.g., naming); it is not a task.
+
+Empty or context-only input → standalone mode: set up the workspace, report the path, and stop — subsequent instructions run inside the workspace.
 
 ## 2. Set Up the Workspace
 
@@ -28,13 +33,13 @@ Read `<project-root>/docs/workspace-isolation.md` **before** creating the worksp
 All downstream work happens inside the workspace:
 
 - Resolve `<project-root>` to the workspace root for code, tests, and commands — except the `<project-root>/docs` specs, which may exist only in the source checkout.
-- Report the workspace path once, then run `<downstream>` as if the user had invoked it directly inside the workspace — load and follow that skill in full, including its own required reads.
+- Report the workspace path once, then run `<downstream>` as if the user had invoked it directly inside the workspace — load and follow that skill in full, including its own required reads. Run work only when the invocation named it; the workspace existing is the deliverable otherwise.
 
 ## Edge Cases
 
 | Situation | Action |
 |-----------|--------|
 | Already inside an isolated workspace | Skip creation; run `<downstream>` in place and say so |
-| No downstream request | Standalone mode: set up, report path, stop — subsequent instructions run inside the workspace |
+| No downstream request, or input is context only (bare URL/ticket/reference) | Standalone mode: set up, report path, stop — subsequent instructions run inside the workspace |
 | Workspace creation fails (sandbox/permissions) | Tell the user, ask whether to run `<downstream>` in place — don't silently proceed |
 | `<downstream>` names an unknown skill | Set up, report, then treat the text as a plain task |
