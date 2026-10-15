@@ -21,12 +21,15 @@ Modes: `review` (default; approval required before commit/push/reply) or `auto` 
 ### 2. Load PR Context
 Resolve project root via `git rev-parse --show-toplevel` → `<repo-path>` (use as `cwd` for MCP calls). Primary thread source: git host list unresolved review comments (filters `isResolved=false` server-side). CLI fallback: GraphQL `reviewThreads` with `isResolved` filter. Use REST `pulls/{n}/comments` only as `databaseId` cross-reference — never as primary (returns resolved comments too).
 
+Non-thread feedback (collect every run — threads alone miss it): git host list reviews → non-empty review bodies; git host list flat comments. Store both as `<flat-feedback>` (author, body, comment id). Skip bot-authored and own-agent comments.
+
 PR metadata: git host view PR + list reviews. CLI fallback:
 ```bash
 gh pr view <pr-number> --json number,title,body,url,headRefName,baseRefName,author,state,commits
 gh api repos/{owner}/{repo}/pulls/<pr-number>/reviews
+gh api repos/{owner}/{repo}/issues/<pr-number>/comments
 ```
-Extract `<pr-branch>`, `<base-branch>`, `<pr-number>`, `<pr-url>`. Run `git branch --show-current` → `<current-branch>`. Review attachments when relevant. No feedback → output "No changes".
+Extract `<pr-branch>`, `<base-branch>`, `<pr-number>`, `<pr-url>`. Run `git branch --show-current` → `<current-branch>`. Review attachments when relevant. No threads and no `<flat-feedback>` → output "No changes".
 
 ### 3. Align Local Branch
 If `<pr-branch>` unavailable → STOP. Check out via git host checkout PR or `gh pr checkout <pr-number>`. Store as `<active-branch>`. Checkout fails → STOP. Don't modify code until `<active-branch>` == `<pr-branch>`. Never skip checkout — `<pr-ref>` is authoritative.
@@ -35,10 +38,10 @@ If `<pr-branch>` unavailable → STOP. Check out via git host checkout PR or `gh
 Git host PR diff. CLI fallback: `gh pr diff <pr-number>` or `git diff <base-branch>...<active-branch>`. Store as `<changes>`.
 
 ### 5. Analyze Feedback
-1. Review unresolved threads; check review states (`CHANGES_REQUESTED`, `APPROVED`, etc.)
+1. Review unresolved threads; check review states (`CHANGES_REQUESTED`, `APPROVED`, etc.). Treat every `<flat-feedback>` item as a feedback item — review bodies and flat comments are reviewer feedback, not metadata.
 2. Use `<changes>` to understand the diff. Prioritize critical issues (bugs, security, broken contracts).
 3. Effectively resolved threads (skip): GitHub-unresolved but have "Fixed..."/"Done..." reply + later commit implementing the fix. Verify via commit diff. If in doubt, ask.
-4. For each actionable thread, record `<comment-id>`, `<file>`, `<lines>`, `<category>`, `<suggestion>`, `<reviewer-body>`, `<current-heading>`. Don't blindly follow suggestions. `noise`/`question` threads → `not-fixing` list with reasons (record `<reviewer-body>` only there, for Step 12).
+4. For each actionable thread, record `<comment-id>`, `<file>`, `<lines>`, `<category>`, `<suggestion>`, `<reviewer-body>`, `<current-heading>`. Flat items record the same minus `<file>`/`<lines>`. Don't blindly follow suggestions. `noise`/`question` threads → `not-fixing` list with reasons (record `<reviewer-body>` only there, for Step 12).
 
 ### 6. Plan Implementation
 Fast path: every thread is a straightforward code suggestion with no conflicts → `<implementation-plan>` = `trivial`, skip to Step 7. Skip fast path when any thread is ambiguous, has cross-thread dependencies, or needs judgment. Otherwise: build ordered fix list (`critical` → `important` → `style`, then file, then line). Move effectively resolved/`noise`/`current-heading: yes` to `not-fixing`. Mark `invalid` threads (misreading, would break behavior, contradicts PR intent) → `not-fixing` with reason (reply why in Step 12). Map dependencies → `<dependencies>`.
@@ -81,7 +84,7 @@ After replying, resolve fully addressed threads via GraphQL `resolveReviewThread
 gh api graphql -f query='{ repository(owner: "<owner>", name: "<repo>") { pullRequest(number: <pr-number>) { reviewThreads(first: 100) { nodes { id isResolved comments(first: 1) { nodes { databaseId body author { login } } } } } } } }'
 gh api graphql -f query='mutation { resolveReviewThread(input: {threadId: "<thread-node-id>"}) { thread { isResolved } } }'
 ```
-Match by first comment's `databaseId`. Only resolve fully addressed threads. Don't resolve intentionally skipped or reviewer-reopened threads. Store `<threads-resolved>`.
+Match by first comment's `databaseId`. Only resolve fully addressed threads. Don't resolve intentionally skipped or reviewer-reopened threads. Flat comments have no resolution — reply only (Step 12). Store `<threads-resolved>`.
 
 ## Output
 Summary of changes and validation results. At the approval gate: one line per fix, not full diffs. Example: "Fixed N threads across M files" + validation status.
