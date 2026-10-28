@@ -27,6 +27,8 @@ Each subdirectory under `skills/` is a self-contained skill with a `SKILL.md` ma
 | pr-create | Create a pull request for the current branch. |
 | pr-fix | Address PR feedback by making fixes and responding directly to review threads. |
 | pr-fix-ci | Fix failing CI checks on a PR — read logs, fix the code, push, verify green. |
+| pr-test | Test a PR end-to-end — exercise the change as a regular user, verify linked-ticket coverage and database effects, catch regressions. Read-only. |
+| post-merge | After a PR is merged and deployed — draft resolution replies for linked customer-success tickets via draft-reply, then clear the work's isolated workspace. |
 | session-to-memory | Extract retention-worthy knowledge from a session and persist it to the active memory provider. |
 | setup-skills | Guide users through initial configuration — creates `<project-root>/docs` folder and generates all spec files needed by other skills. |
 | ship-changes | Ship current work end-to-end — branch, commit, push, open PR. |
