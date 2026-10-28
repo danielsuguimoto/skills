@@ -54,6 +54,7 @@ Each project using these skills must create a `<project-root>/docs` folder with 
 |------|--------|
 | `<project-root>/docs/issue-trackers.md` | Issue/ticket tracking tools — load, sync, list tickets |
 | `<project-root>/docs/bug-trackers.md` | Bug tracking and error monitoring tools — query errors, stack traces |
+| `<project-root>/docs/observability-tools.md` | Monitoring and incident platforms — query alerts, incidents, uptime |
 | `<project-root>/docs/mcp-servers.md` | MCP server interaction — list tools, call tools, discovery protocol |
 | `<project-root>/docs/git-hosts.md` | Git hosting platforms — PRs, reviews, issues, branches, commits |
 | `<project-root>/docs/database-tools.md` | Database inspection — schema, queries, REPL operations |

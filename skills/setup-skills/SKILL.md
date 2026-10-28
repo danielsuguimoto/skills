@@ -9,14 +9,14 @@ description: >
 
 # Setup Skills
 
-Generate the `<project-root>/docs` folder and all 14 spec files in the project root so every danielsuguimoto/skills skill can function. Skills reference these specs by path (e.g., `<project-root>/docs/git-hosts.md`); without them, skills cannot locate the tools they need.
+Generate the `<project-root>/docs` folder and all 15 spec files in the project root so every danielsuguimoto/skills skill can function. Skills reference these specs by path (e.g., `<project-root>/docs/git-hosts.md`); without them, skills cannot locate the tools they need.
 
 ## Pre-flight
 
 1. **Detect project root**: `git rev-parse --show-toplevel` or fall back to `cwd`. Store as `<project-root>`.
-2. **Check existing state**: List `<project-root>/docs/` if it exists. Check which of the 14 expected spec files already exist.
+2. **Check existing state**: List `<project-root>/docs/` if it exists. Check which of the 15 expected spec files already exist.
 3. **Decision gate**:
-   - All 14 exist → ask user whether to reconfigure or abort. If abort, stop.
+   - All 15 exist → ask user whether to reconfigure or abort. If abort, stop.
    - Some exist → ask user whether to regenerate all or only missing ones.
    - None exist → proceed directly to interview.
 4. **Discover MCP servers**: Use native MCP server discovery if available. Store as `<mcp-inventory>`. Offer detected servers as options during the interview. Skip if unsupported.
@@ -25,12 +25,13 @@ Generate the `<project-root>/docs` folder and all 14 spec files in the project r
 
 Ask the user about each tool category using the agent's native user-prompting mechanism. Three batches. Each question offers common options plus a "None / not used" option. Include the detected MCP server as an option when relevant. Present one batch at a time. Wait for all answers before proceeding to the next batch. Record every answer as `<tool-selections>`.
 
-### Batch 1 — Tracking, Git, Database
+### Batch 1 — Tracking, Observability, Git, Database
 
 | Question | Header | Options |
 |----------|--------|---------|
 | What issue/ticket tracker do you use? | Issue tracker | Trello, Linear, Jira, None |
 | What bug/error monitoring tool do you use? | Bug tracker | Sentry, Bugsnag, Rollbar, None |
+| What monitoring/incident platform do you use? | Observability | Datadog, Flare, Grafana, None |
 | What git hosting platform do you use? | Git host | GitHub, GitLab, Bitbucket, None |
 | What database inspection tools do you use? | Database | Laravel Boost MCP, Direct SQL client, None |
 
@@ -57,7 +58,7 @@ For the MCP servers question: if `<mcp-inventory>` is non-empty, offer "Use dete
 
 ## Generate
 
-Create `<project-root>/docs/` if missing. For each of the 14 spec files, generate the file. If the user selected "None", write a stub: `**Tool**: Not configured` with a note that skills referencing this spec will use fallbacks or skip.
+Create `<project-root>/docs/` if missing. For each of the 15 spec files, generate the file. If the user selected "None", write a stub: `**Tool**: Not configured` with a note that skills referencing this spec will use fallbacks or skip.
 
 Each spec documents the tool's interface only — no agent behavior rules:
 
@@ -77,12 +78,13 @@ Each spec documents the tool's interface only — no agent behavior rules:
 <!-- Fill in: MCP server name + tool names, or CLI commands, or API endpoints -->
 ```
 
-The 14 spec files and what they cover (see danielsuguimoto/skills README for the canonical list):
+The 15 spec files and what they cover (see danielsuguimoto/skills README for the canonical list):
 
 | File | Covers |
 |------|--------|
 | `<project-root>/docs/issue-trackers.md` | Load, sync, list tickets |
 | `<project-root>/docs/bug-trackers.md` | Query errors, stack traces |
+| `<project-root>/docs/observability-tools.md` | Query alerts, incidents, uptime |
 | `<project-root>/docs/mcp-servers.md` | List tools, call tools, discovery protocol |
 | `<project-root>/docs/git-hosts.md` | PRs, reviews, issues, branches, commits |
 | `<project-root>/docs/database-tools.md` | Schema, queries, REPL operations |
@@ -100,4 +102,4 @@ For `<project-root>/docs/mcp-servers.md`: populate a server inventory section fr
 
 ## Verify and Output
 
-Confirm all 14 spec files exist. Report summary table: spec file, tool, configured or not. List files with `<!-- Fill in: ... -->` markers needing manual completion. Do not commit or push.
+Confirm all 15 spec files exist. Report summary table: spec file, tool, configured or not. List files with `<!-- Fill in: ... -->` markers needing manual completion. Do not commit or push.

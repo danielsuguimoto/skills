@@ -7,10 +7,12 @@ description: "Use when answering a ticket question, debugging an issue, or when 
 
 Read these project-root spec files before investigating the ticket (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
 
+- `<project-root>/docs/bug-trackers.md`
 - `<project-root>/docs/code-navigation.md`
 - `<project-root>/docs/database-tools.md`
 - `<project-root>/docs/doc-lookup.md`
 - `<project-root>/docs/issue-trackers.md`
+- `<project-root>/docs/observability-tools.md`
 
 Load ticket context, determine mode (ask or debug), gather evidence, draft findings, sync back. READ-ONLY — no code changes, no commits.
 
@@ -55,7 +57,7 @@ Ambiguous → ask the user for clarification before posting to the ticket. Both 
 
 **ask mode:** Gather distilled brief (entry points, callers, conventions, file:line citations) using `grep`/`find_file_by_name`/code navigation tool (see `<project-root>/docs/code-navigation.md`). Pass `<question>`, relevant entities, module path → `<repo-context>`. For API/version questions, use doc lookup (see `<project-root>/docs/doc-lookup.md`) → `<doc-context>`.
 
-**debug mode:** Run context-gathering: code navigation for symbols, database tools (see `<project-root>/docs/database-tools.md`) for data, doc lookup for framework docs. Trace code path user action → failure; identify where actual diverges from expected. Live database is ground truth — verify schema, counts, sample rows directly; don't rely on seeders/migrations/operations. Store as `<investigation-findings>`.
+**debug mode:** Run context-gathering: code navigation for symbols, database tools (see `<project-root>/docs/database-tools.md`) for data, doc lookup for framework docs. Don't stop at code and data — query the project's other tools: error monitoring for matching reports and stack traces (see `<project-root>/docs/bug-trackers.md`), monitoring and incident platforms such as Sentry or Flare (see `<project-root>/docs/observability-tools.md`) for alerts or incidents overlapping the reported timeframe, scope, and symptoms — a correlated incident may be the cause, not just a clue. Scan the rest of `<project-root>/docs/` for other configured tools the issue touches. Trace code path user action → failure; identify where actual diverges from expected. Live database is ground truth — verify schema, counts, sample rows directly; don't rely on seeders/migrations/operations. Store as `<investigation-findings>`.
 
 ### Draft Findings
 
