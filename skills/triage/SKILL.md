@@ -11,6 +11,7 @@ Read these project-root spec files before investigating the ticket (use shell `c
 - `<project-root>/docs/code-navigation.md`
 - `<project-root>/docs/database-tools.md`
 - `<project-root>/docs/doc-lookup.md`
+- `<project-root>/docs/git-hosts.md`
 - `<project-root>/docs/issue-trackers.md`
 - `<project-root>/docs/observability-tools.md`
 
@@ -57,7 +58,7 @@ Ambiguous → ask the user for clarification before posting to the ticket. Both 
 
 **ask mode:** Gather distilled brief (entry points, callers, conventions, file:line citations) using `grep`/`find_file_by_name`/code navigation tool (see `<project-root>/docs/code-navigation.md`). Pass `<question>`, relevant entities, module path → `<repo-context>`. For API/version questions, use doc lookup (see `<project-root>/docs/doc-lookup.md`) → `<doc-context>`.
 
-**debug mode:** Run context-gathering: code navigation for symbols, database tools (see `<project-root>/docs/database-tools.md`) for data, doc lookup for framework docs. Don't stop at code and data — query the project's other tools: error monitoring for matching reports and stack traces (see `<project-root>/docs/bug-trackers.md`), monitoring and incident platforms such as Sentry or Flare (see `<project-root>/docs/observability-tools.md`) for alerts or incidents overlapping the reported timeframe, scope, and symptoms — a correlated incident may be the cause, not just a clue. Scan the rest of `<project-root>/docs/` for other configured tools the issue touches. Trace code path user action → failure; identify where actual diverges from expected. Live database is ground truth — verify schema, counts, sample rows directly; don't rely on seeders/migrations/operations. Store as `<investigation-findings>`.
+**debug mode:** Run context-gathering: code navigation for symbols, database tools (see `<project-root>/docs/database-tools.md`) for data, doc lookup for framework docs. Don't stop at code and data — query the project's other tools: error monitoring for matching reports and stack traces (see `<project-root>/docs/bug-trackers.md`), monitoring and incident platforms such as Sentry or Flare (see `<project-root>/docs/observability-tools.md`) for alerts or incidents overlapping the reported timeframe, scope, and symptoms — a correlated incident may be the cause, not just a clue. Check recent history the same way: `git log`/`git blame` and recent merges, releases, or deploys touching the affected path (see `<project-root>/docs/git-hosts.md`). Look backward, not only forward — the issue may be a regression from a recent change, where reverting the culprit beats designing a new fix. Scan the rest of `<project-root>/docs/` for other configured tools the issue touches. Trace code path user action → failure; identify where actual diverges from expected. Live database is ground truth — verify schema, counts, sample rows directly; don't rely on seeders/migrations/operations. Store as `<investigation-findings>`.
 
 ### Draft Findings
 
@@ -65,11 +66,11 @@ Ambiguous → ask the user for clarification before posting to the ticket. Both 
 
 **debug mode:** Build a root-cause note via these steps:
 
-**Ranked Hypotheses:** Generate 3–5 falsifiable hypotheses. Format: "If `<X>` is the cause, then `<changing Y>` will make the bug disappear." Show ranked list before concluding. Don't block if AFK.
+**Ranked Hypotheses:** Generate 3–5 falsifiable hypotheses. Format: "If `<X>` is the cause, then `<changing Y>` will make the bug disappear." Include a regression hypothesis ("a recent commit or deploy introduced this") whenever the reporter implies the behavior worked before. Show ranked list before concluding. Don't block if AFK.
 
 **Debug Instrumentation:** Tag debug logs with unique prefix `[DEBUG-a4f2]` (cleanup = one grep). Change one variable at a time. Targeted logs at boundaries — never "log everything and grep."
 
-**Analyze Root Cause:** Synthesize all findings to determine `<root-cause>`, `<affected-components>`, `<impact-scope>` (single user / company / all), `<reproduction-conditions>`, `<potential-fixes>` (without implementing). Done when: reproduced · 3–5 falsifiable hypotheses ranked · winning hypothesis tested · root cause/components/scope/conditions stated with evidence · gaps named.
+**Analyze Root Cause:** Synthesize all findings to determine `<root-cause>`, `<introduced-by>` (the commit, merge, or deploy that introduced it, if identifiable), `<affected-components>`, `<impact-scope>` (single user / company / all), `<reproduction-conditions>`, `<potential-fixes>` (without implementing). When `<introduced-by>` is confirmed, lead the recommendations with reverting that change — prefer the revert over a new forward fix. Done when: reproduced · 3–5 falsifiable hypotheses ranked · winning hypothesis tested · root cause/components/scope/conditions stated with evidence · culprit commit identified or ruled out · gaps named.
 
 **Shape Findings:** Map `<investigation-findings>` to the published note. Carry every field forward (CONFIDENCE, ALTERNATIVE_HYPOTHESES, GAPS). Fields: `<note-title>`, `<issue-summary>`, `<root-cause-analysis>`, `<confidence>`, `<evidence>`, `<affected-areas>`, `<alternative-hypotheses>`, `<recommendations>`, `<gaps>`. Include file paths, line numbers. Store as `<ticket-findings>`.
 
