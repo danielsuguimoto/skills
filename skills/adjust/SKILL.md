@@ -28,6 +28,7 @@ The user ships separately.
 Vague adjustment requests produce wrong changes. Grill before parsing, before planning, before implementing.
 
 - **One question at a time.** Wait for the answer. Never batch.
+- **Ask through the environment's question tool.** Route each question through the interactive question tool when one exists — a bare text question ends the turn looking finished instead of awaiting input, stalling the interview. Text question only when no question tool is available.
 - **Recommended answer** with each question — one line, no justification.
 - **Ground in evidence.** If the codebase can answer it, read the code first; ask only what evidence cannot settle.
 - **Cite file:line** when a question references existing code.

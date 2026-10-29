@@ -28,7 +28,7 @@ Load ticket context, determine mode (ask or debug), gather evidence, draft findi
 
 When you hit a blocker (missing context, ambiguity, inaccessible resource, unclear requirements), escalate in order:
 
-1. **Ask the user first.** You can interact with the user directly — many blockers are resolved with a quick question. Do this before posting anything to the ticket.
+1. **Ask the user first.** You can interact with the user directly — many blockers are resolved with a quick question. Do this before posting anything to the ticket. Ask through the environment's interactive question tool when one exists — a bare text question ends the turn looking finished instead of awaiting input.
 2. **Post to the ticket only when the user cannot resolve it** — e.g., needs input from another team, customer-side information, or a decision outside the user's authority.
 
 Posting a blocker to the ticket when the user could have answered it in seconds adds a round-trip the user now has to unwind. Default to asking.

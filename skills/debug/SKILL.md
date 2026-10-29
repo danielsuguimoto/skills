@@ -24,7 +24,7 @@ Reference `<project-root>/docs` specs, never hardcode tool names: code symbols �
 
 ## Grilling Discipline
 
-Grill before exploring, hypothesizing, or fixing. One question at a time — wait for the answer, never batch. Include a one-line recommended answer. Ground in evidence: if codebase/logs/DB can answer it, investigate first. Cite file:line. Stop when target is met. AFK → proceed with recommended answers, state assumptions.
+Grill before exploring, hypothesizing, or fixing. One question at a time — wait for the answer, never batch. Include a one-line recommended answer. Ground in evidence: if codebase/logs/DB can answer it, investigate first. Cite file:line. Stop when target is met. AFK → proceed with recommended answers, state assumptions. Ask through the environment's interactive question tool when one exists — a bare text question ends the turn looking finished instead of awaiting input, stalling the interview.
 
 ## Phase 1 — Context Gathering
 

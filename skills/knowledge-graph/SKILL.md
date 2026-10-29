@@ -72,7 +72,7 @@ Omit categories with 0 files.
 Then act:
 - If `total_files` is 0: stop with "No supported files found in [path]."
 - If `skipped_sensitive` is non-empty: mention the file count skipped, not the names.
-- If `total_words` > 2,000,000 OR `total_files` > 200: show the warning and the top 5 subdirectories by file count, then ask which subfolder to run on. Wait for the answer before proceeding.
+- If `total_words` > 2,000,000 OR `total_files` > 200: show the warning and the top 5 subdirectories by file count, then ask which subfolder to run on via the interactive question tool when one exists. Wait for the answer before proceeding.
 - Otherwise: go to Step 2.5 if video files were detected, or Step 3 if not.
 
 ### Step 2.5 - Transcribe video / audio files (only if video files detected)
@@ -246,7 +246,7 @@ Run this before Step 9 (cleanup) so `graphify-out/.graphify_labels.json` is stil
 
 <!-- script: see references/scripts.md §Step 7 - Neo4j export (only if --neo4j) -->
 
-**If `--neo4j-push <uri>`** — push directly to a running Neo4j instance. Ask the user for credentials if not provided:
+**If `--neo4j-push <uri>`** — push directly to a running Neo4j instance. Ask the user for credentials if not provided, via the interactive question tool when one exists:
 
 <!-- script: see references/scripts.md §Step 7 - Neo4j push (only if --neo4j-push) -->
 
@@ -312,7 +312,7 @@ Then paste these sections from GRAPH_REPORT.md into the chat:
 
 Do NOT paste the full report — only those three sections.
 
-Then offer to explore. Pick the single most interesting suggested question — the one that crosses the most community boundaries or has the most surprising bridge node — and ask:
+Then offer to explore. Pick the single most interesting suggested question — the one that crosses the most community boundaries or has the most surprising bridge node — and ask via the interactive question tool when one exists:
 
 > "The most interesting question this graph can answer: **[question]**. Want me to trace it?"
 

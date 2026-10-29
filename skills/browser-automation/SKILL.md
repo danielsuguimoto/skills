@@ -56,7 +56,7 @@ ALWAYS use `snapshot()` as the primary way to read a webpage. Returns compact ac
 
 ## Forms, Autofill, and Login
 
-Prefer available autofill paths for autofillable forms (ID/PW, email, payment, address). If autofill doesn't complete, inspect updated page with fresh snapshot and continue manually. **ASK USER AS LAST RESORT** if you cannot do it or find the information.
+Prefer available autofill paths for autofillable forms (ID/PW, email, payment, address). If autofill doesn't complete, inspect updated page with fresh snapshot and continue manually. **ASK USER AS LAST RESORT** via the interactive question tool when one exists, if you cannot do it or find the information.
 
 ## Downloads
 

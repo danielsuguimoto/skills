@@ -18,6 +18,8 @@ Turn a request or ticket into a spec, sync to the ticket system. Read-only — n
 
 **Loop with the user, never with yourself.** All iteration lives in the grilling phase (step 5) and the user-review gate (step 10) as back-and-forth with the user. No internal review/refactor/re-review cycles, re-shape loops, self-critique passes. Shape once from gathered context, present the spec exactly once (step 10), revise only on user request. Steps 8-9 are internal build steps — no draft, brief, plan, or partial spec to the user there. The user approves the final shaped spec once, before syncing.
 
+**Ask through the environment's question tool.** Every user-facing question — the step 5 interview, step 7 approach choices, the step 10 review gate — goes through the interactive question tool when the environment provides one (a tool that presents the question and waits for the answer). A bare text question ends the turn looking finished instead of awaiting input, and the interview stalls silently. Fall back to a text question only when no question tool exists.
+
 <spec-template>
 
 ## Destination — the spec, decision, or change this effort delivers. One or two lines.

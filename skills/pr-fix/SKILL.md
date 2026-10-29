@@ -40,7 +40,7 @@ Git host PR diff. CLI fallback: `gh pr diff <pr-number>` or `git diff <base-bran
 ### 5. Analyze Feedback
 1. Review unresolved threads; check review states (`CHANGES_REQUESTED`, `APPROVED`, etc.). Treat every `<flat-feedback>` item as a feedback item — review bodies and flat comments are reviewer feedback, not metadata.
 2. Use `<changes>` to understand the diff. Prioritize critical issues (bugs, security, broken contracts).
-3. Effectively resolved threads (skip): GitHub-unresolved but have "Fixed..."/"Done..." reply + later commit implementing the fix. Verify via commit diff. If in doubt, ask.
+3. Effectively resolved threads (skip): GitHub-unresolved but have "Fixed..."/"Done..." reply + later commit implementing the fix. Verify via commit diff. If in doubt, ask via the interactive question tool when one exists.
 4. For each actionable thread, record `<comment-id>`, `<file>`, `<lines>`, `<category>`, `<suggestion>`, `<reviewer-body>`, `<current-heading>`. Flat items record the same minus `<file>`/`<lines>`. Don't blindly follow suggestions. `noise`/`question` threads → `not-fixing` list with reasons (record `<reviewer-body>` only there, for Step 12).
 
 ### 6. Plan Implementation

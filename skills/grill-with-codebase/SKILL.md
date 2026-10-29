@@ -7,6 +7,8 @@ I have a task or intent, not a finished plan. Interview me one question at a tim
 
 Ask one question at a time. Wait for feedback before continuing.
 
+Ask through the environment's interactive question tool when one exists — a tool that presents the question and waits for the answer. A bare text question ends the turn looking finished instead of awaiting input, and the interview stalls silently. Fall back to a text question only when no question tool is available.
+
 Enact the plan only after I confirm it is concrete.
 
 ## Codebase is the ground truth

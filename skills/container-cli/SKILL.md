@@ -26,7 +26,7 @@ The spec names the tool and documents its exact commands (see `<project-root>/do
 
 ## Before Running Any Container CLI Command
 
-- Confirm the tool's config file exists (the spec names it). If missing, stop and ask — the project may not use this container CLI.
+- Confirm the tool's config file exists (the spec names it). If missing, stop and ask via the interactive question tool when one exists — the project may not use this container CLI.
 - Read the config file first to discover service names and script names. Never guess; verify they exist.
 - Use the tool's list/status operations to enumerate scripts and running services when unsure.
 

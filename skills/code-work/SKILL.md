@@ -18,7 +18,7 @@ Before implementing:
 * State assumptions explicitly. If uncertain, ask.
 * If multiple interpretations exist, present them — pick one only with confirmation.
 * If a simpler approach exists, say so. Push back when warranted.
-* If something is unclear, stop. Name the confusion. Ask.
+* If something is unclear, stop. Name the confusion. Ask via the interactive question tool when one exists — a bare text question ends the turn looking finished instead of awaiting input.
 
 ## 2. Simplicity First
 

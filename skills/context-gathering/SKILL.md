@@ -25,7 +25,7 @@ Before any codebase exploration, `read`/`edit`/`write` on a code file, any code 
 
 ### 1. Clarify the target
 
-A wrong target wastes the whole gather. If the request is ambiguous, ask BEFORE exploring: specific goal, affected module/area, constraints. Use `grill-me` if complex or under-specified. If the target is still undefined after one clarifying round, **stop and say so explicitly.** List what's ambiguous. Do not explore speculatively.
+A wrong target wastes the whole gather. If the request is ambiguous, ask BEFORE exploring: specific goal, affected module/area, constraints. Ask through the environment's interactive question tool when one exists — a bare text question ends the turn looking finished instead of awaiting input. Use `grill-me` if complex or under-specified. If the target is still undefined after one clarifying round, **stop and say so explicitly.** List what's ambiguous. Do not explore speculatively.
 
 ### 2. Discover symbols (Serena-first)
 

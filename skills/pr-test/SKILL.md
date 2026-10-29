@@ -37,7 +37,7 @@ Build `<coverage-map>`: map each `<expected-outcomes>` entry to the diff files/m
 
 ### 4. Align Local Branch
 
-Record `<previous-branch>` via `git branch --show-current`. Uncommitted changes → STOP, ask user to stash/commit. Check out via git host checkout PR or CLI fallback per `<project-root>/docs/git-hosts.md`. Checkout fails → STOP. Restore `<previous-branch>` when testing ends.
+Record `<previous-branch>` via `git branch --show-current`. Uncommitted changes → STOP, ask user to stash/commit via the interactive question tool when one exists. Check out via git host checkout PR or CLI fallback per `<project-root>/docs/git-hosts.md`. Checkout fails → STOP. Restore `<previous-branch>` when testing ends.
 
 ### 5. Build the Test Plan
 

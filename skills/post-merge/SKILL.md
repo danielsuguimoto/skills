@@ -36,7 +36,7 @@ Split loaded tickets into `<customer-tickets>` and `<internal-tickets>`:
 - **Customer-success ticket** — filed in the customer-facing tracker where customers report issues (per `<project-root>/docs/issue-trackers.md`), or carries a customer requester/thread. This is where a resolution reply belongs.
 - **Internal ticket** — planning cards, spec tickets, dev tasks. No customer reply.
 
-Ambiguous classification → ask the user rather than drafting to the wrong audience.
+Ambiguous classification → ask the user via the interactive question tool when one exists rather than drafting to the wrong audience.
 
 ### 5. Draft Resolution Replies
 

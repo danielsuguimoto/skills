@@ -42,7 +42,7 @@ Read the body and every comment in order. Derive:
 - `<ticket-facts>` — stated facts, constraints, prior answers, what is already resolved.
 - `<open-gaps>` — what is still unclear or unaddressed that the reply must cover.
 
-Ambiguous about what to reply to → ask the user before drafting. Do not guess the `<reply-target>`.
+Ambiguous about what to reply to → ask the user before drafting, via the interactive question tool when one exists. Do not guess the `<reply-target>`.
 
 ### Gather Codebase Context (only if needed)
 

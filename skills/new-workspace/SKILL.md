@@ -41,5 +41,5 @@ All downstream work happens inside the workspace:
 |-----------|--------|
 | Already inside an isolated workspace | Skip creation; run `<downstream>` in place and say so |
 | No downstream request, or input is context only (bare URL/ticket/reference) | Standalone mode: set up, report path, stop — subsequent instructions run inside the workspace |
-| Workspace creation fails (sandbox/permissions) | Tell the user, ask whether to run `<downstream>` in place — don't silently proceed |
+| Workspace creation fails (sandbox/permissions) | Tell the user, ask whether to run `<downstream>` in place via the interactive question tool when one exists — don't silently proceed |
 | `<downstream>` names an unknown skill | Set up, report, then treat the text as a plain task |
