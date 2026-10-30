@@ -47,7 +47,7 @@ From `<coverage-map>`, write `<test-plan>` with three scenario classes:
 
 - **Delivery** — one user-level scenario per `<expected-outcomes>` entry: entry point, user action, expected observable result (UI state, DB effect, or both).
 - **Data-artifact** — one execution scenario per migration, seeder, operation, or script flagged in Step 2: run it against a populated database, assert the schema lands and existing rows survive (migrations), assert the expected rows or effects land (seeders, operations, scripts), and assert re-running is safe where the artifact claims idempotency.
-- **Regression** — the surface past the diff: direct callers and shared modules traced via code navigation (see `<project-root>/docs/code-navigation.md`), each a scenario asserting unchanged behavior; the project's own test suite run in full — the whole suite, not the files adjacent to the diff; and a **system pass**: the core journeys every user hits (auth, the landing view, the app's primary CRUD flow) exercised even where the diff never touches them.
+- **Regression** — the surface past the diff: direct callers and shared modules traced via code navigation (see `<project-root>/docs/code-navigation.md`), each a scenario asserting unchanged behavior; the project's own tests covering the diff — the test files that exercise the changed symbols and modules, located via code navigation and the project's test conventions, run by file/name filter; and a **system pass**: the core journeys every user hits (auth, the landing view, the app's primary CRUD flow) exercised even where the diff never touches them.
 
 Order scenarios so setup-free flows run first; note test-data prerequisites per scenario.
 
@@ -61,11 +61,11 @@ After each scenario, verify **persisted effects** via read-only database inspect
 
 Execute each data-artifact scenario per the project's tooling — run the migration, invoke the operation, run the seeder or script — against a populated testing database, then inspect the live schema and rows. A migration that applies but strands stale columns or nulls, or a seeder that runs clean but writes wrong rows, is a failure. Artifact output text is not evidence; the database is.
 
-Regressions: run the project's test/lint suite in full where it exists — a filtered subset proves nothing about the rest — plus every regression scenario and the system pass from Step 5. A suite failure the diff did not cause is still a finding: mark it pre-existing after a cheap check against `<base-branch>`.
+Regressions: run the diff-related tests and lint where they exist, plus every regression scenario and the system pass from Step 5. A test failure the diff did not cause is still a finding: mark it pre-existing after a cheap check against `<base-branch>`.
 
 Record `<results>` per scenario: `pass` / `fail` / `blocked`, with evidence (observed UI state, query results, error text).
 
-**Done when:** every scenario attempted · each `<expected-outcomes>` entry has a result · every data artifact executed or `blocked` with reason · full-suite results and system pass captured.
+**Done when:** every scenario attempted · each `<expected-outcomes>` entry has a result · every data artifact executed or `blocked` with reason · related-test results and system pass captured.
 
 ### 7. Report Findings
 
@@ -74,7 +74,7 @@ Chat only — never post to the PR. Per `<expected-outcomes>` entry: verified / 
 - **Issues** — severity, reproduction steps, evidence, `file:line` where the diff is implicated.
 - **Coverage gaps** — linked tickets/cards the PR does not fully address (from `<coverage-map>` flags and failed scenarios).
 - **Data artifacts** — what each migration, seeder, operation, and script did when executed, or why it was `blocked`.
-- **Regressions** — adjacent behavior that broke: regression scenarios, suite failures (marked pre-existing vs caused), system-pass failures.
+- **Regressions** — adjacent behavior that broke: regression scenarios, test failures (marked pre-existing vs caused), system-pass failures.
 - **Verdict** — `works` only when the delivered outcomes pass AND the system still works around them; otherwise `issues found`, one line.
 
 ## Notes
