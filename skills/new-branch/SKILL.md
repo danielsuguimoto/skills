@@ -12,11 +12,7 @@ Read via shell before creating or switching to the branch — may be gitignored.
 
 # Branch From Argument or Work
 
-Create and switch to a categorized branch.
-
-## Operations
-
-All git/gh operations follow `<project-root>/docs/git-hosts.md`.
+Create and switch to a categorized branch. All git/gh operations follow `<project-root>/docs/git-hosts.md`.
 
 | Operation | Tool | CLI fallback |
 |-----------|------|--------------|
@@ -25,68 +21,47 @@ All git/gh operations follow `<project-root>/docs/git-hosts.md`.
 
 ### 1. Interpret Arguments
 
-Classify the invocation argument (if any) into one of three modes. Store `<arg-mode>` (`description` | `ticket` | `none`) and `<branch-context>`.
+Classify the argument (if any) → `<arg-mode>` (`description`|`ticket`|`none`) + `<branch-context>`:
 
-- **Description** — free-form text that is not a URL/issue link. Use the text directly as `<branch-context>`. Set `<arg-mode>` = `description`.
-- **Ticket/issue link** — a URL or identifier referencing a ticket/issue (e.g. GitHub issue, Linear, Jira). Set `<arg-mode>` = `ticket`. Extract ticket content via the issue tools documented in `<project-root>/docs/issue-trackers.md` (title, summary, labels/type). Store the distilled content as `<branch-context>`. If extraction fails, fall back to any slug-relevant fragment in the link (issue number, path slug) and note the gap.
-- **None** — no argument provided. Set `<arg-mode>` = `none`. `<branch-context>` is empty; the branch name will be derived from git changes (Step 2).
+- **Description** — free-form text, not a URL/issue link → use directly as `<branch-context>`.
+- **Ticket/issue link** — URL or identifier referencing a ticket/issue (GitHub issue, Linear, Jira) → extract content via `<project-root>/docs/issue-trackers.md` (title, summary, labels/type) → `<branch-context>`; extraction fails → fall back to a slug-relevant fragment (issue number, path slug), note the gap.
+- **None** — no argument; `<branch-context>` empty; name derived from git changes (Step 2).
 
 ### 2. Load Changes
 
-Always run, regardless of `<arg-mode>`. Git changes are validated every invocation.
+Always runs — git changes are validated every invocation.
 
-If a pre-scan was forwarded, use `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, and `<branch-category>` directly. Skip to Step 3.
+Pre-scan forwarded → use `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<branch-category>` directly; skip to Step 3.
 
-Otherwise:
-
-Step 1: Load change state via the operations table above. Store `<current-branch>` and `<uncommitted>`.
-
-Step 2: If `<uncommitted>` is empty, check commits ahead using `origin/<current-branch>..<current-branch>`. Store `<ahead-commits>`.
-
-Step 3: Analyze scope (used for validation and as a fallback branch-name source when `<arg-mode>` = `none`):
-- Primary scope: `<uncommitted>`; fallback: `<ahead-commits>`.
-- Group into logical themes. Summarize what and why, not how.
-- Store as `<change-summary>`.
+Otherwise: (1) load change state per the table → `<current-branch>`, `<uncommitted>`; (2) `<uncommitted>` empty → check ahead via `origin/<current-branch>..<current-branch>` → `<ahead-commits>`; (3) analyze scope — primary `<uncommitted>`, fallback `<ahead-commits>` — group into logical themes, summarize what and why (not how) → `<change-summary>`.
 
 ### 3. Check Blockers
 
-- No argument and nothing to branch from: `<arg-mode>` = `none` AND `<uncommitted>` AND `<ahead-commits>` all empty → STOP: "Nothing to branch from."
-- Already on work branch: `<current-branch>` starts with `feature/`, `fix/`, `refactor/`, `docs/`, `test/`, `chore/`, `feat/`, `bugfix/`, `hotfix/`, `perf/`, `build/`, or `ci/` → STOP: "Branching skipped because the current branch already looks like a work branch."
+- Nothing to branch from: `<arg-mode>` = `none` AND `<uncommitted>` AND `<ahead-commits>` all empty → STOP: "Nothing to branch from."
+- Already on a work branch: `<current-branch>` starts with `feature/`, `fix/`, `refactor/`, `docs/`, `test/`, `chore/`, `feat/`, `bugfix/`, `hotfix/`, `perf/`, `build/`, `ci/` → STOP: "Branching skipped because the current branch already looks like a work branch."
 
-Note: When `<arg-mode>` is `description` or `ticket`, missing git changes do NOT block — the branch is created from the argument and the empty change state is recorded as validation output.
+Note: `<arg-mode>` = `description`/`ticket` → missing git changes do NOT block; the branch is created from the argument and the empty change state is recorded as validation output.
 
 ### 4. Determine Category and Slug
 
-- If `<branch-category>` was forwarded from pre-scan, reuse it; only generate the slug.
-- Otherwise choose a category:
-  - When `<arg-mode>` = `ticket`, infer from ticket type/labels first; fall back to `<change-summary>` and `<branch-context>`.
-  - When `<arg-mode>` = `description`, infer from `<branch-context>`; fall back to `<change-summary>`.
-  - When `<arg-mode>` = `none`, infer from `<change-summary>` and `<branch-context>`.
-  - Categories:
-    - `feature` — new functionality
-    - `fix` — bug fixes
-    - `refactor` — restructuring without behavior change
-    - `docs` — documentation
-    - `test` — test-only
-    - `chore` — tooling, dependencies, maintenance
-    - `perf` — performance
-    - `build` — build system
-    - `ci` — CI/CD
-- Store `<branch-category>`.
-- Generate a concise kebab-case slug (2-4 words, descriptive). Source priority:
-  - `<arg-mode>` = `description` or `ticket` → derive from `<branch-context>`; consult `<change-summary>` only to disambiguate.
-  - `<arg-mode>` = `none` → derive from `<change-summary>` and `<branch-context>`.
-- Store as `<branch-slug>`.
+`<branch-category>` forwarded from pre-scan → reuse; only generate the slug. Otherwise infer:
+
+- `ticket` → from ticket type/labels first; fall back to `<change-summary>` + `<branch-context>`.
+- `description` → from `<branch-context>`; fall back to `<change-summary>`.
+- `none` → from `<change-summary>` + `<branch-context>`.
+
+Categories: `feature` (new functionality) · `fix` (bug fixes) · `refactor` (restructure, no behavior change) · `docs` · `test` · `chore` (tooling/deps/maintenance) · `perf` · `build` · `ci`.
+
+Slug: concise kebab-case, 2-4 descriptive words → `<branch-slug>`. Source: `description`/`ticket` → `<branch-context>` (consult `<change-summary>` only to disambiguate); `none` → `<change-summary>` + `<branch-context>`.
 
 ### 5. Pull Latest from Remote
 
-Pull `origin/<current-branch>` via git host tool or CLI. If the pull fails (diverged history, no remote tracking), continue with the current state and note it in the output.
+`git pull origin <current-branch>` via git host or CLI. Pull fails (diverged, no tracking) → continue with current state, note it in output.
 
 ### 6. Create and Checkout Branch
 
-Create `<branch-category>/<branch-slug>` via git host branch create or `git checkout -b` per the Operations table. If the branch exists, retry once with a numeric suffix (`-2`). Store as `<new-branch>`.
+`<branch-category>/<branch-slug>` via git host branch create or `git checkout -b` per the table. Branch exists → retry once with numeric suffix (`-2`) → `<new-branch>`.
 
 ### 7. Publish Branch to Remote
 
-Push with upstream via git host branch create or `git push -u origin <new-branch>` per the Operations table. `git push` only pushes committed changes; uncommitted changes stay local. Store `<published>` as `true` or `false`. Output the new branch name when created.
-
+Push with upstream via git host or `git push -u origin <new-branch>`. Push only ships committed changes; uncommitted stay local → `<published>` `true`/`false`. Output the new branch name.

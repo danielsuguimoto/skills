@@ -15,79 +15,64 @@ Read via shell before any code navigation lookup — may be gitignored. Missing 
 - `<project-root>/docs/code-navigation.md`
 - `<project-root>/docs/memory-providers.md`
 
-Code navigation tools provide LSP-backed semantic operations (`<project-root>/docs/code-navigation.md`). Prefer them over `grep`/`read` for symbol-level work; they are token-efficient and accurate.
+Code navigation tools provide LSP-backed semantic operations (`<project-root>/docs/code-navigation.md`) — prefer over `grep`/`read` for symbol-level work; token-efficient and accurate.
 
 ## Project Activation (MANDATORY first step)
 
-Every code navigation tool requires an active project. No exceptions.
+Every code navigation tool requires an active project — no exceptions.
 
-1. List tools on the code navigation server once per session (not per call) (`<project-root>/docs/code-navigation.md`).
-2. Activate project with the project name (folder name, not full path) (`<project-root>/docs/code-navigation.md`). Accepts full path too if unsure.
+1. List tools on the server once per session (`<project-root>/docs/code-navigation.md`).
+2. Activate project by name (folder name; full path accepted) (`<project-root>/docs/code-navigation.md`).
 3. Read the response — it lists existing memories.
 
-Re-activate: start of every new session, after `cwd` changes to a different repo, or if any tool returns `No active project` (pick the matching name from the error). Treating `No active project` as a server outage is a missing-activation error — activate and retry.
+Re-activate: every new session, after `cwd` changes repos, or on any `No active project` error (pick the matching name from the error) — it's a missing-activation error, not an outage; activate and retry.
 
 ## When to Use Which Tool
 
 | Situation | Operation | Notes |
 |-----------|-----------|-------|
-| First look at unfamiliar file | Symbol overview | Compact symbol tree; `depth=1` for method list |
-| Know class/method name, want body | Find symbol with `include_body=true` | Use `name_path` like `Class/method` |
-| Children of class without bodies | Find symbol with `depth=1` | Cheaper than `include_body` |
-| "Where is this used?" | Find referencing symbols | Requires `name_path` + `relative_path` |
+| First look at unfamiliar file | Symbol overview | Compact tree; `depth=1` for method list |
+| Know class/method, want body | Find symbol `include_body=true` | `name_path` like `Class/method` |
+| Children of class, no bodies | Find symbol `depth=1` | Cheaper than `include_body` |
+| "Where is this used?" | Find referencing symbols | Needs `name_path` + `relative_path` |
 | "What implements this interface?" | Find implementations | Same args as references |
 | "Where is this declared?" | Find declaration | For imports/re-exports |
 | Plain-text / regex search | Search for pattern | Only when symbol name unknown |
-| Rename across codebase | Rename symbol | LSP-aware, updates all references |
+| Rename across codebase | Rename symbol | LSP-aware, updates references |
 | Delete a symbol safely | Safe delete symbol | Returns refs if unsafe |
-| Lint/type errors for a file | Get diagnostics for file | Use before/after edits |
-| Persist project knowledge | Write memory | Recall with read memory / list memories |
+| Lint/type errors for a file | Get diagnostics | Before/after edits |
+| Persist project knowledge | Write memory | Recall via read/list memories |
 
-See `<project-root>/docs/code-navigation.md` for exact tool names and arguments.
+Exact tool names and arguments: `<project-root>/docs/code-navigation.md`.
 
 ## Name Paths
 
-`find_symbol` matches against the in-file symbol tree, not the filesystem. See `<project-root>/docs/code-navigation.md` for implementation details.
+`find_symbol` matches the in-file symbol tree, not the filesystem (`<project-root>/docs/code-navigation.md` for details).
 
-- Simple: `"method"` → any symbol named `method`
-- Relative: `"Class/method"` → matches suffix
-- Absolute: `"/Class/method"` → exact match only
-- Overloads: append `[i]` (e.g. `"Class/method[0]"`)
-- Substring on last element: `substring_matching=true` makes `"Foo/get"` match `getValue`, `getData`
+- `"method"` → any symbol named `method` · `"Class/method"` → suffix match · `"/Class/method"` → exact
+- Overloads: `[i]` (`"Class/method[0]"`) · `substring_matching=true`: `"Foo/get"` matches `getValue`, `getData`
 
 ## Workflow Patterns
 
-**Understanding a new file:** Symbol overview (depth 0) → find symbol with `depth=1` on main class → find symbol with `include_body=true` on specific method(s).
-
-**Tracing a call chain:** Find symbol to locate entry point → find referencing symbols to find callers → repeat on each caller until boundary (controller, route, queue).
-
-**Verifying a refactor:** Find referencing symbols on the symbol → if empty, safe delete is safe → after edit, get diagnostics for file on touched files → for renames, use rename symbol instead of manual edits.
-
-**Cross-module wiring (e.g. Laravel bindings):** Find symbol on the contract → find implementations for concrete classes → search for pattern in `ServiceProvider.php` files for binding calls.
+- **New file:** overview (depth 0) → find symbol `depth=1` on main class → `include_body=true` on needed methods.
+- **Trace call chain:** find symbol for entry → find referencing symbols for callers → repeat until boundary (controller, route, queue).
+- **Verify refactor:** find referencing symbols (empty → safe delete) → get diagnostics on touched files after edit → use rename symbol over manual edits.
+- **Cross-module wiring (e.g. Laravel bindings):** find symbol on contract → find implementations → search for pattern in `ServiceProvider.php` for binding calls.
 
 ## Memories
 
-The code navigation tool may provide memory capabilities (`<project-root>/docs/memory-providers.md`): persistent, per-project markdown notes in memory storage.
+The navigation tool may provide memory (`<project-root>/docs/memory-providers.md`): per-project markdown notes, same activate-project requirement. Write/edit/delete/rename need `editing` mode — `Tool ... is not active` → add `editing` to `base_modes`/`default_modes` (`<project-root>/docs/code-navigation.md`).
 
-Memory tools require an active project (same activate project call). Write tools (write memory, edit memory, delete memory, rename memory) require `editing` mode — if they return `Tool ... is not active`, the code navigation config must include `editing` in `base_modes`/`default_modes` (`<project-root>/docs/code-navigation.md`).
-
-| Operation | Tool |
-| --- | --- |
-| List (optionally by topic) | List memories |
-| Read / Write new / Update / Delete / Rename | Read memory / Write memory / Edit memory / Delete memory / Rename memory |
+Operations: list memories (topic filter) · read / write / edit / delete / rename memory.
 
 ## Project Setup
 
-- Activate project — switch active project by name or path
-- Get current config — see active project, available projects, modes
-- Onboarding — call once per project to generate initial memory
-- Initial instructions — read once per session if unsure how to drive the code navigation tool
+- Activate project — switch by name or path · get current config — active project, available projects, modes · onboarding — once per project, generates initial memory · initial instructions — read once per session if unsure how to drive the tool.
 
 ## Limits and Fallbacks
 
-- LSP must support the language. For dynamic/eval'd symbols, Blade templates, or config arrays, fall back to `grep`/`read`.
-- Find referencing symbols requires `relative_path` (a file, not a directory). Get it from a prior find symbol result. For external deps, `relative_path` is an `<ext...>` identifier — never guess it.
-- Line numbers are 0-based. Adjust when reporting or matching `read` output (1-based).
-- Use `depth` before `include_body=true`. Request bodies only for specific method(s) needed.
-- Batch related queries — call find symbol, find references, and find implementations in parallel when independent.
-
+- LSP must support the language — dynamic/eval'd symbols, Blade templates, config arrays → `grep`/`read`.
+- Find referencing symbols needs `relative_path` (a file, not a directory) from a prior find symbol; external deps use `<ext...>` identifiers — never guess.
+- Line numbers are 0-based — adjust against `read` output (1-based).
+- `depth` before `include_body=true`; bodies only for needed methods.
+- Batch independent queries — find symbol, references, implementations in parallel.

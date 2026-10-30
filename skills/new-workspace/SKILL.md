@@ -11,33 +11,32 @@ Read via shell **before** creating the workspace — may be gitignored and absen
 
 # New Workspace
 
-Companion skill: isolate first, then run whatever came next. Parse the invocation, set up the workspace, hand off.
+Companion skill: isolate first, then run whatever came next. Parse the invocation, set up, hand off.
 
 ## 1. Parse the Invocation
 
-Everything after `new-workspace` is the downstream input. Classify it:
+Everything after `new-workspace` is downstream input:
 
-- **Work request** — a skill invocation (`/implement <card>`), a named skill with args, or an explicit task description ("fix the logout bug"). Store it as `<downstream>`.
-- **Context only** — a bare URL, ticket link, file path, or reference with no requested action. Use it to inform workspace setup (e.g., naming); it is not a task.
-
-Empty or context-only input → standalone mode (see Edge Cases).
+- **Work request** — skill invocation (`/implement <card>`), named skill + args, or explicit task ("fix the logout bug") → `<downstream>`.
+- **Context only** — bare URL, ticket link, file path, reference with no action → informs setup (e.g. naming); not a task.
+- Empty or context-only → standalone mode (Edge Cases).
 
 ## 2. Set Up the Workspace
 
-Invoke the `using-workspaces` skill and follow it fully. Consent is already implied — skip its consent question.
+Invoke `using-workspaces` and follow it fully — consent is implied; skip its consent question.
 
 ## 3. Hand Off
 
 All downstream work happens inside the workspace:
 
-- Resolve `<project-root>` to the workspace root for code, tests, and commands — except the `<project-root>/docs` specs, which may exist only in the source checkout.
-- Report the workspace path once, then run `<downstream>` as if the user had invoked it directly inside the workspace — load and follow that skill in full, including its own required reads. Run work only when the invocation named it; the workspace existing is the deliverable otherwise.
+- Resolve `<project-root>` to the workspace root for code, tests, commands — except `<project-root>/docs` specs, which may exist only in the source checkout.
+- Report the workspace path once, then run `<downstream>` as if invoked directly inside it — load and follow that skill in full, including its required reads. Run work only when the invocation named it; the workspace existing is the deliverable otherwise.
 
 ## Edge Cases
 
 | Situation | Action |
 |-----------|--------|
 | Already inside an isolated workspace | Skip creation; run `<downstream>` in place and say so |
-| No downstream request, or input is context only (bare URL/ticket/reference) | Standalone mode: set up, report path, stop — subsequent instructions run inside the workspace |
-| Workspace creation fails (sandbox/permissions) | Tell the user, ask whether to run `<downstream>` in place via the interactive question tool when one exists — don't silently proceed |
-| `<downstream>` names an unknown skill | Set up, report, then treat the text as a plain task |
+| No downstream request, or context-only input | Standalone mode: set up, report path, stop — subsequent instructions run inside the workspace |
+| Workspace creation fails (sandbox/permissions) | Tell the user; ask whether to run `<downstream>` in place via the interactive question tool when one exists — don't silently proceed |
+| `<downstream>` names an unknown skill | Set up, report, treat the text as a plain task |

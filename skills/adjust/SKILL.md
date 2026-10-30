@@ -5,35 +5,33 @@ description: "Apply user-requested adjustments to existing code — fixes, impro
 
 # Adjust
 
-Apply the user's adjustment request to existing code. Works on the current code as it exists — uncommitted, clean, or no VCS at all, all irrelevant.
+Apply the user's adjustment request to existing code — works on the code as it exists; uncommitted, clean, or no VCS are all irrelevant.
 
 ## Scope Boundary
 
 Act on the request only: fix bugs, apply improvements, refactor per notes. Do NOT:
-- Perform any version control operation — commit, push, branch switch, PR, merge
-- Reply to review threads (none exist)
-- Suggest follow-up work, next steps, or shipping on completion
-- Widen scope unless the request explicitly asks
+
+- Perform any version control operation — commit, push, branch switch, PR, merge.
+- Reply to review threads (none exist).
+- Suggest follow-up work, next steps, or shipping on completion.
+- Widen scope unless the request explicitly asks.
 
 The user ships separately.
 
 ## Quick Reference
 
-- Input: `$ARGUMENTS` = user adjustment request (free-form prose, possibly multi-point).
+- Input: `$ARGUMENTS` = user adjustment request (free-form prose, possibly multi-point), parsed directly.
 - Workspace: stay in the current working directory.
-- Parse `$ARGUMENTS` directly.
 
 ## Grilling Discipline
 
-Vague adjustment requests produce wrong changes. Grill before parsing, before planning, before implementing.
+Vague requests produce wrong changes — grill before parsing, planning, implementing.
 
-- **One question at a time.** Wait for the answer. Never batch.
-- **Ask through the environment's question tool.** Route each question via the environment's interactive question tool when one exists.
-- **Recommended answer** with each question — one line, no justification.
-- **Ground in evidence.** If the codebase can answer it, read the code first; ask only what evidence cannot settle.
-- **Cite file:line** when a question references existing code.
-- **Stop when the target is met.** Don't interrogate past clarity.
-- **AFK** → proceed with recommended answers, state assumptions.
+- **One question at a time** — wait for the answer, never batch, via the interactive question tool when one exists.
+- **Recommended answer** per question — one line, no justification.
+- **Ground in evidence** — code can answer it → read first; ask only what evidence can't settle.
+- **Cite file:line** when referencing existing code.
+- **Stop when the target is met.** AFK → proceed with recommended answers, state assumptions.
 
 ### 1. Capture the Request
 
@@ -43,49 +41,40 @@ Read `$ARGUMENTS` → `<adjust-raw>`. Empty or only a question → STOP, ask for
 
 One question at a time, rotate until each settles:
 
-- **Intent**: what outcome does the user want? Restate it in one line and confirm.
-- **Target**: which file(s)/symbol(s)? If the request names them, confirm against the code. If not, locate candidates and ask.
-- **Scope**: what is explicitly out of scope? What existing behavior must not change?
-- **Priority**: if multi-point, which matters most? Recommend ordering.
-- **Conflict check**: does the request contradict an existing invariant, pattern, or design decision? If yes, surface the conflict with the decisive snippet before proceeding.
+- **Intent** — desired outcome, restated in one line and confirmed.
+- **Target** — file(s)/symbol(s): confirm named ones against code; locate candidates and ask otherwise.
+- **Scope** — explicitly out of scope; existing behavior that must not change.
+- **Priority** — multi-point → which matters most; recommend ordering.
+- **Conflict check** — request contradicting an invariant/pattern/design decision → surface with the decisive snippet first.
 
-Store answers as `<request-context>`.
-
-If after one grilling round the intent is still undefined, **stop, list unknowns.** Don't act speculatively.
+Store as `<request-context>`. Intent still undefined after one round → **stop, list unknowns** — don't act speculatively.
 
 ### 3. Parse Into Actionable Items
 
-Split `<adjust-raw>` + `<request-context>` into discrete `<adjust-item>`s: `id` (`A1`, `A2`, …), `file`, `lines`, `category` (`critical` | `important` | `style`), `suggestion` (one-line imperative), `conflicts-with-design` (`yes` → defend current code, record reason, do NOT apply). Build `<not-applying>` list for `noise`, `question`, or `conflicts-with-design: yes` items.
+Split `<adjust-raw>` + `<request-context>` into `<adjust-item>`s: `id` (`A1`, `A2`, …), `file`, `lines`, `category` (`critical`|`important`|`style`), `suggestion` (one-line imperative), `conflicts-with-design` (`yes` → defend current code, record reason, do NOT apply). `noise`/`question`/`conflicts-with-design: yes` → `<not-applying>` list.
 
 ### 4. Plan Implementation
 
-Fast path: every actionable `<adjust-item>` is a specific code suggestion with no conflicts → `<implementation-plan>` = `trivial`, skip to Step 5. Otherwise: order `critical` → `important` → `style`, then file, then line. Validate each (mark `invalid` if it breaks behavior or contradicts a contract → `<not-applying>`). Map cross-item dependencies → `<dependencies>`.
+Fast path: every actionable item is a specific suggestion with no conflicts → `<implementation-plan>` = `trivial`, skip to Step 5. Otherwise order `critical` → `important` → `style`, then file, then line; validate each (`invalid` if it breaks behavior or contradicts a contract → `<not-applying>`); map cross-item dependencies → `<dependencies>`.
 
 ### 5. Grill: Confirm the Plan
 
-Before implementing, confirm with the user:
-- **The plan**: present the ordered `<adjust-item>` list and `<not-applying>` list. Ask: proceed with this plan?
-- **Scope check**: restate what will NOT change. Ask: any adjacent behavior to preserve?
-- **Rollback**: state how to undo if a change regresses. Recommend keeping changes minimal and isolated.
+Before implementing:
 
-User declines → return to Step 4, revise. Don't implement an unconfirmed plan.
+- **The plan** — present ordered `<adjust-item>` + `<not-applying>` lists; proceed?
+- **Scope check** — restate what will NOT change; any adjacent behavior to preserve?
+- **Rollback** — how to undo on regression; recommend minimal, isolated changes.
+
+Declines → Step 4, revise. Never implement an unconfirmed plan.
 
 ### 6. Implement
 
-Fix critical items first, follow existing patterns, make minimal edits, no comments unless asked. Store `<changes-count>`.
+Critical first, existing patterns, minimal edits, no comments unless asked → `<changes-count>`.
 
 ### 7. Validate Changes
 
-Run the project's lint and test commands. Store `<validation-results>` and `<validation-passing>` (`yes`/`no`).
-
-Confirm changes address the request points. Miss intent → re-implement that item.
+Run the project's lint and test commands → `<validation-results>`, `<validation-passing>` (`yes`/`no`). Confirm changes address the request points; missed intent → re-implement that item.
 
 ### 8. Present Results
 
-Present a concise summary and stop:
-- One line per applied change.
-- Validation status (`<validation-passing>` + `<validation-results>` summary).
-- `<not-applying>` list with one-line reasons.
-- `<changes-count>` if tracked.
-
-
+Concise summary, then stop: one line per applied change · validation status · `<not-applying>` with one-line reasons · `<changes-count>` if tracked.

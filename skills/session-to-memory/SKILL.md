@@ -13,15 +13,15 @@ Read via shell before extracting or persisting session knowledge — may be giti
 
 - `<project-root>/docs/memory-providers.md`
 
-This skill owns bulk extraction at session end. `memory-usage` owns write triggers, naming, entry format, and in-session maintenance — defer to it for each. The active memory-provider skill supplies driver mechanics (tool names, args; `<project-root>/docs/memory-providers.md`).
+This skill owns bulk extraction at session end. `memory-usage` owns write triggers, naming, entry format, and in-session maintenance — defer to it for each. The memory-provider spec supplies driver mechanics (tool names, args).
 
 ## When to Run
 
 - End of a non-trivial session that produced reusable knowledge.
-- User asks to save, remember, or persist the session's learnings.
-- Before `handoff` when the session uncovered invariants, pitfalls, or decisions worth keeping beyond the next agent.
+- User asks to save/remember/persist the session's learnings.
+- Before `handoff` when the session uncovered invariants, pitfalls, or decisions worth keeping.
 
-Don't run for trivial sessions (single command, one-line answer, no investigation).
+Not for trivial sessions (single command, one-line answer, no investigation).
 
 ## Inputs
 
@@ -34,14 +34,14 @@ Don't run for trivial sessions (single command, one-line answer, no investigatio
 
 ## Extraction Targets
 
-Pull only what clears the `memory-usage` write bar: reusable, hard-won, non-obvious, not trivially greppable. Discard the rest.
+Pull only what clears the `memory-usage` write bar: reusable, hard-won, non-obvious, not trivially greppable.
 
 | Category | Keep | Drop |
 | --- | --- | --- |
 | Invariants | Non-obvious constraints the code enforces | Comments that restate code |
-| Conventions | Naming, layout, and patterns the project mandates | Style recoverable from one file |
-| Corrections | User corrections, written as the rule to follow next time | The mistake narrative itself |
-| Preferences | How the user wants the agent to work or communicate | One-off phrasing choices |
+| Conventions | Naming, layout, patterns the project mandates | Style recoverable from one file |
+| Corrections | User corrections as the rule to follow next time | The mistake narrative |
+| Preferences | How the user wants the agent to work/communicate | One-off phrasing choices |
 | Pitfalls | Traps that required real investigation | One-off typos |
 | Decisions | Architectural choices with lasting rationale | Reversible preferences |
 | Module facts | Shape, seams, ownership, lifecycle | Trivial structure |
@@ -49,22 +49,20 @@ Pull only what clears the `memory-usage` write bar: reusable, hard-won, non-obvi
 
 ## Procedure
 
-1. **Survey + Filter** — scan the session's conversation history, tool outputs, and touched file paths, including lessons the session never wrote down. Build a distilled candidate list of `(topic-path, one-line substance, source citation)` entries that clear the `memory-usage` write bar. Discard the rest.
-2. **Dedupe** — list existing memories (`memory-usage` workflow step 1; `<project-root>/docs/memory-providers.md`). For each candidate, edit the existing entry if it overlaps; write a new entry only if the topic path is absent.
-3. **Consolidate + Prune** — leave the store better than you found it: merge overlapping entries, delete stale or transient ones, repair `mem:` references, and update the `project_overview` index. Preserve provenance and explicit user preferences during cleanup.
-4. **Persist** — hand each write to the active memory-provider skill's driver, which owns persistence.
-5. **Report** — one line per entry written, edited, consolidated, or deleted: `topic-path — verb — source citation`. If nothing cleared the bar, say so.
+1. **Survey + Filter** — scan conversation history, tool outputs, touched paths, including unwritten lessons → distilled candidate list of `(topic-path, one-line substance, source citation)` clearing the write bar. Discard the rest.
+2. **Dedupe** — list existing memories (`memory-usage`; `<project-root>/docs/memory-providers.md`); overlapping candidate → edit existing; new topic path → new entry.
+3. **Consolidate + Prune** — leave the store better: merge overlaps, delete stale/transient, repair `mem:` references, update `project_overview`. Preserve provenance and explicit user preferences.
+4. **Persist** — each write goes through the memory-provider spec's driver.
+5. **Report** — one line per entry written/edited/consolidated/deleted: `topic-path — verb — source citation`. Nothing cleared the bar → say so.
 
 ## Output Contract
 
-Return a compact changelog listing entries written, edited, consolidated, or deleted with source citations. Do not paste memory bodies.
+Compact changelog of entries written/edited/consolidated/deleted with citations — never paste memory bodies.
 
 ## Hard Rules
 
-- Never persist conversation state, task progress, or session scratchpads.
-- Never duplicate codebase-readable truth — cite the file:line instead.
-- Never paste full diffs, logs, or file contents into a memory. Distill.
+- Never persist conversation state, task progress, or scratchpads.
+- Never duplicate codebase-readable truth — cite file:line instead.
+- Never paste full diffs, logs, or file contents into memory — distill.
 - Never write secrets, credentials, or PII.
-- If the active memory provider is unavailable, report `BLOCKED` and stop.
-  Don't invent a fallback store.
-
+- Memory provider unavailable → report `BLOCKED` and stop; don't invent a fallback store.

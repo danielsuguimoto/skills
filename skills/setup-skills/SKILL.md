@@ -9,21 +9,18 @@ description: >
 
 # Setup Skills
 
-Generate the `<project-root>/docs` folder and every spec file in the Generate table so every danielsuguimoto/skills skill can function. Skills reference these specs by path (e.g., `<project-root>/docs/git-hosts.md`); without them, skills cannot locate the tools they need.
+Generate `<project-root>/docs/` and every spec file in the Generate table so all danielsuguimoto/skills skills can function — skills reference specs by path; without them they cannot locate tools.
 
 ## Pre-flight
 
-1. **Detect project root**: `git rev-parse --show-toplevel` or fall back to `cwd`. Store as `<project-root>`.
-2. **Check existing state**: List `<project-root>/docs/` if it exists. Check which spec files from the Generate table already exist.
-3. **Decision gate**:
-   - All exist → ask user whether to reconfigure or abort. If abort, stop.
-   - Some exist → ask user whether to regenerate all or only missing ones.
-   - None exist → proceed directly to interview.
-4. **Discover MCP servers**: Use native MCP server discovery if available. Store as `<mcp-inventory>`. Offer detected servers as options during the interview. Skip if unsupported.
+1. **Detect project root**: `git rev-parse --show-toplevel` or fall back to `cwd` → `<project-root>`.
+2. **Check existing state**: list `<project-root>/docs/`; check which Generate-table specs exist.
+3. **Decision gate**: all exist → ask reconfigure or abort (abort → stop) · some → ask regenerate all or only missing · none → interview directly.
+4. **Discover MCP servers**: native MCP discovery if available → `<mcp-inventory>`; offer detected servers as interview options. Skip if unsupported.
 
 ## Interview
 
-Ask the user about each tool category using the agent's native user-prompting mechanism. Three batches. Each question offers common options plus a "None / not used" option. Include the detected MCP server as an option when relevant. Present one batch at a time. Wait for all answers before proceeding to the next batch. Record every answer as `<tool-selections>`.
+Ask about each tool category via the native user-prompting mechanism — three batches, one at a time, waiting for all answers before the next. Each question offers common options plus "None / not used"; include detected MCP servers when relevant. Record answers as `<tool-selections>`.
 
 ### Batch 1 — Tracking, Observability, Git, Database
 
@@ -54,11 +51,11 @@ Ask the user about each tool category using the agent's native user-prompting me
 | What documentation lookup tools do you use? | Doc lookup | Context7, Tavily, None |
 | Which MCP servers should be documented? | MCP servers | Auto-detect from `<mcp-inventory>`, None |
 
-For the MCP servers question: if `<mcp-inventory>` is non-empty, offer "Use detected servers" first. If empty, offer "None" and "Other".
+MCP servers question: `<mcp-inventory>` non-empty → "Use detected servers" first; empty → "None" and "Other".
 
 ## Generate
 
-Create `<project-root>/docs/` if missing. Generate each spec file in the table below, filling every Operations row and Tool Details line derivable from the selected tool; keep `<!-- Fill in: ... -->` markers only where the interface can't be derived — Verify reports those as manual-completion gaps. If the user selected "None", write a stub: `**Tool**: Not configured` with a note that skills referencing this spec will use fallbacks or skip.
+Create `<project-root>/docs/` if missing. Generate each spec file below, filling every Operations row and Tool Details line derivable from the selected tool; keep `<!-- Fill in: ... -->` markers only where the interface can't be derived — Verify reports those as manual-completion gaps. "None" selected → stub: `**Tool**: Not configured` + note that referencing skills use fallbacks or skip.
 
 Each spec documents the tool's interface only — no agent behavior rules:
 
@@ -78,7 +75,7 @@ Each spec documents the tool's interface only — no agent behavior rules:
 <!-- Fill in: MCP server name + tool names, or CLI commands, or API endpoints -->
 ```
 
-The spec files and what they cover:
+Spec files:
 
 | File | Covers |
 |------|--------|
@@ -98,8 +95,8 @@ The spec files and what they cover:
 | `<project-root>/docs/terminal-tools.md` | Non-standard terminal tools replacing usual defaults |
 | `<project-root>/docs/doc-lookup.md` | Framework/library/SDK docs, search fallbacks |
 
-For `<project-root>/docs/mcp-servers.md`: populate a server inventory section from `<mcp-inventory>` if the user chose to document detected servers.
+`mcp-servers.md`: populate a server inventory section from `<mcp-inventory>` if the user chose to document detected servers.
 
 ## Verify and Output
 
-Confirm every spec file in the Generate table exists. Report summary table: spec file, tool, configured or not. List files still carrying `<!-- Fill in: ... -->` markers as manual-completion gaps. Do not commit or push.
+Confirm every spec file exists. Report a summary table: spec file, tool, configured or not. List files still carrying `<!-- Fill in: ... -->` markers as manual-completion gaps. Do not commit or push.

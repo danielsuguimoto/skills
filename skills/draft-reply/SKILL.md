@@ -12,72 +12,68 @@ Read via shell before drafting the reply — may be gitignored. Missing → note
 - `<project-root>/docs/doc-lookup.md`
 - `<project-root>/docs/issue-trackers.md`
 
-Load and analyze the ticket, gather codebase context if needed, draft a reply, post it as a private note for human review. READ-ONLY — no code changes, no commits, no public reply. The note is a draft the human sends; do not post the reply to the customer. The draft promises no work (changes, commits, PRs) unless `<additional-context>` explicitly asks.
+Load and analyze the ticket, gather context if needed, draft a reply, post it as a private note for human review. READ-ONLY — no code changes, commits, or public reply. The note is a draft the human sends; never post to the customer. The draft promises no work (changes, commits, PRs) unless `<additional-context>` explicitly asks.
 
 ## Additional Context
 
-- Treat ticket systems generically. Use `<additional-context>` to shape tone, audience, depth. Default audience is the customer/requester unless `<additional-context>` says otherwise.
-- One draft per ticket.
+Treat ticket systems generically. `<additional-context>` shapes tone, audience, depth — default audience is the customer/requester. One draft per ticket.
 
 ## The Discipline
 
-**The draft is for a human, not the customer.** It must be ready to send verbatim, but the human decides whether and how to deliver it.
+**The draft is for a human, not the customer.** Ready to send verbatim; the human decides whether and how to deliver it.
 
 ### Interpret Arguments
 
-- Ticket reference/URL → `<ticket-url>`; extra focus/constraints/audience hints → `<additional-context>`; no arguments → derive from conversation.
-- Do NOT expect a `<question>` in arguments — it lives on the ticket. Only if the caller explicitly adds one → store as `<question>` to scope the reply.
+Ticket reference/URL → `<ticket-url>`; extra focus/constraints/audience hints → `<additional-context>`; none → derive from conversation. No `<question>` expected in arguments — it lives on the ticket; an explicit one → store as `<question>` to scope the reply.
 
 ### Load Ticket Context
 
-- `<ticket-url>` defined: load via issue tracker tool (see `<project-root>/docs/issue-trackers.md`) with `source: <ticket-url>`, `comments: true` → `<ticket-context>`. Read all attachments with `relativePath` via `read` (images → describe; documents → extract key info → `<attachment-insights>`). Note gaps if inaccessible.
-- Otherwise: treat relevant request/conversation as `<ticket-context>`.
+- `<ticket-url>` → issue tracker tool (`<project-root>/docs/issue-trackers.md`) with `source: <ticket-url>`, `comments: true` → `<ticket-context>`. Read all attachments with `relativePath` via `read` (images → describe; documents → extract key info → `<attachment-insights>`); note inaccessible gaps.
+- Otherwise → the request/conversation is `<ticket-context>`.
 - Missing or unloadable → STOP.
 
 ### Analyze the Ticket
 
-Read the body and every comment in order. Derive:
-- `<reply-target>` — the most recent unanswered question or the open request the reply must address. If multiple open threads, pick the most recent; note the others.
-- `<requester-profile>` — author, role, technical level (infer from tone/content; do not assume).
-- `<ticket-facts>` — stated facts, constraints, prior answers, what is already resolved.
-- `<open-gaps>` — what is still unclear or unaddressed that the reply must cover.
+Read body + every comment in order. Derive:
 
-Ambiguous about what to reply to → ask the user before drafting, via the interactive question tool when one exists. Do not guess the `<reply-target>`.
+- `<reply-target>` — most recent unanswered question or open request the reply must address; multiple open threads → pick most recent, note others.
+- `<requester-profile>` — author, role, technical level (infer from tone/content; don't assume).
+- `<ticket-facts>` — stated facts, constraints, prior answers, what's resolved.
+- `<open-gaps>` — still unclear/unaddressed items the reply must cover.
+
+Ambiguous about the reply target → ask the user before drafting (interactive question tool when one exists). Never guess `<reply-target>`.
 
 ### Gather Codebase Context (only if needed)
 
-Skip when the reply is purely procedural, status, or non-technical and the ticket already contains the answer. Otherwise:
+Skip when the reply is purely procedural/status/non-technical and the ticket already answers it. Otherwise:
 
-- **Code**: Gather a distilled brief (entry points, callers, conventions, `file:line` citations) using `grep`/`find_file_by_name`/code navigation tool (see `<project-root>/docs/code-navigation.md`). Pass `<reply-target>`, relevant entities, module path → `<repo-context>`.
-- **Data**: When the reply depends on persisted state (counts, status, sample rows), inspect the live database via database tools (see `<project-root>/docs/database-tools.md`). Database is ground truth; do not rely on seeders/migrations/operations.
-- **Docs**: For framework/library/API/version questions, use doc lookup (see `<project-root>/docs/doc-lookup.md`) → `<doc-context>`.
+- **Code**: distilled brief (entry points, callers, conventions, `file:line` citations) via `grep`/`find_file_by_name`/code navigation (`<project-root>/docs/code-navigation.md`); pass `<reply-target>`, relevant entities, module path → `<repo-context>`.
+- **Data**: reply depends on persisted state (counts, status, samples) → live DB via database tools (`<project-root>/docs/database-tools.md`) — ground truth over seeders/migrations/operations.
+- **Docs**: framework/library/API/version questions → doc lookup (`<project-root>/docs/doc-lookup.md`) → `<doc-context>`.
 
-Store as `<supporting-context>`. Cite `file:line` and query results inline where they back a claim. Do not dump raw output into the draft.
+Store as `<supporting-context>`; cite `file:line`/query results inline where they back a claim — never dump raw output into the draft.
 
 ### Draft the Reply
 
-Write `<draft-reply>` as the message the human can send to the requester with minimal edits. Rules:
+Write `<draft-reply>` as a message the human can send with minimal edits:
 
-- **Audience match.** Match tone and depth to `<requester-profile>` and `<additional-context>`. Customer-facing by default: greet, plain language, no internal jargon, no `file:line` citations in the reply body. Internal reviewer: technical, cite `file:line`, no client-facing tone.
-- **Answer the `<reply-target>` directly first.** Lead with the answer; background and caveats after.
-- **Ground every claim.** Technical assertions must trace to `<ticket-facts>`, `<supporting-context>`, or `<doc-context>`. If a claim cannot be grounded, mark it `[NEEDS-REVIEW: <what's uncertain>]` rather than stating it as fact.
-- **No invented details.** No fabricated dates, IDs, statuses, or quotes. If missing, say so and flag for the human.
-- **Length to match the question.** One-line answer for a one-line question; structured response for a multi-part question. No padding.
+- **Audience match.** Tone/depth per `<requester-profile>` + `<additional-context>`. Customer-facing default: greet, plain language, no jargon, no `file:line` in the body. Internal reviewer: technical, cite `file:line`, no client tone.
+- **Answer first.** Lead with the answer to `<reply-target>`; background/caveats after.
+- **Ground every claim.** Technical assertions trace to `<ticket-facts>`, `<supporting-context>`, or `<doc-context>`; ungrounded → `[NEEDS-REVIEW: <what's uncertain>]`, not stated as fact.
+- **No invented details.** No fabricated dates, IDs, statuses, quotes — say what's missing, flag for the human.
+- **Length matches the question.** One-line answer for a one-line question; structured for multi-part. No padding.
 
 ### Shape the Note
 
-Post a single private note containing:
-- `## Draft reply` heading.
-- `<draft-reply>` body (ready to send).
-- `## Supporting context` section (internal only): `<reply-target>`, `<requester-profile>`, key `<supporting-context>` citations (`file:line`, query results, doc references), and `[NEEDS-REVIEW]` items with the reason. This section stays in the private note; the human strips it before sending.
+One private note containing: `## Draft reply` heading · `<draft-reply>` body (ready to send) · `## Supporting context` (internal only: `<reply-target>`, `<requester-profile>`, key citations, `[NEEDS-REVIEW]` items with reasons — the human strips it before sending).
 
 ### Sync
 
-Post the private note via the issue tracker sync tool (see `<project-root>/docs/issue-trackers.md`): `refUrl` = `<ticket-url>`, `comments` = array with the single markdown string from "Shape the Note". Use private/internal visibility per provider rules; if the provider has no private note concept, post as a regular comment and prefix the body with `DRAFT — not for sending yet:`. Follow provider-specific sync rules. If sync fails, report the error and provide the draft in chat.
+Post via the issue tracker sync tool (`<project-root>/docs/issue-trackers.md`): `refUrl` = `<ticket-url>`, `comments` = array with the single markdown string. Private/internal visibility per provider rules; no private-note concept → regular comment prefixed `DRAFT — not for sending yet:`. Follow provider sync rules. Fails → report error, provide draft in chat.
 
 ## Notes
 
-- **Traceability (required):** If `<question>` or `<additional-context>` originated from skill arguments rather than the ticket body, the ticket reader cannot see what prompted the draft — so the note MUST restate the provided `<question>` / `<additional-context>` (as a "Question:" / "Context:" preamble in the supporting section) before the draft. Skip only when already visible in the ticket body or comments.
-- Attachments download location: see `<project-root>/docs/issue-trackers.md`.
-- Final output: ticket URL of the posted note. Do not paste the full draft back into chat; one line confirming the post is enough.
-- If the user asks to revise after posting: edit the note in place per provider rules; do not post a second draft note.
+- **Traceability (required):** `<question>`/`<additional-context>` from skill arguments is invisible to the ticket reader — the note MUST restate it ("Question:"/"Context:" preamble in supporting section) before the draft. Skip only when already visible in the ticket.
+- Attachments download location: `<project-root>/docs/issue-trackers.md`.
+- Final output: ticket URL of the posted note — one line confirming, never the full draft pasted back.
+- Revision after posting → edit the note in place per provider rules; never post a second draft.

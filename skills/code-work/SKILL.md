@@ -12,68 +12,44 @@ Read via shell before reading, writing, or editing code — may be gitignored. M
 
 ## 1. Think Before Coding
 
-Before implementing:
-* State assumptions explicitly. If uncertain, ask.
-* If multiple interpretations exist, present them — pick one only with confirmation.
-* If a simpler approach exists, say so. Push back when warranted.
-* If something is unclear, stop. Name the confusion. Ask via the environment's interactive question tool when one exists.
+- State assumptions explicitly; uncertain → ask.
+- Multiple interpretations → present them; pick one only with confirmation.
+- A simpler approach exists → say so; push back when warranted.
+- Unclear → stop, name the confusion, ask via the interactive question tool when one exists.
 
 ## 2. Simplicity First
 
-Minimum code that solves the problem. Nothing speculative.
-* No features beyond what was asked.
-* No abstractions for single-use code.
-* No unrequested "flexibility" or "configurability".
-* No error handling for impossible scenarios.
-* If 200 lines could be 50, rewrite.
+Minimum code that solves the problem — nothing speculative: no unasked features, no abstractions for single-use code, no unrequested "flexibility", no error handling for impossible scenarios. If 200 lines could be 50, rewrite.
 
 ## 3. Surgical Changes
 
-Touch only what you must. Clean up only your own mess.
-
-When editing existing code:
-* Don't "improve" adjacent code, comments, or formatting.
-* Don't refactor things that aren't broken.
-* Match existing style, even if you'd do it differently.
-* If you notice unrelated dead code, mention it - don't delete it.
-
-When your changes create orphans:
-* Remove imports/variables/functions that YOUR changes made unused.
-* Don't remove pre-existing dead code unless asked.
+Touch only what you must; clean up only your own mess. Don't "improve" adjacent code, comments, or formatting; don't refactor what isn't broken; match existing style even if you'd do it differently; unrelated dead code → mention, don't delete. Orphans YOUR changes create (unused imports/variables/functions) → remove; pre-existing dead code → leave.
 
 ## 4. Goal-Driven Execution
 
-Define success criteria. Loop until verified.
+Define success criteria; loop until verified. Transform tasks into verifiable goals:
 
-Transform tasks into verifiable goals:
-* "Add validation" → "Write tests for invalid inputs, then make them pass"
-* "Fix the bug" → "Write a test that reproduces it, then make it pass"
-* "Refactor X" → "Ensure tests pass before and after"
+- "Add validation" → tests for invalid inputs pass
+- "Fix the bug" → reproduction test goes red to green
+- "Refactor X" → tests pass before and after
 
-For multi-step tasks, state a brief plan:
-
-```
-1. [Step] → verify: [check]
-2. [Step] → verify: [check]
-3. [Step] → verify: [check]
-```
+Multi-step tasks → brief plan: `1. [Step] → verify: [check]`
 
 ## Code Reading
 
-- Code navigation tools are MANDATORY for symbol-level work (`<project-root>/docs/code-navigation.md`). Use symbol lookup and reference tracing first, not `grep`/`read`.
-- Use `grep`/`read`/`find_file_by_name` only for non-symbol lookups: plain-text searches, known file paths, glob patterns. Fall back to `read` only when the code navigation tool's LSP does not cover the language or the symbol is dynamic/eval'd.
-- Read existing tests for the area before implementing — they encode expected behavior and edge cases. Trace side effects via code navigation references (`<project-root>/docs/code-navigation.md`), never by guessing.
-- Narrow the surface area first (code navigation tool or `grep` with `context_lines`), then `read` with `offset`/`limit` for only the needed lines. Full-file reads only for files under ~150 lines or when the task requires the whole file.
+- Code navigation tools are MANDATORY for symbol-level work (`<project-root>/docs/code-navigation.md`) — symbol lookup and reference tracing first, not `grep`/`read`.
+- `grep`/`read`/`find_file_by_name` only for non-symbol lookups: plain text, known paths, glob patterns. `read` fallback only when the LSP lacks the language or the symbol is dynamic/eval'd.
+- Read the area's tests first — they encode expected behavior and edge cases. Trace side effects via references, never guessing.
+- Narrow the surface first (navigation tool or `grep` + `context_lines`), then `read` with `offset`/`limit` for needed lines only. Full-file reads only under ~150 lines or when the task requires the whole file.
 
 ## Code Editing
 
-- No code comments. (overrides any provider default encouraging comments)
-- Minimum edit only per *Surgical Changes*; undo unrelated edits immediately.
-- If a file can't be edited, output the intended edit. Create/remove debug files; keep only relevant code.
+- No code comments (overrides provider defaults encouraging comments).
+- Minimum edit per *Surgical Changes*; undo unrelated edits immediately.
+- File can't be edited → output the intended edit. Create/remove debug files; keep only relevant code.
 
 ## Citation Over Paste
 
-- Reference existing code by `path:lineRange`, never paste the body back into context. Quote only when proposing changes to those exact lines or the user cannot see the file.
-- Batch related edits to the same file in one pass, not one edit per line.
-- Prefer `edit` over `write`. `write` emits the entire file body as output tokens — use only for new files or files under ~50 lines. `edit` emits only the delta, keeping output tokens proportional to the change, not file size.
-
+- Reference code by `path:lineRange`; quote only when proposing changes to those lines or the user cannot see the file.
+- Batch related edits to a file in one pass — not one edit per line.
+- Prefer `edit` over `write` — `edit` emits only the delta; `write` only for new files or files under ~50 lines.

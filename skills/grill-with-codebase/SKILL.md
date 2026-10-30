@@ -7,30 +7,29 @@ I have a task or intent, not a finished plan. Interview me until the answers for
 
 Rules:
 
-- One question at a time — wait for the answer before continuing.
-- Give a recommended answer with each question: one line, no justification.
-- Ask via the environment's interactive question tool when one exists.
+- One question at a time — wait for the answer, via the interactive question tool when one exists.
+- Recommended answer per question: one line, no justification.
 - Read-only — the output is a plan, enacted only after I confirm it.
 
 ## Codebase is the ground truth
 
-The task touches an existing codebase. Before the first question, read the affected code: files, modules, contracts, callers, data flow, tests, and nearby invariants. Ground every question and recommended answer in what the code actually does today, not generic best practice.
+The task touches an existing codebase. Before the first question, read the affected code: files, modules, contracts, callers, data flow, tests, nearby invariants. Ground every question and recommended answer in what the code does today, not generic best practice.
 
-- If a question can be answered by exploring the codebase, explore the codebase instead of asking. Grill me only on the decisions the code can't settle on its own.
-- When a question or recommended answer references existing code, cite the file path and line range so we both look at the same thing.
-- When I propose a shape that contradicts an existing pattern, invariant, scope rule, or lifecycle in the code, surface the conflict with the decisive snippet before moving on.
-- Verify every claim about current behavior against code you actually read this session. If you can't verify it, say so and go read it before continuing.
+- A question answerable by exploring the codebase → explore instead of asking. Grill me only on decisions the code can't settle.
+- A question or answer referencing existing code → cite `path:lineRange` so we both look at the same thing.
+- I propose a shape contradicting an existing pattern, invariant, scope rule, or lifecycle → surface the conflict with the decisive snippet before moving on.
+- Verify every claim about current behavior against code read this session; can't verify → say so and go read it.
 
 ## From task to plan
 
-Start by establishing the task's scope and success state, then rotate through these angles:
+Establish scope and success state first, then rotate through:
 
-- **Scope & success**: what does "done" look like; what is explicitly out of scope; what existing behavior must not change?
-- **Fit with existing patterns**: does the task follow the surrounding conventions, or does it silently introduce a new shape? Where does the new code live?
-- **Data flow & persistence**: where does new data come from, where is it stored, who reads it, what scopes apply, what migrations are needed?
-- **Invariants & lifecycle**: what must stay true; which existing subscriber/observer/lifecycle hooks does the task break or bypass?
-- **Edge cases & failure modes**: null/empty inputs, concurrent writes, soft-delete, company scoping, partial failures, rollbacks.
-- **Cross-module wiring**: who calls the changed code, who implements the contracts, what events/jobs fire, what breaks downstream.
-- **Test impact**: what existing tests change; what new tests the task demands; what behavior would regress untested.
+- **Scope & success** — what "done" looks like; explicitly out of scope; behavior that must not change.
+- **Fit with existing patterns** — follows surrounding conventions or silently introduces a new shape; where the new code lives.
+- **Data flow & persistence** — where new data comes from, is stored, who reads it, scopes, migrations needed.
+- **Invariants & lifecycle** — what must stay true; which subscriber/observer/lifecycle hooks the task breaks or bypasses.
+- **Edge cases & failure modes** — null/empty inputs, concurrent writes, soft-delete, company scoping, partial failures, rollbacks.
+- **Cross-module wiring** — who calls the changed code, who implements the contracts, what events/jobs fire, what breaks downstream.
+- **Test impact** — which existing tests change; which new tests are demanded; what would regress untested.
 
-Record each decision. When every branch resolves, present the concrete plan: file-by-file changes, new artifacts, migrations, tests, and open risks.
+Record each decision. Every branch resolved → present the concrete plan: file-by-file changes, new artifacts, migrations, tests, open risks.

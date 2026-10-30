@@ -9,7 +9,7 @@ Read via shell before fixing PR review feedback — may be gitignored. Missing �
 
 - `<project-root>/docs/git-hosts.md`
 
-Address PR feedback by making fixes and replying directly to review threads. Tools: git host tool (see `<project-root>/docs/git-hosts.md`).
+Address PR feedback by making fixes and replying directly to review threads. Tools: git host tool (`<project-root>/docs/git-hosts.md`).
 
 Modes: `review` (default) or `auto` — `auto` skips the Step 9 approval gate.
 
@@ -17,7 +17,7 @@ Modes: `review` (default) or `auto` — `auto` skips the Step 9 approval gate.
 `auto` → `<execution-mode>` = `auto`; PR number/URL → `<pr-ref>`; extra guidance → `<additional-context>`; otherwise → `review`.
 
 ### 2. Load PR Context
-Resolve project root via `git rev-parse --show-toplevel` → `<repo-path>` (use as `cwd` for MCP calls). Primary thread source: git host list unresolved review comments (filters `isResolved=false` server-side). CLI fallback: GraphQL `reviewThreads` with `isResolved` filter. Use REST `pulls/{n}/comments` only as `databaseId` cross-reference — never as primary (returns resolved comments too).
+`git rev-parse --show-toplevel` → `<repo-path>` (use as `cwd` for MCP calls). Primary thread source: git host list unresolved review comments (`isResolved=false` server-side). CLI fallback: GraphQL `reviewThreads` with `isResolved`. REST `pulls/{n}/comments` only as `databaseId` cross-reference — never primary (returns resolved too).
 
 Non-thread feedback (collect every run — threads alone miss it): git host list reviews → non-empty review bodies; git host list flat comments. Store both as `<flat-feedback>` (author, body, comment id). Skip bot-authored and own-agent comments.
 
@@ -27,62 +27,62 @@ gh pr view <pr-number> --json number,title,body,url,headRefName,baseRefName,auth
 gh api repos/{owner}/{repo}/pulls/<pr-number>/reviews
 gh api repos/{owner}/{repo}/issues/<pr-number>/comments
 ```
-Extract `<pr-branch>`, `<base-branch>`, `<pr-number>`, `<pr-url>`. Run `git branch --show-current` → `<current-branch>`. Review attachments when relevant. No threads and no `<flat-feedback>` → output "No changes".
+Extract `<pr-branch>`, `<base-branch>`, `<pr-number>`, `<pr-url>`. `git branch --show-current` → `<current-branch>`. Review attachments when relevant. No threads and no `<flat-feedback>` → output "No changes".
 
 ### 3. Align Local Branch
-If `<pr-branch>` unavailable → STOP. Check out via git host checkout PR or `gh pr checkout <pr-number>`. Store as `<active-branch>`. Checkout fails → STOP. Don't modify code until `<active-branch>` == `<pr-branch>`. Never skip checkout — `<pr-ref>` is authoritative.
+`<pr-branch>` unavailable → STOP. Check out via git host checkout PR or `gh pr checkout <pr-number>` → `<active-branch>`. Fails → STOP. No code edits until `<active-branch>` == `<pr-branch>`. Never skip checkout — `<pr-ref>` is authoritative.
 
 ### 4. Load Changes
-Git host PR diff. CLI fallback: `gh pr diff <pr-number>` or `git diff <base-branch>...<active-branch>`. Store as `<changes>`.
+Git host PR diff. Fallback: `gh pr diff <pr-number>` or `git diff <base-branch>...<active-branch>` → `<changes>`.
 
 ### 5. Analyze Feedback
-1. Review unresolved threads; check review states (`CHANGES_REQUESTED`, `APPROVED`, etc.). Treat every `<flat-feedback>` item as a feedback item — review bodies and flat comments are reviewer feedback, not metadata.
+1. Review unresolved threads; check review states (`CHANGES_REQUESTED`, `APPROVED`, etc.). Every `<flat-feedback>` item is reviewer feedback, not metadata.
 2. Use `<changes>` to understand the diff. Prioritize critical issues (bugs, security, broken contracts).
-3. Effectively resolved threads (skip): GitHub-unresolved but have "Fixed..."/"Done..." reply + later commit implementing the fix. Verify via commit diff. If in doubt, ask via the environment's interactive question tool when one exists.
-4. For each actionable thread, record `<comment-id>`, `<file>`, `<lines>`, `<category>`, `<suggestion>`, `<reviewer-body>`, `<current-heading>`. Flat items record the same minus `<file>`/`<lines>`. Evaluate each suggestion against `<changes>` before applying. `noise`/`question` threads → `not-fixing` list with reasons (record `<reviewer-body>` only there, for Step 12).
+3. Effectively resolved threads (skip): GitHub-unresolved but have "Fixed..."/"Done..." reply + later commit implementing it — verify via commit diff. In doubt → ask via the interactive question tool when one exists.
+4. Per actionable thread record `<comment-id>`, `<file>`, `<lines>`, `<category>`, `<suggestion>`, `<reviewer-body>`, `<current-heading>`; flat items the same minus `<file>`/`<lines>`. Evaluate each suggestion against `<changes>` before applying. `noise`/`question` threads → `not-fixing` list with reasons (`<reviewer-body>` recorded there only, for Step 12).
 
 ### 6. Plan Implementation
-Fast path: every thread is a straightforward code suggestion with no conflicts → `<implementation-plan>` = `trivial`, skip to Step 7. Skip fast path when any thread is ambiguous, has cross-thread dependencies, or needs judgment. Otherwise: build ordered fix list (`critical` → `important` → `style`, then file, then line). Move effectively resolved/`noise`/`current-heading: yes` to `not-fixing`. Mark `invalid` threads (misreading, would break behavior, contradicts PR intent) → `not-fixing` with reason (reply why in Step 12). Map dependencies → `<dependencies>`.
+Fast path: every thread is a straightforward suggestion with no conflicts → `<implementation-plan>` = `trivial`, skip to Step 7. Skip fast path when any thread is ambiguous, has cross-thread dependencies, or needs judgment. Otherwise: ordered fix list (`critical` → `important` → `style`, then file, then line); effectively-resolved/`noise`/`current-heading: yes` → `not-fixing`; `invalid` threads (misreading, would break behavior, contradicts PR intent) → `not-fixing` with reason (reply why in Step 12). Dependencies → `<dependencies>`.
 
 ### 7. Implement Fixes
-Fix critical first, follow existing patterns, use `<active-branch>`, focused minimal changes. Store `<changes-count>`.
+Critical first, existing patterns, `<active-branch>`, focused minimal changes → `<changes-count>`.
 
 ### 8. Validate Changes
-Run lint + tests on changed files. Confirm fixes address feedback. Store `<validation-results>`, `<validation-passing>` (`yes`/`no`).
+Lint + tests on changed files. Confirm fixes address feedback → `<validation-results>`, `<validation-passing>` (`yes`/`no`).
 
 ### 9. Approval Gate (mandatory in `review` mode)
-Never skip. Only `decision: approved` counts — don't infer from silence. If `<validation-passing>` = `no` → STOP. If `auto` mode → skip to Step 11.
+Never skip — only `decision: approved` counts; don't infer from silence. `<validation-passing>` = `no` → STOP. `auto` mode → skip to Step 11.
 
-Present gate: fix summary, changed file count, validation results. Ask (header `Approval`): "Ready to commit, push, and respond?" Options: `Go Ahead` (→ `approved`) or `Needs Review` (requires feedback → `concerns`).
+Present gate: fix summary, changed file count, validation results. Ask (header `Approval`): "Ready to commit, push, and respond?" Options: `Go Ahead` → `approved`; `Needs Review` → `concerns` (requires feedback).
 
-- `approved` → Step 11. `concerns` → store `<review-feedback>` → Step 10 → re-implement (7) → re-validate (8) → re-present gate. Repeat until `approved`.
-- When `<changes-count>` = 0, surface no-change state so user picks `Go Ahead` (no-op) or `Needs Review` with feedback.
+- `approved` → Step 11. `concerns` → `<review-feedback>` → Step 10 → re-implement (7) → re-validate (8) → re-present. Repeat until `approved`.
+- `<changes-count>` = 0 → surface no-change state so user picks `Go Ahead` (no-op) or `Needs Review` with feedback.
 
 ### 10. Apply Review Feedback
-Use `<review-feedback>` to refine without widening scope. Return to Step 7. No commit/push/reply during this step.
+Use `<review-feedback>` to refine without widening scope → Step 7. No commit/push/reply during this step.
 
-### 11. Commit and Push (after `approved` or in `auto` mode)
-`git add -A`, `git commit -m "<message>"`, `git push origin <active-branch>`. Never use generic messages like "address review feedback". Store `<pushed>` (`yes`/`no`).
+### 11. Commit and Push (after `approved` or `auto`)
+`git add -A`, `git commit -m "<message>"`, `git push origin <active-branch>`. Never generic messages like "address review feedback" → `<pushed>` (`yes`/`no`).
 
 ### 12. Respond to Threads
-Reply only after commit + push succeed. ALWAYS reply via thread reply API — NEVER standalone PR comments (`gh pr review -c`, `gh pr comment`). Sole exception: flat PR comments (no line anchor) → single flat PR comment quote-replying (blockquote original + author handle, then response).
+Reply only after commit + push succeed. ALWAYS reply via thread reply API — NEVER standalone PR comments (`gh pr review -c`, `gh pr comment`). Sole exception: flat PR comments (no line anchor) → one flat comment quote-replying (blockquote original + author handle, then response).
 
-Use git host reply to review thread (`pr_number`, `comment_id`, `body`). CLI fallback:
+Git host reply to review thread (`pr_number`, `comment_id`, `body`). Fallback:
 ```bash
 gh api repos/{owner}/{repo}/pulls/<pr-number>/comments/<comment-id>/replies \
   --method POST --input - <<'EOF'
 {"body":"<reply-text>"}
 EOF
 ```
-Use `--input -` (not `-f body=`) for special characters. Keep replies short and factual.
+`--input -` (not `-f body=`) for special characters. Replies short and factual.
 
 ### 13. Resolve Addressed Threads
-After replying, resolve fully addressed threads via GraphQL `resolveReviewThread` (GraphQL-only; no REST endpoint). Use git host list review threads to map comment IDs to thread node IDs (`PRRT_...`), then git host resolve review thread. CLI fallback:
+After replying, resolve fully addressed threads via GraphQL `resolveReviewThread` (GraphQL-only; no REST). Map comment IDs to thread node IDs (`PRRT_...`) via git host list review threads, then git host resolve review thread. Fallback:
 ```bash
 gh api graphql -f query='{ repository(owner: "<owner>", name: "<repo>") { pullRequest(number: <pr-number>) { reviewThreads(first: 100) { nodes { id isResolved comments(first: 1) { nodes { databaseId body author { login } } } } } } } }'
 gh api graphql -f query='mutation { resolveReviewThread(input: {threadId: "<thread-node-id>"}) { thread { isResolved } } }'
 ```
-Match by first comment's `databaseId`. Only resolve fully addressed threads. Don't resolve intentionally skipped or reviewer-reopened threads. Flat comments have no resolution — reply only (Step 12). Store `<threads-resolved>`.
+Match by first comment's `databaseId`. Only fully addressed threads — never intentionally skipped or reviewer-reopened ones. Flat comments have no resolution — reply only (Step 12) → `<threads-resolved>`.
 
 ## Output
-Summary of changes and validation results. At the approval gate: one line per fix, not full diffs. Example: "Fixed N threads across M files" + validation status.
+Summary of changes and validation results. At the approval gate: one line per fix, not full diffs — e.g. "Fixed N threads across M files" + validation status.
