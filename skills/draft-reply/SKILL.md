@@ -5,19 +5,19 @@ description: "Draft a reply to a ticket and post it as a private note for review
 
 ## Required `<project-root>/docs` reads
 
-Read these project-root spec files before drafting the reply (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+Read via shell before drafting the reply — may be gitignored. Missing → note the gap; never invent contents.
 
 - `<project-root>/docs/code-navigation.md`
 - `<project-root>/docs/database-tools.md`
 - `<project-root>/docs/doc-lookup.md`
 - `<project-root>/docs/issue-trackers.md`
 
-Load and analyze the ticket, gather codebase context if needed, draft a reply, post it as a private note for human review. READ-ONLY — no code changes, no commits, no public reply. The note is a draft the human sends; do not post the reply to the customer.
+Load and analyze the ticket, gather codebase context if needed, draft a reply, post it as a private note for human review. READ-ONLY — no code changes, no commits, no public reply. The note is a draft the human sends; do not post the reply to the customer. The draft promises no work (changes, commits, PRs) unless `<additional-context>` explicitly asks.
 
 ## Additional Context
 
 - Treat ticket systems generically. Use `<additional-context>` to shape tone, audience, depth. Default audience is the customer/requester unless `<additional-context>` says otherwise.
-- One draft per ticket. Do not post multiple competing drafts; revise the existing note if the user asks for changes.
+- One draft per ticket.
 
 ## The Discipline
 
@@ -63,7 +63,6 @@ Write `<draft-reply>` as the message the human can send to the requester with mi
 - **Ground every claim.** Technical assertions must trace to `<ticket-facts>`, `<supporting-context>`, or `<doc-context>`. If a claim cannot be grounded, mark it `[NEEDS-REVIEW: <what's uncertain>]` rather than stating it as fact.
 - **No invented details.** No fabricated dates, IDs, statuses, or quotes. If missing, say so and flag for the human.
 - **Length to match the question.** One-line answer for a one-line question; structured response for a multi-part question. No padding.
-- **No code changes, no commits, no PRs promised** unless the user explicitly asked for them in `<additional-context>`.
 
 ### Shape the Note
 
@@ -79,6 +78,6 @@ Post the private note via the issue tracker sync tool (see `<project-root>/docs/
 ## Notes
 
 - **Traceability (required):** If `<question>` or `<additional-context>` originated from skill arguments rather than the ticket body, the ticket reader cannot see what prompted the draft — so the note MUST restate the provided `<question>` / `<additional-context>` (as a "Question:" / "Context:" preamble in the supporting section) before the draft. Skip only when already visible in the ticket body or comments.
-- Ticket load tool downloads attachments to `storage/app/mcp/{source}` — read before drafting.
+- Attachments download location: see `<project-root>/docs/issue-trackers.md`.
 - Final output: ticket URL of the posted note. Do not paste the full draft back into chat; one line confirming the post is enough.
 - If the user asks to revise after posting: edit the note in place per provider rules; do not post a second draft note.

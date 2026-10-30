@@ -5,20 +5,18 @@ description: Use for browser automation (QA, element interaction, screencapture/
 
 ## Required `<project-root>/docs` reads
 
-Read these project-root spec files before any browser automation action (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+Read via shell before any browser automation action — may be gitignored. Missing → note the gap; never invent contents.
 
 - `<project-root>/docs/browser-automation.md`
 
 # Browser Automation
-
-Browser automation tools (see `<project-root>/docs/browser-automation.md`) provide agent-driven and REPL-driven browser control for complex tasks across user's logged-in accounts, cookies, websites, SaaS tools, and browsing histories.
 
 ## Choose the Surface
 
 - **Browser exec** (autonomous agent): spawns an agent session like a subagent. Use for whole-task delegation across logged-in accounts, apps, memory, browsing history. Poll and give user status updates every ~60 seconds — the user can't see the CLI background.
 - **Browser REPL**: persistent ES2023+ JS REPL with Playwright-compatible, low-level browser interaction. Use for direct evidence, downloads, screenshots, exact verification, deterministic UI steps, sensitive logged-in work. Top-level `const`/`let` bindings persist — use fresh variable names.
 
-Both open ephemeral sessions. Use interactive PTY for CLI commands — session deleted when CLI exits. Inspect current CLI usage before running (see `<project-root>/docs/browser-automation.md`).
+Both open ephemeral sessions. Use interactive PTY for CLI commands — session deleted when CLI exits. Inspect current CLI usage before running (`<project-root>/docs/browser-automation.md`).
 
 ## REPL Globals
 
@@ -56,7 +54,7 @@ ALWAYS use `snapshot()` as the primary way to read a webpage. Returns compact ac
 
 ## Forms, Autofill, and Login
 
-Prefer available autofill paths for autofillable forms (ID/PW, email, payment, address). If autofill doesn't complete, inspect updated page with fresh snapshot and continue manually. **ASK USER AS LAST RESORT** via the interactive question tool when one exists, if you cannot do it or find the information.
+Prefer available autofill paths for autofillable forms (ID/PW, email, payment, address). If autofill doesn't complete, inspect updated page with fresh snapshot and continue manually. **ASK USER AS LAST RESORT** via the environment's interactive question tool when one exists, if you cannot do it or find the information.
 
 ## Downloads
 

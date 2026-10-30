@@ -5,19 +5,17 @@ description: "Commit and push current changes."
 
 ## Required `<project-root>/docs` reads
 
-Read these project-root spec files before committing or pushing (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+Read via shell before committing or pushing — may be gitignored. Missing → note the gap; never invent contents.
 
 - `<project-root>/docs/git-hosts.md`
 
 ## Operations
 
-| Operation | Tool (see `<project-root>/docs/git-hosts.md`) | CLI fallback per `<project-root>/docs/git-hosts.md` |
+| Operation | Tool (`<project-root>/docs/git-hosts.md`) | CLI fallback |
 |-----------|--------------|--------------|
-| Load change state | git host change scan (see `<project-root>/docs/git-hosts.md` in the project root) | `git branch --show-current` + `git status --short` + `git diff --stat` + `git diff --cached --stat` + `git log @{u}..HEAD --oneline` |
-| Stage and commit | git host commit (see `<project-root>/docs/git-hosts.md` in the project root, with `message`) | `git add -A` + `git commit -m "<message>"` |
-| Push to remote | git host push (see `<project-root>/docs/git-hosts.md` in the project root) | `git push` (retry `git push -u origin <branch>` if no upstream) |
-
-Follow `<project-root>/docs/git-hosts.md` in the project root for all git/gh operations.
+| Load change state | git host change scan | `git branch --show-current` + `git status --short` + `git diff --stat` + `git diff --cached --stat` + `git log @{u}..HEAD --oneline` |
+| Stage and commit | git host commit (with `message`) | `git add -A` + `git commit -m "<message>"` |
+| Push to remote | git host push | `git push` (retry `git push -u origin <branch>` if no upstream) |
 
 ### 1. Interpret Arguments
 
@@ -30,14 +28,12 @@ If a pre-scan was already forwarded, skip to step 3.
 
 Otherwise:
 
-Step 1: Load uncommitted changes via the operations table above. Store `<uncommitted>`.
-
-Step 2: If `<uncommitted>` is empty, load commits ahead using `@{u}..HEAD`. Store `<ahead-commits>`.
-
-Step 3: Analyze scope:
-- Primary `<uncommitted>`; fallback `<ahead-commits>` (push only, no commit).
-- Group into logical themes. Summarize "what" and "why", not "how".
-- Store as `<change-summary>`, including `<additional-context>`.
+- **2a.** Load uncommitted changes via the operations table above. Store `<uncommitted>`.
+- **2b.** If `<uncommitted>` is empty, load commits ahead using `@{u}..HEAD`. Store `<ahead-commits>`.
+- **2c.** Analyze scope:
+  - Primary `<uncommitted>`; fallback `<ahead-commits>` (push only, no commit).
+  - Group into logical themes. Summarize "what" and "why", not "how".
+  - Store as `<change-summary>`, including `<additional-context>`.
 
 ### 3. Check Blockers
 
@@ -47,7 +43,7 @@ Step 3: Analyze scope:
 
 Skip if `<uncommitted>` is empty (push ahead commits only).
 
-Commit message follows git conventions.
+Commit message: `<prefix>: <message>` — lowercase, under 50 chars, no body. Prefixes: feat, fix, chore, docs, refactor, test, style.
 
 Commit:
 1. Stage (`-A` or specific files).

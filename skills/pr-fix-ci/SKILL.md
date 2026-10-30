@@ -5,15 +5,13 @@ description: "Activate when a pull request has failing CI checks that require co
 
 ## Required `<project-root>/docs` reads
 
-Read these project-root spec files before fixing failing CI checks (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+Read via shell before fixing failing CI checks — may be gitignored. Missing → note the gap; never invent contents.
 
 - `<project-root>/docs/git-hosts.md`
 
-Fix failing CI checks on a PR by reading check logs, fixing the code, pushing, and verifying green. Tools: git host tool (see `<project-root>/docs/git-hosts.md` in the project root). Check source: `gh pr checks` / `gh pr view --json statusCheckRollup` (CLI fallback per `<project-root>/docs/git-hosts.md`).
+Fix failing CI checks on a PR by reading check logs, fixing the code, pushing, and verifying green. Tools: git host tool (`<project-root>/docs/git-hosts.md`). Check source: `gh pr checks` / `gh pr view --json statusCheckRollup` (CLI fallback per `<project-root>/docs/git-hosts.md`).
 
-Modes: `review` (default; approval required before commit/push) or `auto` (commits/pushes without approval). `<pr-ref>` is the only authoritative source for the target PR — never assume current branch determines it.
-
-> CRITICAL: in `review` mode, get explicit approval (Step 10) before committing or pushing. Never infer approval.
+Modes: `review` (default) or `auto` — `auto` skips the Step 10 approval gate. `<pr-ref>` is the only authoritative source for the target PR — never assume current branch determines it.
 
 ### 1. Interpret Arguments
 `auto` → `<execution-mode>` = `auto`; PR number/URL → `<pr-ref>`; extra guidance → `<additional-context>`; otherwise → `review`.

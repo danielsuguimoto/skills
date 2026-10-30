@@ -5,15 +5,13 @@ description: "Activate when a pull request has review feedback that requires cod
 
 ## Required `<project-root>/docs` reads
 
-Read these project-root spec files before fixing PR review feedback (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+Read via shell before fixing PR review feedback — may be gitignored. Missing → note the gap; never invent contents.
 
 - `<project-root>/docs/git-hosts.md`
 
-Address PR feedback by making fixes and replying directly to review threads — NEVER standalone PR comments. Tools: git host tool (see `<project-root>/docs/git-hosts.md`).
+Address PR feedback by making fixes and replying directly to review threads. Tools: git host tool (see `<project-root>/docs/git-hosts.md`).
 
-Modes: `review` (default; approval required before commit/push/reply) or `auto` (commits/pushes without approval). `<pr-ref>` is the only authoritative source for the target PR — never assume current branch determines it.
-
-> CRITICAL: in `review` mode, get explicit approval (Step 9) before committing, pushing, or replying. Never infer approval.
+Modes: `review` (default) or `auto` — `auto` skips the Step 9 approval gate.
 
 ### 1. Interpret Arguments
 `auto` → `<execution-mode>` = `auto`; PR number/URL → `<pr-ref>`; extra guidance → `<additional-context>`; otherwise → `review`.
@@ -40,8 +38,8 @@ Git host PR diff. CLI fallback: `gh pr diff <pr-number>` or `git diff <base-bran
 ### 5. Analyze Feedback
 1. Review unresolved threads; check review states (`CHANGES_REQUESTED`, `APPROVED`, etc.). Treat every `<flat-feedback>` item as a feedback item — review bodies and flat comments are reviewer feedback, not metadata.
 2. Use `<changes>` to understand the diff. Prioritize critical issues (bugs, security, broken contracts).
-3. Effectively resolved threads (skip): GitHub-unresolved but have "Fixed..."/"Done..." reply + later commit implementing the fix. Verify via commit diff. If in doubt, ask via the interactive question tool when one exists.
-4. For each actionable thread, record `<comment-id>`, `<file>`, `<lines>`, `<category>`, `<suggestion>`, `<reviewer-body>`, `<current-heading>`. Flat items record the same minus `<file>`/`<lines>`. Don't blindly follow suggestions. `noise`/`question` threads → `not-fixing` list with reasons (record `<reviewer-body>` only there, for Step 12).
+3. Effectively resolved threads (skip): GitHub-unresolved but have "Fixed..."/"Done..." reply + later commit implementing the fix. Verify via commit diff. If in doubt, ask via the environment's interactive question tool when one exists.
+4. For each actionable thread, record `<comment-id>`, `<file>`, `<lines>`, `<category>`, `<suggestion>`, `<reviewer-body>`, `<current-heading>`. Flat items record the same minus `<file>`/`<lines>`. Evaluate each suggestion against `<changes>` before applying. `noise`/`question` threads → `not-fixing` list with reasons (record `<reviewer-body>` only there, for Step 12).
 
 ### 6. Plan Implementation
 Fast path: every thread is a straightforward code suggestion with no conflicts → `<implementation-plan>` = `trivial`, skip to Step 7. Skip fast path when any thread is ambiguous, has cross-thread dependencies, or needs judgment. Otherwise: build ordered fix list (`critical` → `important` → `style`, then file, then line). Move effectively resolved/`noise`/`current-heading: yes` to `not-fixing`. Mark `invalid` threads (misreading, would break behavior, contradicts PR intent) → `not-fixing` with reason (reply why in Step 12). Map dependencies → `<dependencies>`.

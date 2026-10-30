@@ -9,14 +9,14 @@ description: >
 
 # Setup Skills
 
-Generate the `<project-root>/docs` folder and all 15 spec files in the project root so every danielsuguimoto/skills skill can function. Skills reference these specs by path (e.g., `<project-root>/docs/git-hosts.md`); without them, skills cannot locate the tools they need.
+Generate the `<project-root>/docs` folder and every spec file in the Generate table so every danielsuguimoto/skills skill can function. Skills reference these specs by path (e.g., `<project-root>/docs/git-hosts.md`); without them, skills cannot locate the tools they need.
 
 ## Pre-flight
 
 1. **Detect project root**: `git rev-parse --show-toplevel` or fall back to `cwd`. Store as `<project-root>`.
-2. **Check existing state**: List `<project-root>/docs/` if it exists. Check which of the 15 expected spec files already exist.
+2. **Check existing state**: List `<project-root>/docs/` if it exists. Check which spec files from the Generate table already exist.
 3. **Decision gate**:
-   - All 15 exist → ask user whether to reconfigure or abort. If abort, stop.
+   - All exist → ask user whether to reconfigure or abort. If abort, stop.
    - Some exist → ask user whether to regenerate all or only missing ones.
    - None exist → proceed directly to interview.
 4. **Discover MCP servers**: Use native MCP server discovery if available. Store as `<mcp-inventory>`. Offer detected servers as options during the interview. Skip if unsupported.
@@ -58,7 +58,7 @@ For the MCP servers question: if `<mcp-inventory>` is non-empty, offer "Use dete
 
 ## Generate
 
-Create `<project-root>/docs/` if missing. For each of the 15 spec files, generate the file. If the user selected "None", write a stub: `**Tool**: Not configured` with a note that skills referencing this spec will use fallbacks or skip.
+Create `<project-root>/docs/` if missing. Generate each spec file in the table below, filling every Operations row and Tool Details line derivable from the selected tool; keep `<!-- Fill in: ... -->` markers only where the interface can't be derived — Verify reports those as manual-completion gaps. If the user selected "None", write a stub: `**Tool**: Not configured` with a note that skills referencing this spec will use fallbacks or skip.
 
 Each spec documents the tool's interface only — no agent behavior rules:
 
@@ -78,7 +78,7 @@ Each spec documents the tool's interface only — no agent behavior rules:
 <!-- Fill in: MCP server name + tool names, or CLI commands, or API endpoints -->
 ```
 
-The 15 spec files and what they cover (see danielsuguimoto/skills README for the canonical list):
+The spec files and what they cover:
 
 | File | Covers |
 |------|--------|
@@ -102,4 +102,4 @@ For `<project-root>/docs/mcp-servers.md`: populate a server inventory section fr
 
 ## Verify and Output
 
-Confirm all 15 spec files exist. Report summary table: spec file, tool, configured or not. List files with `<!-- Fill in: ... -->` markers needing manual completion. Do not commit or push.
+Confirm every spec file in the Generate table exists. Report summary table: spec file, tool, configured or not. List files still carrying `<!-- Fill in: ... -->` markers as manual-completion gaps. Do not commit or push.

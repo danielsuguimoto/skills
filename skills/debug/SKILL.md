@@ -5,7 +5,7 @@ description: "Use when a user reports a bug, error, or unexpected behavior and w
 
 ## Required `<project-root>/docs` reads
 
-Read these project-root spec files before investigating the bug (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+Read via shell before investigating the bug — may be gitignored. Missing → note the gap; never invent contents.
 
 - `<project-root>/docs/bug-trackers.md`
 - `<project-root>/docs/code-navigation.md`
@@ -20,11 +20,11 @@ Troubleshoot and fix a user-reported issue. Three phases, each with a grilling s
 
 ## Tool Agnosticism
 
-Reference `<project-root>/docs` specs, never hardcode tool names: code symbols → `<project-root>/docs/code-navigation.md`, DB → `<project-root>/docs/database-tools.md`, framework docs → `<project-root>/docs/doc-lookup.md`, error logs → `<project-root>/docs/bug-trackers.md`, observability → `<project-root>/docs/observability-tools.md`, terminal → `<project-root>/docs/terminal-wrappers.md`, memory → `<project-root>/docs/memory-providers.md`. Missing spec → fall back to native tools, note the gap.
+Reference `<project-root>/docs` specs, never hardcode tool names: code symbols → `<project-root>/docs/code-navigation.md`, DB → `<project-root>/docs/database-tools.md`, framework docs → `<project-root>/docs/doc-lookup.md`, error logs → `<project-root>/docs/bug-trackers.md`, observability → `<project-root>/docs/observability-tools.md`, terminal → `<project-root>/docs/terminal-wrappers.md`, memory → `<project-root>/docs/memory-providers.md`.
 
 ## Grilling Discipline
 
-Grill before exploring, hypothesizing, or fixing. One question at a time — wait for the answer, never batch. Include a one-line recommended answer. Ground in evidence: if codebase/logs/DB can answer it, investigate first. Cite file:line. Stop when target is met. AFK → proceed with recommended answers, state assumptions. Ask through the environment's interactive question tool when one exists — a bare text question ends the turn looking finished instead of awaiting input, stalling the interview.
+Grill before exploring, hypothesizing, or fixing. One question at a time — wait for the answer, never batch. Include a one-line recommended answer. Ground in evidence: if codebase/logs/DB can answer it, investigate first. Cite file:line. Stop when target is met. AFK → proceed with recommended answers, state assumptions. Ask via the environment's interactive question tool when one exists.
 
 ## Phase 1 — Context Gathering
 
@@ -61,6 +61,8 @@ Minimal, surgical, verified.
 **3.3 Verify** — Run lint + tests. Reproducing test passes, no regression. Reproduce original scenario manually (when feasible) — symptom gone. Confirm no debug instrumentation remains. Store `<validation-results>`, `<validation-passing>`.
 
 **3.4 Present and Stop** — Root cause (one line + citation) · fix applied (one line per change, file:line) · validation status · remaining gaps/risks. STOP. No commit, push, PR, or unsolicited next steps. User invokes `commit-and-push` or `ship-changes` to ship.
+
+**Done when:** confirmed fix applied at cited file/symbol · reproducing test passes, no regressions · original symptom verified gone · debug instrumentation removed · results presented — no commit, push, or PR.
 
 ## Common Rationalizations
 

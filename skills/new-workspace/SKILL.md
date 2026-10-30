@@ -5,7 +5,7 @@ description: "Use when the user prefixes a request or skill invocation with 'new
 
 ## Required `<project-root>/docs` reads
 
-Read these project-root spec files before creating the workspace (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back per the `using-workspaces` skill, note the gap; never invent contents.
+Read via shell **before** creating the workspace — may be gitignored and absent from the new workspace, so the copy in context stays the source of truth after the move. Missing → fall back per `using-workspaces`, note the gap; never invent contents.
 
 - `<project-root>/docs/workspace-isolation.md`
 
@@ -20,13 +20,11 @@ Everything after `new-workspace` is the downstream input. Classify it:
 - **Work request** — a skill invocation (`/implement <card>`), a named skill with args, or an explicit task description ("fix the logout bug"). Store it as `<downstream>`.
 - **Context only** — a bare URL, ticket link, file path, or reference with no requested action. Use it to inform workspace setup (e.g., naming); it is not a task.
 
-Empty or context-only input → standalone mode: set up the workspace, report the path, and stop — subsequent instructions run inside the workspace.
+Empty or context-only input → standalone mode (see Edge Cases).
 
 ## 2. Set Up the Workspace
 
-Invoke the `using-workspaces` skill and follow it fully — detect existing isolation, create via the project's configured tool, run setup, verify a clean baseline. Consent is already implied: the user explicitly asked for a separate workspace, so skip its consent question.
-
-Read `<project-root>/docs/workspace-isolation.md` **before** creating the workspace: spec files may be untracked or gitignored and absent from the new workspace. The copy already in context remains the source of truth for the tool's operations after the move.
+Invoke the `using-workspaces` skill and follow it fully. Consent is already implied — skip its consent question.
 
 ## 3. Hand Off
 

@@ -5,20 +5,18 @@ description: "Use when shipping current work end-to-end — creating a branch, c
 
 ## Required `<project-root>/docs` reads
 
-Read these project-root spec files before shipping end-to-end (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+Read via shell before shipping end-to-end — may be gitignored. Missing → note the gap; never invent contents.
 
 - `<project-root>/docs/git-hosts.md`
 - `<project-root>/docs/issue-trackers.md`
-
-Run the full shipping pipeline: branch, commit, push, and open a PR.
 
 ## Operations
 
 | Operation | Tool (see `<project-root>/docs/git-hosts.md`) | CLI fallback per `<project-root>/docs/git-hosts.md` |
 |-----------|--------------|--------------|
-| Pre-scan change state | git host change scan (see `<project-root>/docs/git-hosts.md` in the project root) | `git branch --show-current` + `git status --short` + `git diff --stat` + `git diff --cached --stat` + `git log @{u}..HEAD --oneline` |
+| Pre-scan change state | git host change scan (`<project-root>/docs/git-hosts.md`) | `git branch --show-current` + `git status --short` + `git diff --stat` + `git diff --cached --stat` + `git log @{u}..HEAD --oneline` |
 
-Forward git host tool availability to subskills so they skip their own change scan and PR diff calls when possible. Follow `<project-root>/docs/git-hosts.md` in the project root for all git/gh operations.
+Forward git host tool availability to subskills. Follow `<project-root>/docs/git-hosts.md` for all git/gh operations.
 
 ### 1. Interpret Arguments
 
@@ -29,9 +27,7 @@ Forward git host tool availability to subskills so they skip their own change sc
 
 ### 2. Pre-Scan Changes (Shared Context)
 
-Run the change scan once here and forward results to every subskill so they skip their own Load/Analyze step.
-
-Run the change scan from the operations table above. Store:
+Run the change scan once, from the operations table above. Store:
 - `<current-branch>` — current branch
 - `<uncommitted>` — combined status + diff stat
 - `<ahead-commits>` — ahead-commits log via range `@{u}..HEAD` (empty if none)
@@ -46,15 +42,15 @@ Forward to every subskill: `<current-branch>`, `<uncommitted>`, `<ahead-commits>
 
 ### 3. Create Work Branch
 
-Gate: skip this step if `<current-branch>` is not `master` AND `<current-branch>` is already ticket-related. If skipped, set `<new-branch>` to `<current-branch>`.
+Gate: skip this step if `<current-branch>` is not the detected default branch (`git remote show origin | grep "HEAD branch" | awk '{print $NF}'`) AND `<current-branch>` is already ticket-related. If skipped, set `<new-branch>` to `<current-branch>`.
 
-Otherwise, create a new branch. Pass `<additional-context>`, `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, and `<branch-category>`. Store the resulting branch as `<new-branch>`. If the result is "Nothing to branch from" or "Branching skipped", STOP and report.
+Otherwise, invoke `new-branch`. Pass `<additional-context>`, `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, and `<branch-category>`. Store the resulting branch as `<new-branch>`. If the result is "Nothing to branch from" or "Branching skipped", STOP and report.
 
 ### 4. Commit and Push
 
 Gate: if `<uncommitted>` is empty, skip the commit substep; still push the branch if `<ahead-commits>` is non-empty. If both are empty, the pre-scan blocker already stops.
 
-Commit and push changes. Pass `<additional-context>`, `<uncommitted>`, `<ahead-commits>`, and `<change-summary>`. Store the commit hash as `<hash>` and the push target as `<push-target>`. If the result is "Nothing to commit or push", STOP and report.
+Invoke `commit-and-push`. Pass `<additional-context>`, `<uncommitted>`, `<ahead-commits>`, and `<change-summary>`. Store the commit hash as `<hash>` and the push target as `<push-target>`. If the result is "Nothing to commit or push", STOP and report.
 
 ### 5. Create Pull Request
 

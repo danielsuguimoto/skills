@@ -6,32 +6,35 @@ argument-hint: "[path|query|subcommand]"
 
 ## Required `<project-root>/docs` reads
 
-Read these project-root spec files before any knowledge graph query or build (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+Read via shell before any knowledge graph query or build — may be gitignored. Missing → note the gap; never invent contents.
 
 - `<project-root>/docs/knowledge-graphs.md`
 
-# /graphify (see `<project-root>/docs/knowledge-graphs.md` in the project root for tool interface)
-
-Turn any folder into a navigable knowledge graph with community detection, an audit trail, and three outputs: interactive HTML, GraphRAG-ready JSON, and a plain-language GRAPH_REPORT.md.
+# /graphify (`<project-root>/docs/knowledge-graphs.md` for tool interface)
 
 ## Usage
 
-The knowledge graph tool's commands (see `<project-root>/docs/knowledge-graphs.md` in the project root):
+Commands (`<project-root>/docs/knowledge-graphs.md`):
 
 | Command | Purpose |
 |---------|---------|
 | `/graphify [path]` | Full pipeline (current dir if no path) |
 | `--mode deep` | Thorough extraction, richer INFERRED edges |
+| `--directed` | Preserve edge direction (DiGraph) |
+| `--whisper-model <name>` | Whisper model for video transcription (default `base`) |
 | `--update` | Incremental: re-extract new/changed files only |
 | `--cluster-only` | Rerun clustering on existing graph |
 | `--no-viz` | Skip visualization, report + JSON only |
-| `--svg/--graphml` | Export graph.svg/graph.graphml |
-| `--neo4j-push <url>` | Push directly to Neo4j |
+| `--obsidian` | Generate Obsidian vault (one file per node) |
+| `--wiki` | Build agent-crawlable wiki |
+| `--svg`/`--graphml` | Export graph.svg/graph.graphml |
+| `--neo4j` / `--neo4j-push <url>` | Export Cypher file / push to running Neo4j |
 | `--mcp` | Start MCP stdio server |
 | `--watch` | Watch folder, auto-rebuild on changes |
-| `--wiki` | Build agent-crawlable wiki |
 | `add <url>` | Fetch URL, save to ./raw, update graph |
-| `query "<q>"` / `path "A" "B"` / `explain "X"` | Query operations |
+| `query "<q>"` / `path "A" "B"` / `explain "X"` | Query operations (`--dfs` chain tracing, `--budget N` token cap) |
+
+`UPPER_SNAKE` tokens in scripts (`INPUT_PATH`, `LABELS_DICT`, `IS_DIRECTED`, `NEO4J_URI`…) are placeholders — substitute actual values from the invocation.
 
 ## Output Discipline
 Do not announce that you are using this skill. Do not restate its rules in your response. The skill guides behavior silently; visible output should show the result, not the activation.
@@ -42,21 +45,17 @@ If `/graphify --help` or `/graphify -h` (no other args): print the `## Usage` se
 
 If no path is given, use `.` (current directory). Do not ask.
 
-Follow steps in order. Do not skip.
-
 ### Step 1 - Ensure graphify is installed
 
 <!-- script: see references/scripts.md §Step 1 - Ensure graphify is installed -->
 
 If the import succeeds, print nothing and go to Step 2.
 
-**In every subsequent bash block, replace `python3` with the detected Python interpreter (see `<project-root>/docs/knowledge-graphs.md` in the project root).**
-
 ### Step 2 - Detect files
 
 <!-- script: see references/scripts.md §Step 2 - Detect files -->
 
-Replace `INPUT_PATH` with the actual path the user provided. Do NOT cat or print the JSON — read it silently and present a clean summary:
+Do NOT cat or print the JSON — read it silently and present a clean summary:
 
 ```
 Corpus: X files · ~Y words
@@ -72,20 +71,20 @@ Omit categories with 0 files.
 Then act:
 - If `total_files` is 0: stop with "No supported files found in [path]."
 - If `skipped_sensitive` is non-empty: mention the file count skipped, not the names.
-- If `total_words` > 2,000,000 OR `total_files` > 200: show the warning and the top 5 subdirectories by file count, then ask which subfolder to run on via the interactive question tool when one exists. Wait for the answer before proceeding.
+- If `total_words` > 2,000,000 OR `total_files` > 200: show the warning and the top 5 subdirectories by file count, then ask which subfolder to run on via the environment's interactive question tool when one exists. Wait for the answer before proceeding.
 - Otherwise: go to Step 2.5 if video files were detected, or Step 3 if not.
 
 ### Step 2.5 - Transcribe video / audio files (only if video files detected)
 
 Skip if `detect` returned zero `video` files. Transcribe to text and treat as docs in Step 3.
 
-**Strategy:** Read god nodes from the detect/analysis output, write a one-sentence domain hint, and pass it to Whisper as the initial prompt (see `<project-root>/docs/knowledge-graphs.md` in the project root for Whisper configuration). If the corpus has *only* video files (no docs/code), use fallback: `"Use proper punctuation and paragraph breaks."`
+**Strategy:** Write a one-sentence domain hint and pass it to Whisper as the initial prompt (`<project-root>/docs/knowledge-graphs.md` for Whisper configuration). If the corpus has *only* video files (no docs/code), use fallback: `"Use proper punctuation and paragraph breaks."`
 
-**Step 1 - Write Whisper prompt:** Read top god node labels and compose a domain hint (e.g., `transformer, attention` → `"Machine learning research on transformer architectures. Use proper punctuation."`). Set as `GRAPHIFY_WHISPER_PROMPT`.
+**Step 1 - Write Whisper prompt:** Skim the file names in `graphify-out/.graphify_detect.json` (`files` lists across all categories) and compose a domain hint from the dominant topics (e.g., `transformer.py`, `attention.md` → `"Machine learning research on transformer architectures. Use proper punctuation."`). Set as `GRAPHIFY_WHISPER_PROMPT`.
 
 **Step 2 - Transcribe:** <!-- script: see references/scripts.md §Step 2.5 - Transcribe video / audio files -->
 
-After transcription: read `graphify-out/.graphify_transcripts.json` (the graph output directory, e.g. `graphify-out/` — see `<project-root>/docs/knowledge-graphs.md` in the project root), add to the docs list for Step 3B, print `Transcribed N video file(s) -> treating as docs`. Warn on failures and continue.
+After transcription: read `graphify-out/.graphify_transcripts.json` (the graph output directory, e.g. `graphify-out/` — `<project-root>/docs/knowledge-graphs.md`), add to the docs list for Part B, print `Transcribed N video file(s) -> treating as docs`. Warn on failures and continue.
 
 **Whisper model:** Default `base`. If `--whisper-model <name>` was passed, set `GRAPHIFY_WHISPER_MODEL=<name>`.
 
@@ -95,19 +94,19 @@ After transcription: read `graphify-out/.graphify_transcripts.json` (the graph o
 
 Two parts: **structural extraction** (AST, deterministic, free) and **semantic extraction** (your model, costs tokens).
 
-> **The knowledge graph tool needs no external API key. Never ask or block on one.** Code is extracted structurally (AST) with no LLM/key — a code-only corpus skips semantic extraction entirely (go straight to Part A, skip Part B). Semantic extraction (docs/papers/images only) uses your model. Code-only corpus has no semantic work (write an empty semantic file and continue to Part C).
+> **The knowledge graph tool needs no external API key. Never ask or block on one.** Code is extracted structurally (AST) with no LLM/key. Semantic extraction (docs/papers/images only) uses your model.
 
-**Run Part A (AST) and Part B (semantic) in parallel. Start AST extraction and semantic extraction in the same message. They run simultaneously across different file types. Merge in Part C.**
+**Run Part A (AST) and Part B (semantic) in parallel — start both in the same message, merge in Part C.**
 
 #### Part A - Structural extraction for code files
 
-For any code files detected, run AST extraction in parallel with Part B (see `<project-root>/docs/knowledge-graphs.md` in the project root):
+For any code files detected, run AST extraction (`<project-root>/docs/knowledge-graphs.md`):
 
 <!-- script: see references/scripts.md §Step 3 Part A - Structural extraction (AST) -->
 
 #### Part B - Semantic extraction (parallel chunks)
 
-**Fast path:** If zero docs/papers/images are detected (code-only corpus), skip Part B and go straight to Part C. AST handles code.
+**Fast path:** If zero docs/papers/images are detected (code-only corpus), skip Part B: write an empty `.graphify_semantic.json` (`{"nodes":[],"edges":[],"hyperedges":[],"input_tokens":0,"output_tokens":0}`) and go straight to Part C. AST handles code.
 
 Before starting, print a timing estimate:
 - Load `total_words`/file counts from `graphify-out/.graphify_detect.json`
@@ -138,40 +137,7 @@ Concrete example for 3 chunks:
 [Chunk 3: files 31-45]
 ```
 
-For each chunk, extract a knowledge graph fragment using this exact prompt (fill in `FILE_LIST`):
-
-```
-Read the files listed and extract a knowledge graph fragment.
-Output ONLY valid JSON with no commentary: {"nodes": [...], "edges": [...], "hyperedges": [...], "input_tokens": 0, "output_tokens": 0}
-
-Extraction rules:
-- EXTRACTED: explicit in source (import, call, citation)
-- INFERRED: reasonable inference (shared structure, implied dependency)
-- AMBIGUOUS: uncertain — flag it, do not omit
-- Code files: extract semantic edges AST cannot find (design patterns, protocol conformance). Do not re-extract imports.
-- Doc/paper files: named concepts, entities, citations. Store rationale (WHY decisions) as `rationale` attribute on relevant node. Use `file_type:"rationale"` for concept-like nodes (ideas, principles, mechanisms) and `file_type:"concept"` for named concepts. `file_type` MUST be one of: `code`, `document`, `paper`, `image`, `rationale`, `concept`. When adding `calls` edges: source is caller, target is callee.
-- Image files: use vision to understand what the image IS (not just OCR). UI screenshot: layout patterns, design decisions, key elements, purpose. Chart: metric, trend/insight, data source. Tweet/post: claim as node, author, concepts mentioned. Diagram: components and connections. Research figure: what it demonstrates, method, result. Handwritten/whiteboard: ideas and arrows, mark uncertain readings AMBIGUOUS.
-- DEEP_MODE (if set): be aggressive with INFERRED edges
-- Semantic similarity: if two concepts solve same problem without structural link, add `semantically_similar_to` INFERRED edge (confidence 0.6-0.95). Non-obvious cross-file links only.
-- Hyperedges: if 3+ nodes share concept/flow not captured by pairwise edges, add hyperedge. Max 3 per file.
-- If file has YAML frontmatter (--- ... ---), copy source_url, captured_at, author, contributor onto every node from that file.
-- confidence_score REQUIRED on every edge — never omit, never use 0.5 default:
-  - EXTRACTED edges: confidence_score = 1.0 always
-  - INFERRED edges: pick exactly ONE value — never 0.5:
-    0.95 direct structural evidence (shared data structure, named cross-file reference)
-    0.85 strong inference (clear functional alignment, no direct symbol link)
-    0.75 reasonable inference (shared problem domain + similar shape, requires interpretation)
-    0.65 weak inference (thematically related, no shape evidence)
-    0.55 speculative but plausible (surface-level co-occurrence only)
-  Models follow discrete rubrics better than continuous ranges; if no value above fits, mark AMBIGUOUS rather than picking 0.4 or below.
-- AMBIGUOUS edges: 0.1-0.3
-
-Schema:
-{"nodes":[{"id":"filestem_entityname","label":"Human Readable Name","file_type":"code|document|paper|image|rationale|concept","source_file":"relative/path","source_location":null,"source_url":null,"captured_at":null,"author":null,"contributor":null}],"edges":[{"source":"node_id","target":"node_id","relation":"calls|implements|references|cites|conceptually_related_to|shares_data_with|semantically_similar_to|rationale_for","confidence":"EXTRACTED|INFERRED|AMBIGUOUS","confidence_score":1.0,"source_file":"relative/path","source_location":null,"weight":1.0}],"hyperedges":[{"id":"snake_case_id","label":"Human Readable Label","nodes":["node_id1","node_id2","node_id3"],"relation":"participate_in|implement|form","confidence":"EXTRACTED|INFERRED","confidence_score":0.75,"source_file":"relative/path"}],"input_tokens":0,"output_tokens":0}
-
-Files:
-FILE_LIST
-```
+For each chunk, run the extraction prompt in `references/extraction-prompt.md`, filling in `FILE_LIST`.
 
 **Step B3 - Cache and merge**
 
@@ -200,13 +166,11 @@ Clean up temp files: `rm -f graphify-out/.graphify_cached.json graphify-out/.gra
 
 ### Step 4 - Build graph, cluster, analyze, generate outputs
 
-**Before starting:** Code blocks below pass `directed=IS_DIRECTED` to `build_from_json()`. Replace `IS_DIRECTED` with `True` if `--directed` was given (builds `DiGraph` preserving edge direction source->target), otherwise `False` (default undirected `Graph`). Substitute everywhere it appears, the same way as `INPUT_PATH`.
+**Before starting:** `build_from_json()` takes `directed=IS_DIRECTED` — set `IS_DIRECTED` to `True` if `--directed` was given (builds `DiGraph` preserving edge direction source->target), otherwise `False` (default undirected `Graph`).
 
 <!-- script: see references/scripts.md §Step 4 - Build graph, cluster, analyze, generate outputs -->
 
 If it prints `ERROR: Graph is empty`, stop and tell the user what happened — do not proceed to labeling/visualization.
-
-Replace `INPUT_PATH` with the actual path.
 
 ### Step 5 - Label communities
 
@@ -216,7 +180,7 @@ Regenerate the report and save labels for the visualizer:
 
 <!-- script: see references/scripts.md §Step 5 - Label communities -->
 
-Replace `LABELS_DICT` with the actual dict (e.g., `{0: "Attention Mechanism", 1: "Training Pipeline"}`). Replace `INPUT_PATH` with the actual path.
+Set `LABELS_DICT` to the chosen names (e.g., `{0: "Attention Mechanism", 1: "Training Pipeline"}`).
 
 ### Step 6 - Generate Obsidian vault (opt-in) + HTML
 
@@ -246,11 +210,11 @@ Run this before Step 9 (cleanup) so `graphify-out/.graphify_labels.json` is stil
 
 <!-- script: see references/scripts.md §Step 7 - Neo4j export (only if --neo4j) -->
 
-**If `--neo4j-push <uri>`** — push directly to a running Neo4j instance. Ask the user for credentials if not provided, via the interactive question tool when one exists:
+**If `--neo4j-push <uri>`** — push directly to a running Neo4j instance. Ask the user for credentials if not provided, via the environment's interactive question tool when one exists:
 
 <!-- script: see references/scripts.md §Step 7 - Neo4j push (only if --neo4j-push) -->
 
-Replace `NEO4J_URI`, `NEO4J_USER`, and `NEO4J_PASSWORD` with actual values. Defaults: URI `bolt://localhost:7687`, user `neo4j`. Uses MERGE — safe to re-run without creating duplicates.
+Defaults: URI `bolt://localhost:7687`, user `neo4j`. Uses MERGE — safe to re-run without creating duplicates.
 
 ### Step 7b - SVG export (only if --svg flag)
 
@@ -294,7 +258,7 @@ Print the output directly in chat. If `total_words <= 5000`, skip silently — f
 
 Tell the user (omit the `obsidian/` line unless `--obsidian` was given; omit the `wiki/` line unless `--wiki` was given):
 ```
-Graph complete. Outputs in PATH_TO_DIR/graphify-out/ (the graph output directory — see `<project-root>/docs/knowledge-graphs.md` in the project root)
+Graph complete. Outputs in PATH_TO_DIR/graphify-out/ (the graph output directory — `<project-root>/docs/knowledge-graphs.md`)
 
   graph.html            - interactive graph, open in browser
   GRAPH_REPORT.md       - audit report
@@ -303,16 +267,14 @@ Graph complete. Outputs in PATH_TO_DIR/graphify-out/ (the graph output directory
   wiki/                 - agent-crawlable wiki, start at wiki/index.md (only if --wiki was given)
 ```
 
-Replace `PATH_TO_DIR` with the actual absolute path of the processed directory.
-
 Then paste these sections from GRAPH_REPORT.md into the chat:
 - God Nodes
 - Surprising Connections
 - Suggested Questions
 
-Do NOT paste the full report — only those three sections.
+Do NOT paste the full report — only those three sections. Include the token cost printed by the cleanup script (`This run` / `All time`), and report cohesion scores as raw numbers, not symbols.
 
-Then offer to explore. Pick the single most interesting suggested question — the one that crosses the most community boundaries or has the most surprising bridge node — and ask via the interactive question tool when one exists:
+Then offer to explore. Pick the single most interesting suggested question — the one that crosses the most community boundaries or has the most surprising bridge node — and ask via the environment's interactive question tool when one exists:
 
 > "The most interesting question this graph can answer: **[question]**. Want me to trace it?"
 
@@ -338,13 +300,15 @@ If new files exist, first check whether all changed files are code files:
 
 <!-- script: see references/scripts.md §--update - Check if code-only -->
 
-If `code_only` is True: print `[graphify update] Code-only changes detected - skipping semantic extraction (no LLM needed)`, run only Step 3A (AST) on the changed files, skip Step 3B entirely, then merge and run Steps 4-8.
+If `code_only` is True: print `[graphify update] Code-only changes detected - skipping semantic extraction (no LLM needed)`, run only Part A (AST) on the changed files, skip Part B entirely, then run Part C and Steps 4-8.
 
-If `code_only` is False (any changed file is a doc/paper/image): run the full Steps 3A-3C pipeline as normal.
+If `code_only` is False (any changed file is a doc/paper/image): run the full Step 3 pipeline (Parts A-C) as normal.
 
 If no new files exist (only deletions), create an empty extraction so the merge step can prune:
 
 <!-- script: see references/scripts.md §--update - Empty extraction for deletions only -->
+
+Save the old graph for the diff: `cp graphify-out/graph.json graphify-out/.graphify_old.json`
 
 Then:
 
@@ -356,7 +320,6 @@ After Step 4, show the graph diff:
 
 <!-- script: see references/scripts.md §--update - Graph diff -->
 
-Before the merge step, save the old graph: `cp graphify-out/graph.json graphify-out/.graphify_old.json`
 Clean up after: `rm -f graphify-out/.graphify_old.json`
 
 ---
@@ -375,11 +338,15 @@ Then run Steps 5-9 as normal.
 
 For detailed query examples, see `queries.md`.
 
+---
+
+## For /graphify add
+
 Fetch a URL and add it to the corpus, then update the graph.
 
 <!-- script: see references/scripts.md §/graphify add - Fetch URL and add to corpus -->
 
-Replace `URL` with the actual URL, `AUTHOR` with the user's name if provided, and `CONTRIBUTOR` likewise. After a successful save, automatically run the `--update` pipeline on `./raw` to merge the new file into the existing graph.
+Set `AUTHOR`/`CONTRIBUTOR` to the user's name when provided. After a successful save, automatically run the `--update` pipeline on `./raw` to merge the new file into the existing graph.
 
 Supported URL types (auto-detected):
 - Twitter/X -> fetched via oEmbed, saved as `.md` with tweet text and author
@@ -396,7 +363,7 @@ Start a background watcher that monitors a folder and auto-updates the graph whe
 
 <!-- script: see references/scripts.md §--watch -->
 
-Replace `INPUT_PATH` with the folder to watch. Behavior depends on what changed:
+Behavior depends on what changed:
 
 - **Code files only (.py, .ts, .go, etc.):** re-runs AST extraction + rebuild + cluster immediately, no LLM needed. `graph.json` and `GRAPH_REPORT.md` update automatically.
 - **Docs, papers, or images:** writes a `graphify-out/needs_update` flag and prints a notification to run `/graphify --update` (LLM semantic re-extraction required).
@@ -423,15 +390,6 @@ Run once per project to make the knowledge graph tool always-on in Devin session
 
 <!-- script: see references/scripts.md §Devin always-on context -->
 
-This writes a `## graphify` section to `.windsurf/rules/graphify.md` that instructs Devin to check the graph before answering codebase questions and rebuild it after code changes (see `<project-root>/docs/knowledge-graphs.md` in the project root).
-
-<!-- script: see references/scripts.md §Devin always-on context -->
+This writes a `## graphify` section to `.windsurf/rules/graphify.md` that instructs Devin to check the graph before answering codebase questions and rebuild it after code changes (`<project-root>/docs/knowledge-graphs.md`). `graphify devin uninstall --project` removes it.
 
 ---
-
-## Honesty Rules
-
-- Never invent an edge. If unsure, use AMBIGUOUS.
-- Never skip the corpus check warning.
-- Always show token cost in the report.
-- Never hide cohesion scores behind symbols — show the raw number.

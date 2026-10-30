@@ -5,30 +5,30 @@ description: "Use when starting new work that needs a branch — creates and swi
 
 ## Required `<project-root>/docs` reads
 
-Read these project-root spec files before creating or switching to the branch (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+Read via shell before creating or switching to the branch — may be gitignored. Missing → note the gap; never invent contents.
 
 - `<project-root>/docs/git-hosts.md`
 - `<project-root>/docs/issue-trackers.md` (only when a ticket/issue link argument is provided)
 
 # Branch From Argument or Work
 
-Create and switch to a categorized branch. The branch name is derived from an argument (description or ticket/issue link) when provided, otherwise from current uncommitted or ahead-of-base work. Git changes are always validated regardless of argument type.
+Create and switch to a categorized branch.
 
 ## Operations
 
-| Operation | Tool (see `<project-root>/docs/git-hosts.md`) | CLI fallback per `<project-root>/docs/git-hosts.md` |
-|-----------|--------------|--------------|
-| Load change state | git host change scan (see `<project-root>/docs/git-hosts.md` in the project root) | `git branch --show-current` + `git status --short` + `git diff --cached --stat` + `git diff --stat` + `git log origin/<branch>..<branch> --oneline` |
-| Pull, create, publish | git host branch create (see `<project-root>/docs/git-hosts.md` in the project root, with `branch_name`) | `git pull origin <branch>` + `git checkout -b <cat>/<slug>` + `git push -u origin <new-branch>` |
+All git/gh operations follow `<project-root>/docs/git-hosts.md`.
 
-Follow `<project-root>/docs/git-hosts.md` in the project root for all git/gh operations.
+| Operation | Tool | CLI fallback |
+|-----------|------|--------------|
+| Load change state | git host change scan | `git branch --show-current` + `git status --short` + `git diff --cached --stat` + `git diff --stat` + `git log origin/<branch>..<branch> --oneline` |
+| Pull, create, publish | git host branch create (`branch_name`) | `git pull origin <branch>` + `git checkout -b <cat>/<slug>` + `git push -u origin <new-branch>` |
 
 ### 1. Interpret Arguments
 
 Classify the invocation argument (if any) into one of three modes. Store `<arg-mode>` (`description` | `ticket` | `none`) and `<branch-context>`.
 
 - **Description** — free-form text that is not a URL/issue link. Use the text directly as `<branch-context>`. Set `<arg-mode>` = `description`.
-- **Ticket/issue link** — a URL or identifier referencing a ticket/issue (e.g. GitHub issue, Linear, Jira). Set `<arg-mode>` = `ticket`. Extract ticket content via the issue tools documented in `<project-root>/docs/issue-trackers.md` in the project root (title, summary, labels/type). Store the distilled content as `<branch-context>`. If extraction fails, fall back to any slug-relevant fragment in the link (issue number, path slug) and note the gap.
+- **Ticket/issue link** — a URL or identifier referencing a ticket/issue (e.g. GitHub issue, Linear, Jira). Set `<arg-mode>` = `ticket`. Extract ticket content via the issue tools documented in `<project-root>/docs/issue-trackers.md` (title, summary, labels/type). Store the distilled content as `<branch-context>`. If extraction fails, fall back to any slug-relevant fragment in the link (issue number, path slug) and note the gap.
 - **None** — no argument provided. Set `<arg-mode>` = `none`. `<branch-context>` is empty; the branch name will be derived from git changes (Step 2).
 
 ### 2. Load Changes
@@ -84,9 +84,9 @@ Pull `origin/<current-branch>` via git host tool or CLI. If the pull fails (dive
 
 ### 6. Create and Checkout Branch
 
-Create `<branch-category>/<branch-slug>` via git host branch create (see `<project-root>/docs/git-hosts.md` in the project root) or `git checkout -b` per `<project-root>/docs/git-hosts.md`. If the branch exists, retry once with a numeric suffix (`-2`). Store as `<new-branch>`.
+Create `<branch-category>/<branch-slug>` via git host branch create or `git checkout -b` per the Operations table. If the branch exists, retry once with a numeric suffix (`-2`). Store as `<new-branch>`.
 
 ### 7. Publish Branch to Remote
 
-Push with upstream via git host branch create (see `<project-root>/docs/git-hosts.md` in the project root) or `git push -u origin <new-branch>` per `<project-root>/docs/git-hosts.md`. `git push` only pushes committed changes; uncommitted changes stay local. Store `<published>` as `true` or `false`. Output the new branch name when created.
+Push with upstream via git host branch create or `git push -u origin <new-branch>` per the Operations table. `git push` only pushes committed changes; uncommitted changes stay local. Store `<published>` as `true` or `false`. Output the new branch name when created.
 

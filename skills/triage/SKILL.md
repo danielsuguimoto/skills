@@ -5,7 +5,7 @@ description: "Use when answering a ticket question, debugging an issue, or when 
 
 ## Required `<project-root>/docs` reads
 
-Read these project-root spec files before investigating the ticket (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+Read via shell before investigating the ticket — may be gitignored. Missing → note the gap; never invent contents.
 
 - `<project-root>/docs/bug-trackers.md`
 - `<project-root>/docs/code-navigation.md`
@@ -29,7 +29,7 @@ Load ticket context, determine mode (ask or debug), gather evidence, draft findi
 
 When you hit a blocker (missing context, ambiguity, inaccessible resource, unclear requirements), escalate in order:
 
-1. **Ask the user first.** You can interact with the user directly — many blockers are resolved with a quick question. Do this before posting anything to the ticket. Ask through the environment's interactive question tool when one exists — a bare text question ends the turn looking finished instead of awaiting input.
+1. **Ask the user first** — many blockers resolve with a quick question via the environment's interactive question tool when one exists. Ask before posting anything to the ticket.
 2. **Post to the ticket only when the user cannot resolve it** — e.g., needs input from another team, customer-side information, or a decision outside the user's authority.
 
 Posting a blocker to the ticket when the user could have answered it in seconds adds a round-trip the user now has to unwind. Default to asking.
@@ -41,7 +41,7 @@ Posting a blocker to the ticket when the user could have answered it in seconds 
 
 ### Load Ticket Context
 
-- `<ticket-url>` defined: load via issue tracker tool (see `<project-root>/docs/issue-trackers.md`) with `source: <ticket-url>`, `comments: true` → `<ticket-context>`. Read all attachments with `relativePath` via `read` (images → describe; documents → extract key info → `<attachment-insights>`). Note gaps if inaccessible.
+- `<ticket-url>` defined: load via issue tracker tool (see `<project-root>/docs/issue-trackers.md`) with `source: <ticket-url>`, `comments: true` → `<ticket-context>`. Read all attachments — downloaded to `storage/app/mcp/{source}` — with `relativePath` via `read` (images → describe; documents → extract key info → `<attachment-insights>`). Note gaps if inaccessible.
 - Otherwise: treat relevant request/conversation as `<ticket-context>`.
 - Missing or unloadable → ask the user for the ticket content or an alternative source; STOP only if the user cannot provide it.
 
@@ -68,7 +68,7 @@ Ambiguous → ask the user for clarification before posting to the ticket. Both 
 
 **Ranked Hypotheses:** Generate 3–5 falsifiable hypotheses. Format: "If `<X>` is the cause, then `<changing Y>` will make the bug disappear." Include a regression hypothesis ("a recent commit or deploy introduced this") whenever the reporter implies the behavior worked before. Show ranked list before concluding. Don't block if AFK.
 
-**Debug Instrumentation:** Tag debug logs with unique prefix `[DEBUG-a4f2]` (cleanup = one grep). Change one variable at a time. Targeted logs at boundaries — never "log everything and grep."
+**Debug Instrumentation** — only when the user grants write access for diagnosis: tag debug logs with unique prefix `[DEBUG-a4f2]` (cleanup = one grep). Change one variable at a time. Targeted logs at boundaries — never "log everything and grep."
 
 **Analyze Root Cause:** Synthesize all findings to determine `<root-cause>`, `<introduced-by>` (the commit, merge, or deploy that introduced it, if identifiable), `<affected-components>`, `<impact-scope>` (single user / company / all), `<reproduction-conditions>`, `<potential-fixes>` (without implementing). When `<introduced-by>` is confirmed, lead the recommendations with reverting that change — prefer the revert over a new forward fix. Done when: reproduced · 3–5 falsifiable hypotheses ranked · winning hypothesis tested · root cause/components/scope/conditions stated with evidence · culprit commit identified or ruled out · gaps named.
 
@@ -76,7 +76,7 @@ Ambiguous → ask the user for clarification before posting to the ticket. Both 
 
 ### Ticket Framing
 
-See `<project-root>/docs/issue-trackers.md` for provider-specific framing rules. Internal audience: technical language, cite code paths, no client-facing tone (no "Hi", "Thanks", second-person to customer). Do NOT modify/create/delete files; no git commit or push.
+See `<project-root>/docs/issue-trackers.md` for provider-specific framing rules. Private note for an internal audience: technical and concise, cite file:line, no full code blocks, no client-facing tone (no "Hi", "Thanks", second-person to customer).
 
 ### Sync
 
@@ -85,6 +85,4 @@ Always sync findings back — the spec phase reads prior comments; skipping brea
 ## Notes
 
 - **Traceability (required):** If `<question>` or `<additional-context>` originated from skill arguments rather than the ticket body, the ticket reader cannot see what prompted the answer — so the synced note becomes disconnected. In that case, the findings MUST explicitly restate the provided `<question>` / `<additional-context>` (as a quoted preamble or "Question:" / "Context:" block) before the answer, so the response is traceable to its source. Skip this only when the question is already visible in the ticket body or comments.
-- Ticket load tool downloads attachments to `storage/app/mcp/{source}` — read before triaging.
-- Private note: technical, concise, cite file:line, no full code blocks.
 - Final output: ticket URL (+ note title for debug). Don't paste full findings back.

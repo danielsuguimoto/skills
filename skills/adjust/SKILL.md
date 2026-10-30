@@ -1,11 +1,11 @@
 ---
 name: adjust
-description: "Apply user-requested adjustments to existing code — fixes, improvements, refactors per notes. Interactive: grills the user to clarify the request, then parses, plans, and executes. No shipping, no next steps, no loop."
+description: "Apply user-requested adjustments to existing code — fixes, improvements, refactors per notes. Interactive: grills the user to clarify the request, then parses, plans, and executes."
 ---
 
 # Adjust
 
-Apply the user's adjustment request to existing code. Works on the current code as it exists — uncommitted, clean, or no VCS at all, all irrelevant. No version control operations, no review threads, no approval-driven next steps.
+Apply the user's adjustment request to existing code. Works on the current code as it exists — uncommitted, clean, or no VCS at all, all irrelevant.
 
 ## Scope Boundary
 
@@ -28,7 +28,7 @@ The user ships separately.
 Vague adjustment requests produce wrong changes. Grill before parsing, before planning, before implementing.
 
 - **One question at a time.** Wait for the answer. Never batch.
-- **Ask through the environment's question tool.** Route each question through the interactive question tool when one exists — a bare text question ends the turn looking finished instead of awaiting input, stalling the interview. Text question only when no question tool is available.
+- **Ask through the environment's question tool.** Route each question via the environment's interactive question tool when one exists.
 - **Recommended answer** with each question — one line, no justification.
 - **Ground in evidence.** If the codebase can answer it, read the code first; ask only what evidence cannot settle.
 - **Cite file:line** when a question references existing code.
@@ -82,14 +82,10 @@ Confirm changes address the request points. Miss intent → re-implement that it
 
 ### 8. Present Results
 
-Nothing ships. Present a concise summary and stop:
+Present a concise summary and stop:
 - One line per applied change.
 - Validation status (`<validation-passing>` + `<validation-results>` summary).
 - `<not-applying>` list with one-line reasons.
 - `<changes-count>` if tracked.
-
-No follow-up questions, no refinement loop, no next steps.
-
-STOP. No shipping suggestions. The user invokes other skills to ship.
 
 

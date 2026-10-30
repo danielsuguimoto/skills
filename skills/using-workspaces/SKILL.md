@@ -5,13 +5,13 @@ description: "Use when starting work that needs an isolated workspace — featur
 
 ## Required `<project-root>/docs` reads
 
-Read these project-root spec files before creating any workspace (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → follow Step 1c, note the gap; never invent contents.
+Read via shell before creating any workspace — may be gitignored. Missing → follow Step 1c, note the gap; never invent contents.
 
 - `<project-root>/docs/workspace-isolation.md`
 
 # Using Workspaces
 
-Ensure work happens in an isolated workspace — one concept, several possible backends. The mechanism is never assumed: prefer the project's configured mechanism, then a harness-provided capability, then the documented fallback. Never fight the harness.
+Ensure work happens in an isolated workspace — one concept, several possible backends. The mechanism is never assumed: prefer the project's configured mechanism, then a harness-provided capability, then the documented fallback. Never fight the harness. Ask user-facing questions via the environment's interactive question tool when one exists.
 
 ## Step 0: Detect Existing Isolation
 
@@ -33,7 +33,7 @@ VCS checks alone do not rule out tool-managed isolation: snapshot/copy mechanism
 
 If already isolated → skip to Step 2. Report path and branch state. A detached HEAD is a valid externally-managed workspace — a branch is needed only at ship time (e.g. `new-branch`/`ship-changes`).
 
-If not isolated and the user has not already declared a preference, ask consent before creating (via the interactive question tool when one exists):
+If not isolated and the user has not already declared a preference, ask consent before creating:
 
 > "Would you like me to set up an isolated workspace? It protects your current checkout from changes."
 
@@ -58,47 +58,23 @@ Only when neither applies. Use the fallback mechanism documented in the spec's T
 - **Directory**: an explicit user-declared location wins; else the location the spec documents; else a project-local hidden directory. For project-local directories, verify the path is ignored before creating — `git check-ignore -q <dir>` — and if not ignored, add it to `.gitignore` and commit first.
 - **Sandbox**: if creation fails with a permission error, tell the user the sandbox blocked it and work in place; run setup and baseline there.
 
-If the spec documents no fallback either → ask the user which workspace mechanism to use via the interactive question tool when one exists, and offer to write it into `<project-root>/docs/workspace-isolation.md`.
+If the spec documents no fallback either → ask the user which workspace mechanism to use, and offer to write it into `<project-root>/docs/workspace-isolation.md`.
 
 ## Step 2: Project Setup
 
-Auto-detect and run the appropriate setup inside the workspace:
-
-```bash
-[ -f package.json ] && npm install
-[ -f Cargo.toml ] && cargo build
-[ -f requirements.txt ] && pip install -r requirements.txt
-[ -f pyproject.toml ] && poetry install
-[ -f go.mod ] && go mod download
-```
+Auto-detect and run the appropriate setup inside the workspace from the manifests present.
 
 Copy/snapshot mechanisms may omit regenerable artifacts (`node_modules`, `target`, `dist`, caches) — dependency install is mandatory there even when the source checkout was fully set up.
 
 ## Step 3: Verify Clean Baseline
 
-Run the project's test command (`npm test` / `cargo test` / `pytest` / `go test ./...`). Failures → report them and ask whether to proceed or investigate, via the interactive question tool when one exists. Passing → report ready:
+Run the project's test command (`npm test` / `cargo test` / `pytest` / `go test ./...`). Failures → report them and ask whether to proceed or investigate. Passing → report ready:
 
 ```
 Workspace ready at <full-path>
 Tests passing (<N> tests, 0 failures)
 Ready to implement <feature-name>
 ```
-
-## Quick Reference
-
-| Situation | Action |
-|-----------|--------|
-| VCS reports a linked workspace | Skip creation (Step 0) |
-| Tool-managed workspace (marker/ancestors) | Skip creation (Step 0) |
-| In a submodule | Treat as normal repo (Step 0 guard) |
-| Spec names a mechanism | Use it per the spec (Step 1a) |
-| Harness capability available | Use it (Step 1b) |
-| Neither applies | Documented fallback (Step 1c) |
-| Workspace directory not ignored | Add to `.gitignore` + commit |
-| Permission error on create | Work in place, tell the user |
-| Detached HEAD workspace | Valid; create branch only at ship time |
-| No fallback documented | Ask which mechanism, offer to write spec |
-| Tests fail during baseline | Report failures + ask |
 
 ## Common Rationalizations
 

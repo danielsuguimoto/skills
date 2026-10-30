@@ -1,15 +1,15 @@
 ---
 name: database
 description: >
-  Use database inspection tools for schema, queries, and operations. Activate when
-  querying the database, reading schema, reconciling counts, running EXPLAIN plans,
-  or performing read/write operations. Do NOT activate for code-level work on
-  models/repositories — use code navigation tools there.
+  Use database inspection tools for schema, queries, and operations — querying
+  the database, reading schema, reconciling counts, running EXPLAIN plans,
+  read/write operations. Not for code-level work on models/repositories —
+  use code navigation tools there.
 ---
 
 ## Required `<project-root>/docs` reads
 
-Read these project-root spec files before any database query, schema inspection, or read/write operation (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+Read via shell before any database query, schema inspection, or read/write operation — may be gitignored. Missing → note the gap; never invent contents.
 
 - `<project-root>/docs/code-navigation.md`
 - `<project-root>/docs/database-tools.md`
@@ -18,14 +18,12 @@ Read these project-root spec files before any database query, schema inspection,
 
 ## Database as Source of Truth
 
-When database tools are available (see `<project-root>/docs/database-tools.md` in the project root), treat the live database as the source of truth. Schema files, migrations, seeders, factories, and operations describe intent and history; the database records current reality. Inspect the live database before relying on code artifacts for data shape, relationships, constraints, or sample values.
+When database tools are available (`<project-root>/docs/database-tools.md`), treat the live database as the source of truth. Schema files, migrations, seeders, factories, and operations describe intent and history; the database records current reality. Inspect the live database before relying on code artifacts for data shape, relationships, constraints, or sample values.
 
-Prefer (see `<project-root>/docs/database-tools.md` in the project root):
+Prefer (`<project-root>/docs/database-tools.md`):
 - Schema inspection tool for current tables, columns, indexes, foreign keys, views, and routines
 - Query tool for row counts, sample rows, actual values, duplicates, orphans, and `EXPLAIN` plans
-- REPL for Eloquent semantics, scopes, and accessors when the raw schema is not enough
-
-Avoid using migration files, schema dumps, seeders, or operations as proxies for the current database state.
+- REPL for Eloquent semantics — routing per the decision table below
 
 ## Tool Inventory
 
@@ -37,9 +35,9 @@ Avoid using migration files, schema dumps, seeders, or operations as proxies for
 | Inspect schema | Inspect tables, columns, indexes, FKs, views, routines | `summary`, `filter`, `include_column_details`, `include_views`, `include_routines`, `database` |
 | Run read-only query | Run read-only SQL (`SELECT`, `SHOW`, `EXPLAIN`, `DESCRIBE`) | `query` (required), `database` |
 
-**REPL (read/write)**: The only path for mutating via Eloquent. Boots the full app container — models, scopes, gates, company scoping, subscribers fire. Prefer the query tool for raw SQL (faster, no boot, sandboxed). Use the REPL only for Eloquent semantics or writes.
+**REPL (read/write)**: Boots the full app container — models, scopes, gates, company scoping, subscribers fire. Routing per the decision table below.
 
-**Targeting the testing database**: Tests may run against a separate testing database. When debugging a test failure that depends on seeded data, company IDs, or pre-existing rows, inspect the testing DB, not the local dev DB — IDs and seeded rows differ. Target the testing environment via `<project-root>/docs/database-tools.md` in the project root for both REPL and query tool; without it, both hit the default connection's local dev database.
+**Targeting the testing database**: Tests may run against a separate testing database. When debugging a test failure that depends on seeded data, company IDs, or pre-existing rows, inspect the testing DB, not the local dev DB — IDs and seeded rows differ. Target the testing environment via `<project-root>/docs/database-tools.md` for both REPL and query tool; without it, both hit the default connection's local dev database.
 
 ## Discovery Workflow
 
@@ -61,7 +59,7 @@ Avoid using migration files, schema dumps, seeders, or operations as proxies for
 
 When a raw SQL count disagrees with a UI widget:
 
-1. Read the widget's query path with the code navigation tool (see `<project-root>/docs/code-navigation.md` in the project root) — find the repository's `getDatatableQuery` / `getStDatatable`.
+1. Read the widget's query path with the code navigation tool (`<project-root>/docs/code-navigation.md`) — find the repository's `getDatatableQuery` / `getStDatatable`.
 2. Reproduce every JOIN and WHERE with the query tool `SELECT COUNT(*)`.
 3. If counts still differ, the gap is almost always in `queryAll`/`queryScope` — company precedence unions, partial-access filters, or cancelled-status exclusions the raw SQL omits.
 4. Add filters one at a time until counts match. The missing filter is the root cause.
@@ -91,7 +89,5 @@ Never "fix" the widget to match the raw count without identifying the filter gap
 
 ## Pitfalls
 
-- Schema inspection `summary` omits indexes and FKs; re-call with `filter` + `include_column_details` for real work.
-- Views and routines are hidden by default; set `include_views` / `include_routines` when queries reference them.
-- The REPL boots the full app — slow startup (~seconds). Batch questions into one session.
+- The REPL boots slowly (~seconds) — batch questions into one session.
 

@@ -534,7 +534,7 @@ print('graph.graphml written - open in Gephi, yEd, or any GraphML tool')
 # Starts a stdio MCP server exposing graph query tools
 
 ```bash
-python3 -m graphify.serve graphify-out/graph.json
+$(cat graphify-out/.graphify_python) -m graphify.serve graphify-out/graph.json
 ```
 
 ## Step 8 - Token reduction benchmark (only if total_words > 5000)
@@ -795,7 +795,7 @@ except RuntimeError as e:
 # Starts background watcher that auto-rebuilds graph on changes
 
 ```bash
-python3 -m graphify.watch INPUT_PATH --debounce 3
+$(cat graphify-out/.graphify_python) -m graphify.watch INPUT_PATH --debounce 3
 ```
 
 ## git commit hook

@@ -5,7 +5,7 @@ description: "Use when testing or verifying a pull request end-to-end — exerci
 
 ## Required `<project-root>/docs` reads
 
-Read these project-root spec files before testing the PR (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+Read via shell before testing the PR — may be gitignored. Missing → note the gap; never invent contents.
 
 - `<project-root>/docs/browser-automation.md`
 - `<project-root>/docs/code-navigation.md`
@@ -13,11 +13,11 @@ Read these project-root spec files before testing the PR (use shell `cat`/`ls` �
 - `<project-root>/docs/git-hosts.md`
 - `<project-root>/docs/issue-trackers.md`
 
-Test whether a PR **works**, not whether it reads well — and whether the **system** still works around it. The diff marks where the change landed; the blast radius is every behavior, caller, and data artifact it can break. A green feature check inside a broken system is a failed test. Load the PR's purpose and linked tickets/specs, check out the branch, drive the system as a regular user, execute the data artifacts it ships, verify persisted effects in the database, confirm coverage of every related card, and sweep the system for regressions. READ-ONLY — no code changes, no commits, nothing posted to the PR. Findings go to chat.
+Test whether a PR **works**, not whether it reads well — and whether the **system** still works around it. The diff marks where the change landed; the blast radius is every behavior, caller, and data artifact it can break. A green feature check inside a broken system is a failed test.
 
 ### 1. Interpret Arguments
 
-- PR number/URL → `<pr-ref>`; extra focus areas or constraints → `<additional-context>`; no arguments → derive from conversation or the open PR for the current branch (git host list PRs, see `<project-root>/docs/git-hosts.md` in the project root).
+- PR number/URL → `<pr-ref>`; extra focus areas or constraints → `<additional-context>`; no arguments → derive from conversation or the open PR for the current branch (git host list PRs, `<project-root>/docs/git-hosts.md`).
 
 ### 2. Load PR Context
 
@@ -29,7 +29,7 @@ Classify `<changes>`. Flag **data artifacts** — migrations, seeders, operation
 
 For each `<ticket-refs>` entry, load the ticket via the issue tracker tool (see `<project-root>/docs/issue-trackers.md`): body, every comment, checklists (e.g. Implementation/Validation sections), attachments.
 
-**Follow nested links.** A PR commonly links to a git host issue that itself links to a card on another platform — the real requirements live on the inner card. After loading each ticket, scan its body, comments, checklists, and attachments for references to other issues/cards on any platform. Load each new reference, repeat the scan on it, and add it to `<ticket-refs>` until no new refs surface. Dedupe visited refs so cross-linked tickets don't loop. Every nested ticket contributes to `<expected-outcomes>`.
+**Nested links:** traverse per `<project-root>/docs/issue-trackers.md` — the real requirements may live on an inner card. Add each ref found to `<ticket-refs>`; every nested ticket contributes to `<expected-outcomes>`.
 
 Extract `<expected-outcomes>` — one entry per acceptance criterion, validation item, or spec requirement the PR must deliver. A linked ticket that fails to load → record a gap, don't guess its criteria.
 
@@ -39,7 +39,7 @@ Build `<coverage-map>`: map each `<expected-outcomes>` entry to the diff files/m
 
 ### 4. Align Local Branch
 
-Record `<previous-branch>` via `git branch --show-current`. Uncommitted changes → STOP, ask user to stash/commit via the interactive question tool when one exists. Check out via git host checkout PR or CLI fallback per `<project-root>/docs/git-hosts.md`. Checkout fails → STOP. Restore `<previous-branch>` when testing ends.
+Record `<previous-branch>` via `git branch --show-current`. Uncommitted changes → STOP, ask user to stash/commit via the environment's interactive question tool when one exists. Check out via git host checkout PR or CLI fallback per `<project-root>/docs/git-hosts.md`. Checkout fails → STOP. Restore `<previous-branch>` when testing ends.
 
 ### 5. Build the Test Plan
 

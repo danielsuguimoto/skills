@@ -5,17 +5,17 @@ description: "Use after a pull request is merged and deployed — find customer-
 
 ## Required `<project-root>/docs` reads
 
-Read these project-root spec files before post-merge cleanup (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+Read via shell before post-merge cleanup — may be gitignored. Missing → note the gap; never invent contents.
 
 - `<project-root>/docs/git-hosts.md`
 - `<project-root>/docs/issue-trackers.md`
 - `<project-root>/docs/workspace-isolation.md`
 
-Close the loop on shipped work: tell customer-facing tickets their issue is resolved, then tear down the workspace the work happened in. No code changes, no commits. Drafts go to a human for review — the agent never replies to a customer directly.
+Drafts go to a human for review.
 
 ### 1. Interpret Arguments
 
-- PR number/URL → `<pr-ref>`; no arguments → derive from conversation or the most recently merged PR on the current branch (git host list PRs with merged state, see `<project-root>/docs/git-hosts.md` in the project root); extra guidance → `<additional-context>`.
+- PR number/URL → `<pr-ref>`; no arguments → derive from conversation or the most recently merged PR on the current branch (git host list PRs with merged state, `<project-root>/docs/git-hosts.md`); extra guidance → `<additional-context>`.
 
 ### 2. Load PR Context
 
@@ -27,7 +27,7 @@ View the PR via git host view PR (see `<project-root>/docs/git-hosts.md`). Extra
 
 For each `<ticket-refs>` entry, load the ticket via the issue tracker tool (see `<project-root>/docs/issue-trackers.md`): body, every comment, attachments.
 
-**Follow nested links.** A PR commonly links to a git host issue that itself links to a card on another platform — the customer thread may live on the inner card. After loading each ticket, scan its body, comments, and attachments for references to other issues/cards on any platform. Load each new reference, repeat the scan on it, and add it to `<ticket-refs>` until no new refs surface. Dedupe visited refs so cross-linked tickets don't loop.
+**Nested links:** traverse per `<project-root>/docs/issue-trackers.md` — the customer thread may live on an inner card. Add each ref found to `<ticket-refs>`.
 
 ### 4. Classify Tickets
 
@@ -36,7 +36,7 @@ Split loaded tickets into `<customer-tickets>` and `<internal-tickets>`:
 - **Customer-success ticket** — filed in the customer-facing tracker where customers report issues (per `<project-root>/docs/issue-trackers.md`), or carries a customer requester/thread. This is where a resolution reply belongs.
 - **Internal ticket** — planning cards, spec tickets, dev tasks. No customer reply.
 
-Ambiguous classification → ask the user via the interactive question tool when one exists rather than drafting to the wrong audience.
+Ambiguous classification → ask the user via the environment's interactive question tool when one exists rather than drafting to the wrong audience.
 
 ### 5. Draft Resolution Replies
 

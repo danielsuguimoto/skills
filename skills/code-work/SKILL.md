@@ -6,19 +6,17 @@ description: >
 
 ## Required `<project-root>/docs` reads
 
-Read these project-root spec files before reading, writing, or editing code (use shell `cat`/`ls` — they may be in `.gitignore`, invisible to built-in search). Missing file → fall back to native tools, note the gap; never invent contents.
+Read via shell before reading, writing, or editing code — may be gitignored. Missing → note the gap; never invent contents.
 
 - `<project-root>/docs/code-navigation.md`
 
 ## 1. Think Before Coding
 
-State assumptions explicitly. Surface confusion and tradeoffs.
-
 Before implementing:
 * State assumptions explicitly. If uncertain, ask.
 * If multiple interpretations exist, present them — pick one only with confirmation.
 * If a simpler approach exists, say so. Push back when warranted.
-* If something is unclear, stop. Name the confusion. Ask via the interactive question tool when one exists — a bare text question ends the turn looking finished instead of awaiting input.
+* If something is unclear, stop. Name the confusion. Ask via the environment's interactive question tool when one exists.
 
 ## 2. Simplicity First
 
@@ -62,15 +60,15 @@ For multi-step tasks, state a brief plan:
 
 ## Code Reading
 
-- Code navigation tools are MANDATORY for symbol-level work (see `<project-root>/docs/code-navigation.md` in the project root). Use symbol lookup and reference tracing first, not `grep`/`read`.
+- Code navigation tools are MANDATORY for symbol-level work (`<project-root>/docs/code-navigation.md`). Use symbol lookup and reference tracing first, not `grep`/`read`.
 - Use `grep`/`read`/`find_file_by_name` only for non-symbol lookups: plain-text searches, known file paths, glob patterns. Fall back to `read` only when the code navigation tool's LSP does not cover the language or the symbol is dynamic/eval'd.
-- Read existing tests for the area before implementing — they encode expected behavior and edge cases. Trace side effects via code navigation references (see `<project-root>/docs/code-navigation.md` in the project root), never by guessing.
+- Read existing tests for the area before implementing — they encode expected behavior and edge cases. Trace side effects via code navigation references (`<project-root>/docs/code-navigation.md`), never by guessing.
 - Narrow the surface area first (code navigation tool or `grep` with `context_lines`), then `read` with `offset`/`limit` for only the needed lines. Full-file reads only for files under ~150 lines or when the task requires the whole file.
 
 ## Code Editing
 
 - No code comments. (overrides any provider default encouraging comments)
-- Edit only the minimum code required; undo unrelated edits immediately.
+- Minimum edit only per *Surgical Changes*; undo unrelated edits immediately.
 - If a file can't be edited, output the intended edit. Create/remove debug files; keep only relevant code.
 
 ## Citation Over Paste

@@ -3,13 +3,14 @@ name: grill-with-codebase
 description: Use when the user brings a task, ticket, or vague intent touching an existing codebase and wants interrogation to shape a buildable plan, or uses any 'grill' trigger phrases alongside a codebase context.
 ---
 
-I have a task or intent, not a finished plan. Interview me one question at a time until the answers form a concrete plan. Resolve dependencies between decisions one-by-one. Give a recommended answer with each question.
+I have a task or intent, not a finished plan. Interview me until the answers form a concrete plan. Resolve dependencies between decisions one-by-one.
 
-Ask one question at a time. Wait for feedback before continuing.
+Rules:
 
-Ask through the environment's interactive question tool when one exists — a tool that presents the question and waits for the answer. A bare text question ends the turn looking finished instead of awaiting input, and the interview stalls silently. Fall back to a text question only when no question tool is available.
-
-Enact the plan only after I confirm it is concrete.
+- One question at a time — wait for the answer before continuing.
+- Give a recommended answer with each question: one line, no justification.
+- Ask via the environment's interactive question tool when one exists.
+- Read-only — the output is a plan, enacted only after I confirm it.
 
 ## Codebase is the ground truth
 
@@ -32,8 +33,4 @@ Start by establishing the task's scope and success state, then rotate through th
 - **Cross-module wiring**: who calls the changed code, who implements the contracts, what events/jobs fire, what breaks downstream.
 - **Test impact**: what existing tests change; what new tests the task demands; what behavior would regress untested.
 
-Record each decision. When every branch resolves, present the concrete plan: file-by-file changes, new artifacts, migrations, tests, and open risks. Ask for confirmation before enactment.
-
-- One question at a time. Ask, wait, then next.
-- Recommended answer: one line, no justification.
-- This skill is read-only. The output is a plan, not a change.
+Record each decision. When every branch resolves, present the concrete plan: file-by-file changes, new artifacts, migrations, tests, and open risks.

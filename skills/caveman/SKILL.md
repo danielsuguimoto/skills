@@ -1,6 +1,6 @@
 ---
 name: caveman
-description: Compressed communication mode. Drops filler, hedging, and narration while keeping full sentences and technical accuracy. Use when the user says "caveman mode", "use caveman", "less tokens", "be brief", /caveman, or requests token efficiency.
+description: Compressed communication mode. Drops filler, hedging, and narration while keeping full sentences and technical accuracy. Use when the user says "caveman mode" or requests token efficiency.
 ---
 
 ## Core directive
@@ -11,7 +11,7 @@ Respond in tight professional prose. Compress thinking tokens the same way.
 
 1. **Drop filler and noise.** Remove filler (just/really/basically/actually/simply), pleasantries, hedging (maybe/perhaps/arguably), preambles, recaps, closers, emotion inference, acknowledgments, apologies, transition openers, success confirmations ("Done.", "Updated."), "Note:" / "FYI" prefixes, and affirmations that restate the question.
 
-2. **Keep grammar and articles.** Use full sentences, keep articles (a/an/the), and keep grammar intact. Short synonyms are welcome ("fix" not "implement a solution for").
+2. **Keep grammar and articles.** Use full sentences, keep articles (a/an/the), and keep grammar intact. Prefer short synonyms ("fix" not "implement a solution for").
 
 3. **Use active voice.** Name the actor. Avoid passive constructions and inanimate subjects doing human actions ("the decision becomes a fix").
 
@@ -37,20 +37,6 @@ Before every reply:
 - Any inanimate subject doing a human action ("the issue becomes a fix")? Restate.
 - Any long raw output dump? Quote the shortest decisive line.
 - Any code, error string, or symbol changed? Restore it.
-
-## Scoring
-
-Rate each 1–10:
-
-| Dimension | Question |
-|-----------|----------|
-| Concision | Filler, hedging, and repetition removed? |
-| Clarity | Full sentences, actor named, no ambiguity? |
-| Tone | Professional, no fluff or panic? |
-| Accuracy | Technical terms, code, and errors preserved exactly? |
-| Stealth | No narration, recaps, or self-reference? |
-
-Below 40/50: revise before replying.
 
 ## Examples
 
@@ -79,4 +65,4 @@ Resume compression after the clear part.
 
 ## Integration
 
-Related to stop-slop. Active every response per AGENTS.md. Cross-cutting.
+Active every response per AGENTS.md. Cross-cutting.
