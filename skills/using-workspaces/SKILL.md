@@ -56,7 +56,7 @@ Spec names no mechanism but the harness provides one (dedicated tool/command/fla
 Only when neither applies — the fallback in the spec's Tool Details. Around whichever mechanism runs:
 
 - **Directory**: explicit user-declared location wins; else the spec's documented location; else a project-local hidden directory. Project-local → verify ignored first (`git check-ignore -q <dir>`); not ignored → add to `.gitignore` and commit before creating.
-- **Sandbox**: permission error on creation → tell the user the sandbox blocked it; work in place, run setup + baseline there.
+- **Sandbox**: permission error on creation → tell the user the sandbox blocked it; work in place, run setup there.
 
 Spec documents no fallback either → ask which mechanism to use; offer to write it into `<project-root>/docs/workspace-isolation.md`.
 
@@ -64,15 +64,7 @@ Spec documents no fallback either → ask which mechanism to use; offer to write
 
 Auto-detect and run setup inside the workspace from the manifests present. Copy/snapshot mechanisms may omit regenerable artifacts (`node_modules`, `target`, `dist`, caches) — dependency install is mandatory there even when the source checkout was fully set up.
 
-## Step 3: Verify Clean Baseline
-
-Run the project's test command (`npm test`/`cargo test`/`pytest`/`go test ./...`). Failures → report, ask whether to proceed or investigate. Passing → report ready:
-
-```
-Workspace ready at <full-path>
-Tests passing (<N> tests, 0 failures)
-Ready to implement <feature-name>
-```
+Report `Workspace ready at <full-path>`.
 
 ## Common Rationalizations
 
@@ -82,4 +74,4 @@ Ready to implement <feature-name>
 | "Creating it directly is quicker than reading the spec" | The configured mechanism owns placement, hooks, cleanup. Bypassing it creates phantom state outside its registry — the #1 mistake. |
 | "The workspace directory is surely ignored already" | Run `git check-ignore`. An unignored workspace directory commits the whole tree into the repo. |
 | "A detached HEAD means something is broken" | Snapshot mechanisms intentionally copy with detached HEAD. Commit on it; create the branch when shipping. |
-| "The workspace is fresh — baseline tests can wait" | A dirty baseline makes every later failure ambiguous. Run the tests now. |
+| "A quick test run proves the workspace is good" | Creation and setup are the deliverable; downstream work owns verification. |
