@@ -69,11 +69,11 @@ Ambiguous → ask the user before posting. Both apply → default to debug (root
 
 **Analyze Root Cause:** synthesize `<root-cause>`, `<introduced-by>` (culprit commit/merge/deploy if identifiable), `<affected-components>`, `<impact-scope>` (single user/company/all), `<reproduction-conditions>`, `<potential-fixes>` (no implementing). Confirmed `<introduced-by>` → lead recommendations with the revert over a forward fix. Done when: reproduced · 3–5 hypotheses ranked · winner tested · cause/components/scope/conditions stated with evidence · culprit identified or ruled out · gaps named.
 
-**Shape Findings:** map `<investigation-findings>` to the note, carrying every field forward: `<note-title>`, `<issue-summary>`, `<root-cause-analysis>`, `<confidence>`, `<evidence>`, `<affected-areas>`, `<alternative-hypotheses>`, `<recommendations>`, `<gaps>` — with file paths and line numbers → `<ticket-findings>`.
+**Shape Findings:** map `<investigation-findings>` to a compact note: `## <note-title>` · `<issue-summary>` (one or two lines) · `<root-cause-analysis>` including `<introduced-by>` when identified · `<evidence>` as `file:line` and query citations · `<confidence>` · `<recommendations>` · `<gaps>`. Add `<affected-areas>` or `<alternative-hypotheses>` only when they change what the reader does next. Omit a field that would be empty — no TBD placeholders → `<ticket-findings>`.
 
 ### Ticket Framing
 
-Per `<project-root>/docs/issue-trackers.md`. Private note for internal audience: technical, concise, cite file:line, no full code blocks, no client-facing tone (no "Hi", "Thanks", second-person to customer).
+Per `<project-root>/docs/issue-trackers.md`. The note is read by downstream agents (the spec phase reads prior comments) and the team — write it per `writing-for-agents`: compact reference structure, `file:line` citations, no full code blocks, no client-facing tone (no "Hi", "Thanks", second-person to customer).
 
 ### Sync
 
@@ -81,5 +81,5 @@ Always sync findings back — the spec phase reads prior comments; skipping brea
 
 ## Notes
 
-- **Traceability (required):** `<question>`/`<additional-context>` from skill arguments is invisible to the ticket reader — the findings MUST restate it (quoted preamble or "Question:"/"Context:" block) before the answer. Skip only when already visible in the ticket body/comments.
+- **Traceability:** when `<question>`/`<additional-context>` came from skill arguments and isn't visible on the ticket, open the findings with one `Question:`/`Context:` line so downstream readers have it.
 - Final output: ticket URL (+ note title for debug). Don't paste full findings back.

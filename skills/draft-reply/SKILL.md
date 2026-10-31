@@ -59,13 +59,14 @@ Write `<draft-reply>` as a message the human can send with minimal edits:
 
 - **Audience match.** Tone/depth per `<requester-profile>` + `<additional-context>`. Customer-facing default: greet, plain language, no jargon, no `file:line` in the body. Internal reviewer: technical, cite `file:line`, no client tone.
 - **Answer first.** Lead with the answer to `<reply-target>`; background/caveats after.
+- **Human prose.** Write `<draft-reply>` per the `writing-for-humans` skill — it is text for a human reader: no staging, stock vocabulary, formatting tics, or chat residue, and keep the requester's own vocabulary where the draft mirrors their words.
 - **Ground every claim.** Technical assertions trace to `<ticket-facts>`, `<supporting-context>`, or `<doc-context>`; ungrounded → `[NEEDS-REVIEW: <what's uncertain>]`, not stated as fact.
 - **No invented details.** No fabricated dates, IDs, statuses, quotes — say what's missing, flag for the human.
 - **Length matches the question.** One-line answer for a one-line question; structured for multi-part. No padding.
 
 ### Shape the Note
 
-One private note containing: `## Draft reply` heading · `<draft-reply>` body (ready to send) · `## Supporting context` (internal only: `<reply-target>`, `<requester-profile>`, key citations, `[NEEDS-REVIEW]` items with reasons — the human strips it before sending).
+The private note is `<draft-reply>` and nothing else — ready to send verbatim. No headings, supporting sections, or analysis. `[NEEDS-REVIEW]` flags stay inline in the body for the human to resolve before sending.
 
 ### Sync
 
@@ -73,7 +74,6 @@ Post via the issue tracker sync tool (`<project-root>/docs/issue-trackers.md`): 
 
 ## Notes
 
-- **Traceability (required):** `<question>`/`<additional-context>` from skill arguments is invisible to the ticket reader — the note MUST restate it ("Question:"/"Context:" preamble in supporting section) before the draft. Skip only when already visible in the ticket.
 - Attachments download location: `<project-root>/docs/issue-trackers.md`.
 - Final output: ticket URL of the posted note — one line confirming, never the full draft pasted back.
 - Revision after posting → edit the note in place per provider rules; never post a second draft.
