@@ -1,29 +1,20 @@
 ---
 name: using-code-navigation
-description: >
-  Use code navigation tools for symbol-level code work instead of grep/read: finding
-  classes, methods, functions, references, and cross-module wiring. Activate when
-  tracing, navigating, or refactoring named code entities in an LSP-supported language,
-  or for project onboarding/memory capture. Do NOT activate for plain-text searches,
-  known file paths, or non-code files — use grep/glob/read there.
+description: "Use code navigation tools for symbol-level work instead of grep/read: finding classes, methods, references, cross-module wiring — when tracing, navigating, or refactoring named entities (LSP-supported languages) or for onboarding/memory capture. For plain-text searches, known paths, or non-code files use grep/glob/read."
 ---
 
 ## Required `<project-root>/docs` reads
 
-Read via shell before any code navigation lookup — may be gitignored. Missing → note the gap; never invent contents.
+Shell-read before any code navigation lookup; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`, `<project-root>/docs/memory-providers.md`
 
-- `<project-root>/docs/code-navigation.md`
-- `<project-root>/docs/memory-providers.md`
-
-Code navigation tools provide LSP-backed semantic operations (`<project-root>/docs/code-navigation.md`) — prefer over `grep`/`read` for symbol-level work; token-efficient and accurate.
+LSP-backed semantic ops (`code-navigation.md`) — prefer over `grep`/`read` for symbol-level work.
 
 ## Project Activation (MANDATORY first step)
 
 Every code navigation tool requires an active project — no exceptions.
 
-1. List tools on the server once per session (`<project-root>/docs/code-navigation.md`).
-2. Activate project by name (folder name; full path accepted) (`<project-root>/docs/code-navigation.md`).
-3. Read the response — it lists existing memories.
+1. List tools on the server once per session (`code-navigation.md`).
+2. Activate project by name (folder name; full path accepted) — the response lists existing memories.
 
 Re-activate: every new session, after `cwd` changes repos, or on any `No active project` error (pick the matching name from the error) — it's a missing-activation error, not an outage; activate and retry.
 
@@ -43,11 +34,11 @@ Re-activate: every new session, after `cwd` changes repos, or on any `No active 
 | Lint/type errors for a file | Get diagnostics | Before/after edits |
 | Persist project knowledge | Write memory | Recall via read/list memories |
 
-Exact tool names and arguments: `<project-root>/docs/code-navigation.md`.
+Exact tool names and arguments: `code-navigation.md`.
 
 ## Name Paths
 
-`find_symbol` matches the in-file symbol tree, not the filesystem (`<project-root>/docs/code-navigation.md` for details).
+`find_symbol` matches the in-file symbol tree, not the filesystem (`code-navigation.md` for details).
 
 - `"method"` → any symbol named `method` · `"Class/method"` → suffix match · `"/Class/method"` → exact
 - Overloads: `[i]` (`"Class/method[0]"`) · `substring_matching=true`: `"Foo/get"` matches `getValue`, `getData`
@@ -61,7 +52,7 @@ Exact tool names and arguments: `<project-root>/docs/code-navigation.md`.
 
 ## Memories
 
-The navigation tool may provide memory (`<project-root>/docs/memory-providers.md`): per-project markdown notes, same activate-project requirement. Write/edit/delete/rename need `editing` mode — `Tool ... is not active` → add `editing` to `base_modes`/`default_modes` (`<project-root>/docs/code-navigation.md`).
+The navigation tool may provide memory (`memory-providers.md`): per-project markdown notes, same activate-project requirement. Write/edit/delete/rename need `editing` mode — `Tool ... is not active` → add `editing` to `base_modes`/`default_modes` (`code-navigation.md`).
 
 Operations: list memories (topic filter) · read / write / edit / delete / rename memory.
 

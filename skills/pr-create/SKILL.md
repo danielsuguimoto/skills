@@ -5,16 +5,11 @@ description: "Use when creating or opening a pull request for the current branch
 
 ## Required `<project-root>/docs` reads
 
-Read via shell before creating the PR — may be gitignored. Missing → note the gap; never invent contents.
-
-- `<project-root>/docs/git-hosts.md`
-- `<project-root>/docs/issue-trackers.md`
+Shell-read before creating the PR; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`, `<project-root>/docs/issue-trackers.md`
 
 ## Operations
 
-MCP tools take business-level inputs (title, body, base, head). Never use CLI flags. Skip `--body-file` temp-file steps when using MCP.
-
-Operations — all git host operations (`<project-root>/docs/git-hosts.md`, CLI fallback per same): detect branch+default base, check uncommitted, fetch base+compute diff, push branch, create issue, create PR, view PR, check auth. Ticket commenting uses the issue tracker update-ticket operation (`<project-root>/docs/issue-trackers.md`).
+MCP tools take business-level inputs (title, body, base, head) — no CLI flags, no `--body-file` temp files. All git host ops per `git-hosts.md` (detect branch+default base, check uncommitted, fetch base+diff, push, create issue, create/view PR, auth). Ticket comments via issue tracker update-ticket (`issue-trackers.md`).
 
 As a subskill, the invoking skill owns Steps 1-10; on "Nothing to ship.", proceed to Step 3 blockers.
 
@@ -24,7 +19,7 @@ Base branch → `<base>`; auto-create ticket → `<ticket-mode>` = `auto`; ticke
 
 ### 2. Load & Analyze Changes
 
-- **Context.** `git branch --show-current` → `<current-branch>` (`<project-root>/docs/git-hosts.md`). No `<base>` → detect via `git remote show origin | grep "HEAD branch" | awk '{print $NF}'`. `<resolved-base>` = user `<base>` or detected default (strip `origin/`). Use `<remote-base>` = `origin/<resolved-base>` for all comparisons — the local base is often stale.
+- **Context.** `git branch --show-current` → `<current-branch>` (`git-hosts.md`). No `<base>` → detect default base per spec fallback. `<resolved-base>` = user `<base>` or detected default (strip `origin/`). Use `<remote-base>` = `origin/<resolved-base>` for all comparisons — the local base is often stale.
 - **Changes.** `git status --short` + `git fetch origin <resolved-base>`; diff against `<remote-base>` with **three-dot syntax** (`...`) — mandatory, excludes base-branch-only changes: ahead log, `git diff --stat`, `git diff` → `<changes>`.
 
 ### 3. Check Blockers
@@ -57,7 +52,7 @@ Otherwise: `provided` → use it; `skip` → `SKIPPED`.
 
 ### 8. Push Branch
 
-Push with upstream via git host push or `git push -u origin <current-branch>` (`<project-root>/docs/git-hosts.md`). Report `Push: yes/no` (`no` if "Everything up-to-date") → `<push-status>`, `<pushed-line>`.
+Push with upstream via git host push or `git push -u origin <current-branch>` (`git-hosts.md`). Report `Push: yes/no` (`no` if "Everything up-to-date") → `<push-status>`, `<pushed-line>`.
 
 ### 9. Create PR
 
@@ -82,4 +77,4 @@ Use `<pr-title>` + `<pr-body>` (already reflects `<pr-template>`). Body when `<p
 
 Skip when `<ticket-url>` = `SKIPPED` AND `<pr-body>` references no issues.
 
-Collect every unique issue reference: `<ticket-url>` (unless `SKIPPED`) + issue URLs or `#N`/`OWNER/REPO#N` in `<pr-body>` (`#N` resolves against the current repo). For each, post `PR: <pr-url>` via the issue tracker update-ticket operation (`<project-root>/docs/issue-trackers.md`); CLI fallback `gh issue comment <issue-ref> --body "PR: <pr-url>"`. Report any ticket lacking a matching tracker operation — don't skip silently.
+Collect every unique issue reference: `<ticket-url>` (unless `SKIPPED`) + issue URLs or `#N`/`OWNER/REPO#N` in `<pr-body>` (`#N` resolves against the current repo). For each, post `PR: <pr-url>` via the issue tracker update-ticket operation (`issue-trackers.md`); CLI fallback `gh issue comment <issue-ref> --body "PR: <pr-url>"`. Report any ticket lacking a matching tracker operation — don't skip silently.

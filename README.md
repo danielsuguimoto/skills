@@ -53,23 +53,7 @@ Each project using these skills must create a `<project-root>/docs` folder with 
 
 ### Expected spec files
 
-| File | Covers |
-|------|--------|
-| `<project-root>/docs/issue-trackers.md` | Issue/ticket tracking tools — load, sync, list tickets |
-| `<project-root>/docs/bug-trackers.md` | Bug tracking and error monitoring tools — query errors, stack traces |
-| `<project-root>/docs/observability-tools.md` | Monitoring and incident platforms — query alerts, incidents, uptime |
-| `<project-root>/docs/mcp-servers.md` | MCP server interaction — list tools, call tools, discovery protocol |
-| `<project-root>/docs/git-hosts.md` | Git hosting platforms — PRs, reviews, issues, branches, commits |
-| `<project-root>/docs/database-tools.md` | Database inspection — schema, queries, REPL operations |
-| `<project-root>/docs/code-navigation.md` | LSP-backed code navigation — find symbols, trace references, refactor |
-| `<project-root>/docs/browser-automation.md` | Browser automation — snapshots, element interaction, downloads |
-| `<project-root>/docs/knowledge-graphs.md` | Knowledge graph tools — build, query, path, explain |
-| `<project-root>/docs/container-clis.md` | Container CLI wrappers — lifecycle, exec, logs, scripts |
-| `<project-root>/docs/memory-providers.md` | Persistent memory — list, read, write, edit, delete memories |
-| `<project-root>/docs/terminal-wrappers.md` | Terminal token compression wrappers — command prefixing, output filtering |
-| `<project-root>/docs/terminal-tools.md` | Non-standard terminal tools replacing usual defaults |
-| `<project-root>/docs/workspace-isolation.md` | Isolated workspace mechanisms — detect, create, list, remove workspaces |
-| `<project-root>/docs/doc-lookup.md` | Documentation lookup — framework/library/SDK docs, search fallbacks |
+The canonical list is the **Generate** table in `skills/setup-skills/SKILL.md` — one file per tool category: issue/bug tracking, observability, MCP servers, git hosting, databases, code navigation, browser automation, knowledge graphs, container CLIs, memory, terminal wrappers/tools, workspace isolation, doc lookup.
 
 Each spec file must define: the operations available, their input/output schemas, and expected behavior rules. Agents read these files to learn how to interact with the project's specific tool implementations.
 

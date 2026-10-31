@@ -6,16 +6,13 @@ description: >
 
 ## Required `<project-root>/docs` reads
 
-Read via shell before reading, writing, or editing code — may be gitignored. Missing → note the gap; never invent contents.
-
-- `<project-root>/docs/code-navigation.md`
+Shell-read before reading, writing, or editing code; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`
 
 ## 1. Think Before Coding
 
-- State assumptions explicitly; uncertain → ask.
-- Multiple interpretations → present them; pick one only with confirmation.
+- State assumptions explicitly; multiple interpretations → present them, pick one only with confirmation.
 - A simpler approach exists → say so; push back when warranted.
-- Unclear → stop, name the confusion, ask via the interactive question tool when one exists.
+- Unclear → stop, name the confusion, ask.
 
 ## 2. Simplicity First
 
@@ -37,10 +34,10 @@ Multi-step tasks → brief plan: `1. [Step] → verify: [check]`
 
 ## Code Reading
 
-- Code navigation tools are MANDATORY for symbol-level work (`<project-root>/docs/code-navigation.md`) — symbol lookup and reference tracing first, not `grep`/`read`.
+- Code navigation tools are MANDATORY for symbol-level work (`code-navigation.md`) — symbol lookup and reference tracing first, not `grep`/`read`.
 - `grep`/`read`/`find_file_by_name` only for non-symbol lookups: plain text, known paths, glob patterns. `read` fallback only when the LSP lacks the language or the symbol is dynamic/eval'd.
 - Read the area's tests first — they encode expected behavior and edge cases. Trace side effects via references, never guessing.
-- Narrow the surface first (navigation tool or `grep` + `context_lines`), then `read` with `offset`/`limit` for needed lines only. Full-file reads only under ~150 lines or when the task requires the whole file.
+- `read` with `offset`/`limit` for needed lines — full-file reads only under ~150 lines or when the task requires the whole file.
 
 ## Code Editing
 

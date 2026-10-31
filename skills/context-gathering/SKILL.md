@@ -1,16 +1,11 @@
 ---
 name: context-gathering
-description: MANDATORY skill. Invoke BEFORE any codebase exploration, code reading, writing, editing, or answering about code.
+description: "MANDATORY — invoke BEFORE any codebase exploration, code reading/writing/editing, or answering about code."
 ---
 
 ## Required `<project-root>/docs` reads
 
-Read via shell before codebase exploration, code reading/writing/editing, or answering about code — may be gitignored. Missing → note the gap; never invent contents.
-
-- `<project-root>/docs/code-navigation.md`
-- `<project-root>/docs/database-tools.md`
-- `<project-root>/docs/doc-lookup.md`
-- `<project-root>/docs/knowledge-graphs.md`
+Shell-read before codebase exploration, code reading/writing/editing, or answering about code; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`, `<project-root>/docs/database-tools.md`, `<project-root>/docs/doc-lookup.md`, `<project-root>/docs/knowledge-graphs.md`
 
 ## Core Principle
 
@@ -18,25 +13,25 @@ Never write code from assumptions. Flow: clarify target → map (codebase + data
 
 ### 1. Clarify the target
 
-A wrong target wastes the whole gather. Ambiguous → ask BEFORE exploring (goal, module/area, constraints) via the interactive question tool when one exists; `grill-with-codebase` if complex or under-specified. Still undefined after one round → **stop and say so**, list what's ambiguous, don't explore speculatively.
+A wrong target wastes the whole gather. Ambiguous → ask BEFORE exploring (goal, module/area, constraints); `grill-with-codebase` if complex or under-specified. Still undefined after one round → **stop and say so**, list what's ambiguous, don't explore speculatively.
 
 ### 2. Discover symbols
 
-Symbol routing per `code-work` → *Code Reading* (`<project-root>/docs/code-navigation.md`).
+Symbol routing per `code-work` → *Code Reading* (`code-navigation.md`).
 
 ### 3. Map the codebase
 
-- Knowledge graph output exists (`<project-root>/docs/knowledge-graphs.md`) → query it before raw source browsing; its wiki/report covers broad navigation and architecture.
+- Knowledge graph output exists (`knowledge-graphs.md`) → query it before raw source browsing; its wiki/report covers broad navigation and architecture.
 - Locate entry points, modules, dependencies; trace cross-module wiring via contracts/repositories; identify callers/callees; read similar implementations for patterns.
-- Target touches persisted state → query the DB: schema, row counts, EXPLAIN plans, sample rows (`<project-root>/docs/database-tools.md`). Live DB is ground truth.
+- Target touches persisted state → query the DB: schema, row counts, EXPLAIN plans, sample rows (`database-tools.md`). Live DB is ground truth.
 
 ### 4. Fetch current documentation
 
-Internal knowledge is outdated for frameworks/libraries/SDKs — use doc lookup tools (`<project-root>/docs/doc-lookup.md`). Verify API signatures, best practices, version-specific behavior, gotchas.
+Use doc lookup tools (`doc-lookup.md`): API signatures, best practices, version-specific behavior, gotchas.
 
 ### 5. Analyze conventions
 
-Identify: code style and format rules (config files), naming patterns, error handling and validation patterns, testing patterns and coverage, architecture patterns (module structure, repository/contract, DTOs).
+Identify: style/format rules (config files), naming, error handling/validation, testing patterns/coverage, architecture (module structure, contracts, DTOs).
 
 ### 6. Verify understanding
 

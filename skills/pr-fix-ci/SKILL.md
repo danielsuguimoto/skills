@@ -5,9 +5,7 @@ description: "Activate when a pull request has failing CI checks that require co
 
 ## Required `<project-root>/docs` reads
 
-Read via shell before fixing failing CI checks — may be gitignored. Missing → note the gap; never invent contents.
-
-- `<project-root>/docs/git-hosts.md`
+Shell-read before fixing failing CI checks; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`
 
 Fix failing CI checks on a PR: read logs, fix code, push, verify. Tools: git host (`<project-root>/docs/git-hosts.md`). Check source: `gh pr checks` / `gh pr view --json statusCheckRollup`.
 
@@ -17,11 +15,7 @@ Modes: `review` (default) or `auto` — `auto` skips the Step 10 approval gate. 
 `auto` → `<execution-mode>` = `auto`; PR number/URL → `<pr-ref>`; extra guidance → `<additional-context>`; otherwise → `review`.
 
 ### 2. Load PR Context
-Verify git host auth (`<project-root>/docs/git-hosts.md`). `git rev-parse --show-toplevel` → `<repo-path>` (use as `cwd`). View PR via git host view PR (includes checks) or fallback:
-```bash
-gh pr view <pr-number> --json number,title,headRefName,baseRefName,url,state,statusCheckRollup
-```
-Extract `<pr-branch>`, `<base-branch>`, `<pr-number>`, `<pr-url>`. `git branch --show-current` → `<current-branch>`.
+Verify git host auth (`git-hosts.md`). `git rev-parse --show-toplevel` → `<repo-path>` (use as `cwd`). View PR via git host view PR (includes checks) or spec CLI fallback. Extract `<pr-branch>`, `<base-branch>`, `<pr-number>`, `<pr-url>`. `git branch --show-current` → `<current-branch>`.
 
 ### 3. Align Local Branch
 `<pr-branch>` unavailable → STOP. Check out via git host checkout PR or `gh pr checkout <pr-number>` → `<active-branch>`; fails → STOP. No code edits until `<active-branch>` == `<pr-branch>`.
@@ -51,15 +45,10 @@ On `<active-branch>` — focused, minimal, existing patterns. Root cause, not sy
 Reproduce each fixed `<check>`'s `<failing-command>` locally (lint/build/test on changed files); confirm green. A check that can't run locally → state so, rely on Step 12 → `<validation-results>`, `<validation-passing>` (`yes`/`no`).
 
 ### 10. Approval Gate (mandatory in `review` mode)
-Never skip — only `decision: approved` counts. `<validation-passing>` = `no` → STOP. `auto` → skip to Step 11.
-
-Present gate: failing checks fixed, changed file count, local validation, `<not-fixing>` items (flaky/infra with suggested re-runs). Ask (header `Approval`): "Ready to commit and push?" `Go Ahead` → `approved`; `Needs Review` → `concerns` (requires feedback).
-
-- `approved` → Step 11. `concerns` → `<review-feedback>` → refine (8) → re-validate (9) → re-present. Repeat until `approved`.
-- `<changes-count>` = 0 (all non-`code`) → surface no-change state so user picks `Go Ahead` (no-op) or `Needs Review`.
+Same gate as `pr-fix` Step 9 — `review`/`auto` semantics, `Go Ahead`/`Needs Review` loop (refine → re-validate → re-present until `approved`). Present: failing checks fixed, file count, local validation, `<not-fixing>` items (flaky/infra with suggested re-runs). `<changes-count>` = 0 → surface no-change state.
 
 ### 11. Commit and Push (after `approved` or `auto`)
-`git add -A`, `git commit -m "<message>"` (lowercase, `<prefix>: <summary>`, under 50 chars), `git push origin <active-branch>`. Never generic messages like "fix ci". Do not poll CI or loop back — session ends after push.
+`git add -A`, `git commit -m "<message>"` (convention per `commit-and-push`), `git push origin <active-branch>`. Never generic messages like "fix ci". Do not poll CI or loop back — session ends after push.
 
 ## Output
 Summary of fixed checks, local validation, pushed state — one line per fix at the gate, e.g. "Fixed N failing checks across M files" + validation + "pushed to `<active-branch>`". Never claim CI green — unverified.

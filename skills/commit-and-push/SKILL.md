@@ -5,15 +5,13 @@ description: "Commit and push current changes."
 
 ## Required `<project-root>/docs` reads
 
-Read via shell before committing or pushing — may be gitignored. Missing → note the gap; never invent contents.
-
-- `<project-root>/docs/git-hosts.md`
+Shell-read before committing or pushing; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`
 
 ## Operations
 
-| Operation | Tool (`<project-root>/docs/git-hosts.md`) | CLI fallback |
+| Operation | Tool (`git-hosts.md`) | CLI fallback |
 |-----------|--------------|--------------|
-| Load change state | git host change scan | `git branch --show-current` + `git status --short` + `git diff --stat` + `git diff --cached --stat` + `git log @{u}..HEAD --oneline` |
+| Load change state | git host change scan | change-scan fallback per spec |
 | Stage and commit | git host commit (with `message`) | `git add -A` + `git commit -m "<message>"` |
 | Push to remote | git host push | `git push` (retry `git push -u origin <branch>` if no upstream) |
 
@@ -52,5 +50,5 @@ Commit:
 
 ### 5. Push to Remote
 
-Push via git host push or `git push`. If no upstream, retry `git push -u origin <branch>`. Store `<push-target>`. If push fails, STOP and report the error. On success, output `<hash>` and `<push-target>`.
+Push via git host push or `git push`; no upstream → `git push -u origin <branch>`. Fails → STOP, report the error. Success → output `<hash>` + `<push-target>`.
 

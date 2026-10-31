@@ -5,14 +5,9 @@ description: "Draft a reply to a ticket and post it as a private note for review
 
 ## Required `<project-root>/docs` reads
 
-Read via shell before drafting the reply — may be gitignored. Missing → note the gap; never invent contents.
+Shell-read before drafting the reply; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`, `<project-root>/docs/database-tools.md`, `<project-root>/docs/doc-lookup.md`, `<project-root>/docs/issue-trackers.md`
 
-- `<project-root>/docs/code-navigation.md`
-- `<project-root>/docs/database-tools.md`
-- `<project-root>/docs/doc-lookup.md`
-- `<project-root>/docs/issue-trackers.md`
-
-Load and analyze the ticket, gather context if needed, draft a reply, post it as a private note for human review. READ-ONLY — no code changes, commits, or public reply. The note is a draft the human sends; never post to the customer. The draft promises no work (changes, commits, PRs) unless `<additional-context>` explicitly asks.
+Load and analyze the ticket, gather context if needed, draft a reply, post it as a private note for human review. READ-ONLY — the note is a draft the human sends; it promises no work (changes, commits, PRs) unless `<additional-context>` explicitly asks.
 
 ## Additional Context
 
@@ -28,7 +23,7 @@ Ticket reference/URL → `<ticket-url>`; extra focus/constraints/audience hints 
 
 ### Load Ticket Context
 
-- `<ticket-url>` → issue tracker tool (`<project-root>/docs/issue-trackers.md`) with `source: <ticket-url>`, `comments: true` → `<ticket-context>`. Read all attachments with `relativePath` via `read` (images → describe; documents → extract key info → `<attachment-insights>`); note inaccessible gaps.
+- `<ticket-url>` → issue tracker tool (`issue-trackers.md`) with `source: <ticket-url>`, `comments: true` → `<ticket-context>`; attachments per spec → `<attachment-insights>`.
 - Otherwise → the request/conversation is `<ticket-context>`.
 - Missing or unloadable → STOP.
 
@@ -41,15 +36,15 @@ Read body + every comment in order. Derive:
 - `<ticket-facts>` — stated facts, constraints, prior answers, what's resolved.
 - `<open-gaps>` — still unclear/unaddressed items the reply must cover.
 
-Ambiguous about the reply target → ask the user before drafting (interactive question tool when one exists). Never guess `<reply-target>`.
+Ambiguous about the reply target → ask the user before drafting. Never guess `<reply-target>`.
 
 ### Gather Codebase Context (only if needed)
 
 Skip when the reply is purely procedural/status/non-technical and the ticket already answers it. Otherwise:
 
-- **Code**: distilled brief (entry points, callers, conventions, `file:line` citations) via `grep`/`find_file_by_name`/code navigation (`<project-root>/docs/code-navigation.md`); pass `<reply-target>`, relevant entities, module path → `<repo-context>`.
-- **Data**: reply depends on persisted state (counts, status, samples) → live DB via database tools (`<project-root>/docs/database-tools.md`) — ground truth over seeders/migrations/operations.
-- **Docs**: framework/library/API/version questions → doc lookup (`<project-root>/docs/doc-lookup.md`) → `<doc-context>`.
+- **Code**: distilled brief (entry points, callers, conventions, `file:line` citations) via `grep`/`find_file_by_name`/code navigation (`code-navigation.md`); pass `<reply-target>`, relevant entities, module path → `<repo-context>`.
+- **Data**: reply depends on persisted state (counts, status, samples) → live DB via database tools (`database-tools.md`) — ground truth.
+- **Docs**: framework/library/API/version questions → doc lookup (`doc-lookup.md`) → `<doc-context>`.
 
 Store as `<supporting-context>`; cite `file:line`/query results inline where they back a claim — never dump raw output into the draft.
 
@@ -70,10 +65,9 @@ The private note is `<draft-reply>` and nothing else — ready to send verbatim.
 
 ### Sync
 
-Post via the issue tracker sync tool (`<project-root>/docs/issue-trackers.md`): `refUrl` = `<ticket-url>`, `comments` = array with the single markdown string. Private/internal visibility per provider rules; no private-note concept → regular comment prefixed `DRAFT — not for sending yet:`. Follow provider sync rules. Fails → report error, provide draft in chat.
+Post via the issue tracker sync tool — convention per `issue-trackers.md` (`refUrl` = `<ticket-url>`; private note per provider, `DRAFT` prefix fallback). Fails → report error, provide draft in chat.
 
 ## Notes
 
-- Attachments download location: `<project-root>/docs/issue-trackers.md`.
 - Final output: ticket URL of the posted note — one line confirming, never the full draft pasted back.
 - Revision after posting → edit the note in place per provider rules; never post a second draft.

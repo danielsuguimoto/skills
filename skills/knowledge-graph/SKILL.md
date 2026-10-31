@@ -1,20 +1,16 @@
 ---
 name: knowledge-graph
-description: "Use for any question about a codebase, its architecture, file relationships, or project content — especially when a knowledge graph output exists. Turns any input (code, docs, papers, images, videos) into a persistent knowledge graph with community detection and query/path/explain tools."
+description: "Use for questions about a codebase, its architecture, or file relationships — or to turn inputs (code, docs, papers, images, videos) into a persistent knowledge graph with community detection and query/path/explain tools."
 argument-hint: "[path|query|subcommand]"
 ---
 
 ## Required `<project-root>/docs` reads
 
-Read via shell before any knowledge graph query or build — may be gitignored. Missing → note the gap; never invent contents.
+Shell-read before any knowledge graph query or build; may be gitignored — missing → note gap, never invent: `<project-root>/docs/knowledge-graphs.md`
 
-- `<project-root>/docs/knowledge-graphs.md`
-
-# /graphify (`<project-root>/docs/knowledge-graphs.md` for tool interface)
+# /graphify — tool interface: `knowledge-graphs.md`
 
 ## Usage
-
-Commands (`<project-root>/docs/knowledge-graphs.md`):
 
 | Command | Purpose |
 |---------|---------|
@@ -36,10 +32,6 @@ Commands (`<project-root>/docs/knowledge-graphs.md`):
 
 `UPPER_SNAKE` tokens in scripts (`INPUT_PATH`, `LABELS_DICT`, `IS_DIRECTED`, `NEO4J_URI`…) are placeholders — substitute actual values from the invocation.
 
-## Output Discipline
-
-Do not announce that you are using this skill or restate its rules — show the result, not the activation.
-
 ## When Invoked
 
 `/graphify --help` or `-h` (no other args) → print `## Usage` verbatim and stop. No path → use `.` — do not ask.
@@ -54,7 +46,7 @@ Import succeeds → print nothing, go to Step 2.
 
 <!-- script: see references/scripts.md §Step 2 - Detect files -->
 
-Do NOT cat or print the JSON — read silently, present a clean summary:
+Read silently — present a clean summary:
 
 ```
 Corpus: X files · ~Y words
@@ -69,14 +61,14 @@ Omit categories with 0 files. Then act:
 
 - `total_files` 0 → stop: "No supported files found in [path]."
 - `skipped_sensitive` non-empty → mention the count skipped, not the names.
-- `total_words` > 2,000,000 OR `total_files` > 200 → show the warning + top 5 subdirectories by file count, ask which subfolder via the interactive question tool when one exists; wait before proceeding.
+- `total_words` > 2,000,000 OR `total_files` > 200 → show the warning + top 5 subdirectories by file count, ask which subfolder; wait before proceeding.
 - Otherwise → Step 2.5 if video files detected, else Step 3.
 
 ### Step 2.5 - Transcribe video/audio (only if video files detected)
 
 Skip if `detect` returned zero `video` files. Transcribe to text, treat as docs in Step 3.
 
-**Step 1 - Whisper prompt:** write a one-sentence domain hint as `GRAPHIFY_WHISPER_PROMPT` (`<project-root>/docs/knowledge-graphs.md` for Whisper config). Skim file names in `graphify-out/.graphify_detect.json`, compose from dominant topics (e.g. `transformer.py`, `attention.md` → `"Machine learning research on transformer architectures. Use proper punctuation."`). Video-only corpus fallback: `"Use proper punctuation and paragraph breaks."`
+**Step 1 - Whisper prompt:** write a one-sentence domain hint as `GRAPHIFY_WHISPER_PROMPT` (`knowledge-graphs.md` for Whisper config). Skim file names in `graphify-out/.graphify_detect.json`, compose from dominant topics (e.g. `transformer.py`, `attention.md` → `"Machine learning research on transformer architectures. Use proper punctuation."`). Video-only corpus fallback: `"Use proper punctuation and paragraph breaks."`
 
 **Step 2 - Transcribe:** <!-- script: see references/scripts.md §Step 2.5 - Transcribe video / audio files -->
 
@@ -96,7 +88,7 @@ Two parts: **structural** (AST, deterministic, free) and **semantic** (your mode
 
 #### Part A - Structural extraction for code files
 
-For code files detected, run AST extraction (`<project-root>/docs/knowledge-graphs.md`):
+For code files detected, run AST extraction (`knowledge-graphs.md`):
 
 <!-- script: see references/scripts.md §Step 3 Part A - Structural extraction (AST) -->
 
@@ -148,45 +140,13 @@ Read `graphify-out/.graphify_analysis.json`; name each community in 2-5 plain-la
 
 <!-- script: see references/scripts.md §Step 5 - Label communities -->
 
-### Step 6 - Obsidian vault (opt-in) + HTML
+### Step 6 - HTML visualization (always, unless --no-viz)
 
-**HTML always** (unless `--no-viz`); **Obsidian only if `--obsidian` given** — skip otherwise.
-
-`--obsidian` given:
-<!-- script: see references/scripts.md §Step 6 - Obsidian vault (only if --obsidian) -->
-
-HTML graph (always, unless `--no-viz`):
 <!-- script: see references/scripts.md §Step 6 - HTML visualization -->
 
-### Step 6b - Wiki (only if --wiki)
+### Step 6b - Opt-in flags
 
-Agent-crawlable export — `index.md` plus one article per community and god-node articles. Run before Step 9 while `graphify-out/.graphify_labels.json` is still available:
-
-<!-- script: see references/scripts.md §Step 6b - Wiki (only if --wiki) -->
-
-### Step 7 - Neo4j export (only if --neo4j or --neo4j-push)
-
-`--neo4j` — Cypher file for manual import:
-<!-- script: see references/scripts.md §Step 7 - Neo4j export (only if --neo4j) -->
-
-`--neo4j-push <uri>` — push to a running Neo4j; ask for credentials if not provided (interactive question tool when one exists):
-<!-- script: see references/scripts.md §Step 7 - Neo4j push (only if --neo4j-push) -->
-
-Defaults: URI `bolt://localhost:7687`, user `neo4j`. MERGE-based — safe to re-run, no duplicates.
-
-### Step 7b - SVG (only if --svg)
-
-<!-- script: see references/scripts.md §Step 7b - SVG export (only if --svg) -->
-
-### Step 7c - GraphML (only if --graphml)
-
-<!-- script: see references/scripts.md §Step 7c - GraphML export (only if --graphml) -->
-
-### Step 7d - MCP server (only if --mcp)
-
-<!-- script: see references/scripts.md §Step 7d - MCP server (only if --mcp) -->
-
-Stdio MCP server exposing `query_graph`, `get_node`, `get_neighbors`, `get_community`, `god_nodes`, `graph_stats`, `shortest_path`. Register in an MCP orchestrator (e.g. Claude Desktop `mcpServers.graphify`): command `python3`, args `["-m", "graphify.serve", "/absolute/path/to/graphify-out/graph.json"]`.
+`--obsidian` · `--wiki` · `--neo4j`/`--neo4j-push` · `--svg`/`--graphml` · `--mcp` → `references/flags.md` (load only when passed). Run before Step 9 while `graphify-out/.graphify_labels.json` exists.
 
 ### Step 8 - Token reduction benchmark (only if total_words > 5000)
 
@@ -211,7 +171,7 @@ Graph complete. Outputs in PATH_TO_DIR/graphify-out/
 
 Then paste only these GRAPH_REPORT.md sections — never the full report: **God Nodes** · **Surprising Connections** · **Suggested Questions**. Include the token cost (`This run`/`All time`); cohesion scores as raw numbers, not symbols.
 
-Then offer to explore: pick the single most interesting suggested question (most community boundaries crossed / most surprising bridge node) and ask via the interactive question tool when one exists:
+Then offer to explore: pick the single most interesting suggested question (most community boundaries crossed / most surprising bridge node) and ask:
 
 > "The most interesting question this graph can answer: **[question]**. Want me to trace it?"
 
@@ -283,33 +243,6 @@ URL types (auto-detected): Twitter/X → oEmbed → `.md` · arXiv → abstract+
 
 ---
 
-## For --watch
+## For --watch · git commit hook · Devin always-on context
 
-Background watcher; auto-updates the graph on file changes:
-
-<!-- script: see references/scripts.md §--watch -->
-
-- **Code files only:** re-runs AST + rebuild + cluster immediately, no LLM. `graph.json`/`GRAPH_REPORT.md` update automatically.
-- **Docs/papers/images:** writes `graphify-out/needs_update` flag; notify to run `/graphify --update` (LLM required).
-
-Debounce (default 3s): waits for file activity to stop so parallel writes trigger one rebuild. Ctrl+C to stop.
-
----
-
-## For git commit hook
-
-Post-commit hook auto-rebuilds the graph after every commit — no background process:
-
-<!-- script: see references/scripts.md §git commit hook -->
-
-Detects changed code files, re-runs AST on them, rebuilds `graph.json`/`GRAPH_REPORT.md`. Doc/image changes ignored — run `/graphify --update` manually.
-
----
-
-## For always-on context in Devin sessions
-
-Run once per project:
-
-<!-- script: see references/scripts.md §Devin always-on context -->
-
-Writes a `## graphify` section to `.windsurf/rules/graphify.md` instructing Devin to check the graph before codebase questions and rebuild after code changes. `graphify devin uninstall --project` removes it.
+`references/flags.md` — load for these triggers.

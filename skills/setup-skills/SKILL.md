@@ -1,15 +1,11 @@
 ---
 name: setup-skills
-description: >
-  Guide users through initial configuration to enable all danielsuguimoto/skills
-  skills. Creates the <project-root>/docs folder and generates spec files for each tool category.
-  Invoke when the user says 'setup skills', 'configure skills', 'initialize skills',
-  or when <project-root>/docs spec files are missing or incomplete.
+description: "Guide initial configuration for this skills system — creates <project-root>/docs spec files per tool category. Invoke on 'setup skills', 'configure skills', 'initialize skills', or when spec files are missing or incomplete."
 ---
 
 # Setup Skills
 
-Generate `<project-root>/docs/` and every spec file in the Generate table so all danielsuguimoto/skills skills can function — skills reference specs by path; without them they cannot locate tools.
+Generate `<project-root>/docs/` and every spec file in the Generate table — skills reference specs by path to locate tools.
 
 ## Pre-flight
 
@@ -20,7 +16,7 @@ Generate `<project-root>/docs/` and every spec file in the Generate table so all
 
 ## Interview
 
-Ask about each tool category via the native user-prompting mechanism — three batches, one at a time, waiting for all answers before the next. Each question offers common options plus "None / not used"; include detected MCP servers when relevant. Record answers as `<tool-selections>`.
+Ask about each tool category via the native user-prompting mechanism — three sequential batches. Each question offers common options plus "None / not used"; include detected MCP servers when relevant. Record answers as `<tool-selections>`.
 
 ### Batch 1 — Tracking, Observability, Git, Database
 
@@ -55,7 +51,7 @@ MCP servers question: `<mcp-inventory>` non-empty → "Use detected servers" fir
 
 ## Generate
 
-Create `<project-root>/docs/` if missing. Generate each spec file below, filling every Operations row and Tool Details line derivable from the selected tool; keep `<!-- Fill in: ... -->` markers only where the interface can't be derived — Verify reports those as manual-completion gaps. "None" selected → stub: `**Tool**: Not configured` + note that referencing skills use fallbacks or skip.
+Create `<project-root>/docs/` if missing. Generate each spec file below, filling every Operations row and Tool Details line derivable from the selected tool; keep `<!-- Fill in: ... -->` markers only where the interface can't be derived. "None" selected → stub: `**Tool**: Not configured` + note that referencing skills use fallbacks or skip.
 
 Each spec documents the tool's interface only — no agent behavior rules:
 

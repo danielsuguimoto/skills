@@ -1,14 +1,11 @@
 ---
 name: memory-usage
-description: >
-  Use when reading or writing persistent project memory before, during, or after non-trivial work.
+description: "Use for persistent project memory reads/writes during non-trivial work."
 ---
 
 ## Required `<project-root>/docs` reads
 
-Read via shell before memory operations — may be gitignored. Missing → note the gap; never invent contents.
-
-- `<project-root>/docs/memory-providers.md`
+Shell-read before memory operations; may be gitignored — missing → note gap, never invent: `<project-root>/docs/memory-providers.md`
 
 Persistent memory holds facts that are expensive to re-derive and survive across sessions: lessons learned working with the user, written as short notes — not session summaries.
 
@@ -16,22 +13,19 @@ This skill owns when, where, and how to write, plus in-session maintenance. `ses
 
 ## When to Use Memory
 
-| Trigger | Action |
-| --- | --- |
-| Starting a non-trivial task | Check the index for relevant entries. |
-| Unfamiliar error, pattern, or convention | Search memories for a matching topic or pitfall. |
-| User asks "how do we do X here?" | Read the related memory first. |
-| Non-obvious invariant or convention learned | Write under a topic-specific name. |
-| Tricky pitfall requiring real investigation | Write under a `pitfalls/` path. |
-| Architectural decision with lasting rationale | Write under a `decisions/` path. |
-| User corrects you or states a preference | Write the correction plus the rule to follow next time. |
-| User asks to remember something | Write it with the requested name. |
+- Starting a non-trivial task → check the index for relevant entries.
+- Unfamiliar error, pattern, or convention → search memories for a matching topic or pitfall.
+- User asks "how do we do X here?" → read the related memory first.
+- Non-obvious invariant or convention learned → write under a topic-specific name.
+- Tricky pitfall requiring real investigation → `pitfalls/` path; architectural decision with lasting rationale → `decisions/` path.
+- User corrects you or states a preference → write the correction plus the rule to follow next time.
+- User asks to remember something → write it with the requested name.
 
 Write at the moment of learning — defer only bulk review to `session-to-memory`.
 
 ### Do NOT write
 
-- Conversation state, task progress, session summaries, scratchpads — memory stores lessons, not history.
+- Conversation state, task progress, session summaries, scratchpads.
 - Transient data (current branch, in-flight PR numbers, today's ticket ID).
 - Secrets, credentials, or PII.
 - Duplicates — edit the existing entry instead.
@@ -40,7 +34,7 @@ Write at the moment of learning — defer only bulk review to `session-to-memory
 
 - Short one-line bullets under topic headings, provenance per entry: `— [source: <session or task ref>; added: YYYY-MM-DD]`.
 - `project_overview` doubles as the index: general preferences plus `mem:` pointers to topics. Keep it current on add/rename/delete.
-- Read the index first, then load topics on demand — never dump the whole store.
+- Read the index first, then load topics on demand.
 
 ## Maintain As You Go
 
@@ -55,7 +49,6 @@ Whenever you read or write memory:
 
 ## Core Rules
 
-- Read before non-trivial work.
 - Never duplicate codebase-readable truth — a quick `grep`/`read` recovers it, leave it in code.
 - Structure with headings, bullets, tables; split entries past ~100 lines.
 - Cross-reference with `mem:<name>` — cite, don't paste bodies.
@@ -73,4 +66,4 @@ Slash-separated topic paths; specific, not generic.
 
 ## Operations
 
-All memory drivers expose the same lifecycle — exact tool names and args in `<project-root>/docs/memory-providers.md`: list (optional topic filter), read, write, edit (name-stable), delete, rename, activate-project. Many drivers require an active project — verify before listing or reading; activate the correct one if none.
+All memory drivers expose the same lifecycle — exact tool names and args in `memory-providers.md`: list (optional topic filter), read, write, edit (name-stable), delete, rename, activate-project. Many drivers require an active project — verify before listing or reading; activate the correct one if none.

@@ -5,16 +5,7 @@ description: "Use when a user reports a bug, error, or unexpected behavior and w
 
 ## Required `<project-root>/docs` reads
 
-Read via shell before investigating the bug — may be gitignored. Missing → note the gap; never invent contents.
-
-- `<project-root>/docs/bug-trackers.md`
-- `<project-root>/docs/code-navigation.md`
-- `<project-root>/docs/database-tools.md`
-- `<project-root>/docs/doc-lookup.md`
-- `<project-root>/docs/memory-providers.md`
-- `<project-root>/docs/observability-tools.md`
-- `<project-root>/docs/terminal-wrappers.md`
-- `<project-root>/docs/terminal-tools.md`
+Shell-read before investigating the bug; may be gitignored — missing → note gap, never invent: `<project-root>/docs/bug-trackers.md`, `<project-root>/docs/code-navigation.md`, `<project-root>/docs/database-tools.md`, `<project-root>/docs/doc-lookup.md`, `<project-root>/docs/memory-providers.md`, `<project-root>/docs/observability-tools.md`, `<project-root>/docs/terminal-wrappers.md`, `<project-root>/docs/terminal-tools.md`
 
 Troubleshoot and fix a user-reported issue. Three phases, each with a grilling section. This skill **executes fixes**; for read-only root-cause reporting use `triage`.
 
@@ -24,7 +15,7 @@ Reference `<project-root>/docs` specs, never hardcode tool names: code symbols �
 
 ## Grilling Discipline
 
-Grill before exploring, hypothesizing, or fixing. One question at a time — wait for the answer, never batch; include a one-line recommended answer. Ground in evidence: codebase/logs/DB can answer it → investigate first. Cite file:line. Stop when target met. AFK → proceed with recommended answers, state assumptions. Ask via the interactive question tool when one exists.
+Grill per `grill-with-codebase` before exploring, hypothesizing, or fixing. AFK → proceed with recommended answers, state assumptions.
 
 ## Phase 1 — Context Gathering
 
@@ -38,7 +29,7 @@ Don't explore until the symptom is clear.
 
 ## Phase 2 — Planning
 
-Strategy before code — single-hypothesis thinking anchors on the first plausible idea and misses the cause.
+Strategy before code — the first plausible idea is usually not the cause.
 
 **2.1 Grill: Confirm the Strategy** — Hypotheses (present ranked list, confirm/reorder) · Fix approach (minimal patch, refactor, or workaround — recommend one) · Risk tolerance (what must not change — recommend safest boundary) · Test strategy (recommend a failing test reproducing the bug) → `<plan-decisions>`.
 
@@ -64,11 +55,4 @@ Minimal, surgical, verified.
 
 **Done when:** confirmed fix applied at cited file/symbol · reproducing test passes, no regressions · symptom verified gone · instrumentation removed · results presented.
 
-## Common Rationalizations
 
-| Excuse | Reality |
-|---|---|
-| "I'll just fix it directly" | Fixing without root cause guarantees recurrence. |
-| "The bug is obvious" | Obvious bugs are usually symptoms, not causes. |
-| "Debugging takes too long" | Systematic debugging beats trial-and-error. |
-| "I don't need to ask the user" | A vague report sent to the wrong target wastes the whole investigation. |

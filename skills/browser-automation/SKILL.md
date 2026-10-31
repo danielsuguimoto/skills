@@ -5,18 +5,16 @@ description: Use for browser automation (QA, element interaction, screencapture/
 
 ## Required `<project-root>/docs` reads
 
-Read via shell before any browser automation action — may be gitignored. Missing → note the gap; never invent contents.
-
-- `<project-root>/docs/browser-automation.md`
+Shell-read before any browser automation action; may be gitignored — missing → note gap, never invent: `<project-root>/docs/browser-automation.md`
 
 # Browser Automation
 
 ## Choose the Surface
 
-- **Browser exec** (autonomous agent): spawns an agent session like a subagent — for whole-task delegation across logged-in accounts, apps, memory, browsing history. Poll and update the user every ~60s — they can't see the CLI background.
+- **Browser exec** (autonomous agent): spawns an agent session like a subagent — for whole-task delegation across logged-in accounts, apps, memory, browsing history. Poll and update the user every ~60s.
 - **Browser REPL**: persistent ES2023+ JS REPL with Playwright-compatible interaction — for direct evidence, downloads, screenshots, exact verification, deterministic UI steps, sensitive logged-in work. Top-level `const`/`let` persist — use fresh variable names.
 
-Both open ephemeral sessions — use interactive PTY for CLI commands; session dies when CLI exits. Inspect current CLI usage first (`<project-root>/docs/browser-automation.md`).
+Both open ephemeral sessions — use interactive PTY for CLI commands; sessions die when the CLI exits. Inspect current CLI usage first (`browser-automation.md`).
 
 ## REPL Globals
 
@@ -24,12 +22,7 @@ Both open ephemeral sessions — use interactive PTY for CLI commands; session d
 
 ## Open Browser Tabs
 
-`browser repl` starts neutral — `page` is not necessarily the user's current tab. User mentions a current/open page or tab → inspect first:
-```js
-const openTabs = await listBrowserTabs();
-console.log(openTabs.map((tab) => ({ targetId: tab.targetId, active: tab.active, title: tab.title, url: tab.url })));
-```
-`attachActiveBrowserTab()` for the active page, `attachBrowserTab(targetId)` for a specific tab; after attaching, read with `snapshot(page, { interactive: true })`. `openTab()` only when no relevant tab exists or the user asks.
+`browser repl` starts neutral — `page` is not necessarily the user's current tab. User mentions a current/open page or tab → inspect `listBrowserTabs()` (targetId/active/title/url) first; `attachActiveBrowserTab()` for the active page or `attachBrowserTab(targetId)` for a specific one; then read with `snapshot(page, { interactive: true })`. `openTab()` only when no relevant tab exists or the user asks.
 
 ## Snapshot
 
@@ -47,14 +40,13 @@ ALWAYS `snapshot()` as the primary page read — compact accessibility tree with
 - Playwright APIs through `page`. ALWAYS `openTab()`/`closeTab()` for tabs — NEVER `page.context().newPage()`/`page.close()` (memory leaks).
 - NEVER guess URLs (well-known destinations like Google/YouTube excepted). Locator actions with ref IDs over `page.evaluate()`.
 - Pack action + snapshot in one call when the next step doesn't depend on new state; split when it does.
-- Action is unconfirmed until a fresh snapshot shows expected state. Unexpected state → suspect missed/stale/wrong-target action before inferring site-specific requirements.
-- State-changing interactions: the result is evidence of what the site accepted — recheck only on concrete contradiction, stale snapshot, or unchanged state.
+- Action is unconfirmed until a fresh snapshot shows expected state; unexpected → suspect missed/stale/wrong-target action before inferring site requirements. State-changing results are evidence — recheck only on concrete contradiction or stale snapshot.
 - `openTab()`/`click()` already wait for interactivity/DOM stability — `sleep()` only when a snapshot shows the page still transitioning.
 - No scroll needed — snapshot includes off-screen elements; click scrolls to targets.
 
 ## Forms, Autofill, and Login
 
-Prefer autofill paths for autofillable forms (ID/PW, email, payment, address). Autofill incomplete → fresh snapshot, continue manually. **ASK USER AS LAST RESORT** (interactive question tool when one exists) when you can't do it or find the information.
+Prefer autofill paths for autofillable forms (ID/PW, email, payment, address). Autofill incomplete → fresh snapshot, continue manually. **ASK USER AS LAST RESORT** when stuck.
 
 ## Downloads
 
@@ -73,4 +65,4 @@ await page.locator('button.export').click();
 const download = await downloadPromise;
 console.log({ filename: download.suggestedFilename(), downloadPath: await download.path(), size: (await fs.stat(await download.path())).size });
 ```
-`fs` cannot browse real `~/Downloads`; after `download.path()` the file is readable in-session. One-shot `browser repl "..."` → verify inside the same command — the session closes after. Extract PDF/document facts via local document tools; report only facts found in the file or confirmed on the page.
+`fs` cannot browse real `~/Downloads`; after `download.path()` the file is readable in-session. One-shot `browser repl "..."` → verify inside the same command. Extract PDF/document facts via local document tools; report only confirmed facts.

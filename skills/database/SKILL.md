@@ -1,20 +1,11 @@
 ---
 name: database
-description: >
-  Use database inspection tools for schema, queries, and operations — querying
-  the database, reading schema, reconciling counts, running EXPLAIN plans,
-  read/write operations. Not for code-level work on models/repositories —
-  use code navigation tools there.
+description: "Use database inspection tools for schema, queries, reconciling counts, EXPLAIN plans, read/write operations. Not for code-level model/repository work — use code navigation tools there."
 ---
 
 ## Required `<project-root>/docs` reads
 
-Read via shell before any database query, schema inspection, or read/write operation — may be gitignored. Missing → note the gap; never invent contents.
-
-- `<project-root>/docs/code-navigation.md`
-- `<project-root>/docs/database-tools.md`
-
-# Database Analysis & Operations
+Shell-read before any database query, schema inspection, or read/write operation; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`, `<project-root>/docs/database-tools.md`
 
 ## Source of Truth
 
@@ -24,13 +15,7 @@ Prefer (`<project-root>/docs/database-tools.md`): schema-inspection tool (tables
 
 ## Tool Inventory
 
-**Database tools (read-only)** — rejects mutating statements:
-
-| Operation | Key params |
-|-----------|-----------|
-| List connections | — |
-| Inspect schema | `summary`, `filter`, `include_column_details`, `include_views`, `include_routines`, `database` |
-| Run read-only query (`SELECT`/`SHOW`/`EXPLAIN`/`DESCRIBE`) | `query` (required), `database` |
+**Read-only tools** (reject mutating statements): list connections · inspect schema (`summary`, `filter`, `include_column_details`, `include_views`, `include_routines`, `database`) · read-only query (`SELECT`/`SHOW`/`EXPLAIN`/`DESCRIBE`; `query` required).
 
 **REPL (read/write)** — boots the full app container: models, scopes, gates, company scoping, subscribers fire.
 
@@ -45,7 +30,7 @@ Prefer (`<project-root>/docs/database-tools.md`): schema-inspection tool (tables
 
 ## Querying Guidelines
 
-- `EXPLAIN` before trusting query cost — confirm index usage, especially on large tables (`feedbacks`, `student_programs`, `placements`, `contacts`).
+- `EXPLAIN` before trusting query cost — confirm index usage, especially on large tables.
 - Qualify every joined column with its table alias — many tables share `id`, `company_id`, `created_at`, `deleted_at`, `status`.
 - Respect soft deletes: raw SQL needs explicit `AND <alias>.deleted_at IS NULL` — read-only tools apply no global scopes. Mirror Eloquent `joinRelationship()` semantics before JOINs.
 - Company scoping is not applied — replicate the widget's `queryAll`/`queryScope` filters explicitly (status exclusions, partial-access scoping, precedence unions). See *Reconciling Counts*.
@@ -54,10 +39,9 @@ Prefer (`<project-root>/docs/database-tools.md`): schema-inspection tool (tables
 
 ## Reconciling Counts (widget vs. raw SQL)
 
-1. Read the widget's query path via code navigation — find the repository's `getDatatableQuery`/`getStDatatable`.
+1. Read the widget's query path via code navigation (`getDatatableQuery`/`getStDatatable`).
 2. Reproduce every JOIN and WHERE with `SELECT COUNT(*)`.
-3. Still differs → the gap is almost always in `queryAll`/`queryScope` (precedence unions, partial-access filters, cancelled-status exclusions raw SQL omits).
-4. Add filters one at a time until counts match — the missing filter is the root cause.
+3. Still differs → the gap is almost always in `queryAll`/`queryScope` (precedence unions, partial-access filters, cancelled-status exclusions raw SQL omits); add filters one at a time until counts match — the missing one is the root cause.
 
 Never "fix" the widget to match the raw count — widget filters are intentional.
 
@@ -77,5 +61,4 @@ Never "fix" the widget to match the raw count — widget filters are intentional
 - Experiments: `factory()` or `DB::transaction(function () { ... DB::rollback(); })`.
 - Company scoping applies — repository/contract queries scope to the current company; `queryAll()`/`without*` scopes bypass access controls deliberately.
 - Subscribers fire on model writes — may enqueue jobs, write logs, sync services. Raw `DB::table()` bypasses events — document why when used.
-- Never commit secrets or paste `.env` values into shared REPL snippets.
 - REPL boots slowly (~seconds) — batch questions into one session.

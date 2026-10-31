@@ -5,11 +5,7 @@ description: "Use after a pull request is merged and deployed — find customer-
 
 ## Required `<project-root>/docs` reads
 
-Read via shell before post-merge cleanup — may be gitignored. Missing → note the gap; never invent contents.
-
-- `<project-root>/docs/git-hosts.md`
-- `<project-root>/docs/issue-trackers.md`
-- `<project-root>/docs/workspace-isolation.md`
+Shell-read before post-merge cleanup; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`, `<project-root>/docs/issue-trackers.md`, `<project-root>/docs/workspace-isolation.md`
 
 Drafts go to a human for review.
 
@@ -19,20 +15,20 @@ PR number/URL → `<pr-ref>`; none → derive from conversation or the most rece
 
 ### 2. Load PR Context
 
-View PR via git host (`<project-root>/docs/git-hosts.md`). Extract `<pr-branch>`, `<pr-number>`, `<pr-url>`, `<pr-summary>` (what shipped and why — title, body, commits), `<ticket-refs>` (every issue/card reference in body, commits, branch name — git host or external tracker).
+View PR via git host (`git-hosts.md`). Extract `<pr-branch>`, `<pr-number>`, `<pr-url>`, `<pr-summary>` (what shipped and why — title, body, commits), `<ticket-refs>` (every issue/card reference in body, commits, branch name — git host or external tracker).
 
 **Gate:** PR must be merged. Open or closed-unmerged → STOP, report its actual state — this flow only applies to shipped work.
 
 ### 3. Load Linked Tickets
 
-Per `<ticket-refs>` entry, load via the issue tracker tool (`<project-root>/docs/issue-trackers.md`): body, every comment, attachments. **Nested links:** traverse per the spec — the customer thread may live on an inner card; add each ref found to `<ticket-refs>`.
+Per `<ticket-refs>` entry, load via the issue tracker tool (`issue-trackers.md`): body, every comment, attachments. **Nested links:** traverse per the spec — the customer thread may live on an inner card; add each ref found to `<ticket-refs>`.
 
 ### 4. Classify Tickets
 
 - **Customer-success ticket** → `<customer-tickets>` — filed in the customer-facing tracker where customers report issues (per the spec), or carries a customer requester/thread. Resolution replies belong here.
 - **Internal ticket** → `<internal-tickets>` — planning cards, spec tickets, dev tasks. No customer reply.
 
-Ambiguous → ask the user (interactive question tool when one exists) rather than drafting to the wrong audience.
+Ambiguous → ask the user rather than drafting to the wrong audience.
 
 ### 5. Draft Resolution Replies
 
@@ -45,7 +41,7 @@ One draft per ticket — `draft-reply` posts a private note; nothing reaches the
 
 ### 6. Clear the Workspace
 
-List isolated workspaces per `<project-root>/docs/workspace-isolation.md`; find the one created for this PR (match `<pr-branch>` or the ticket slug); remove via the spec's remove operation. Confirm removal — never delete a workspace not tied to this PR. No match → report `none found`, move on.
+List isolated workspaces per `workspace-isolation.md`; find the one created for this PR (match `<pr-branch>` or the ticket slug); remove via the spec's remove operation. Confirm removal — never delete a workspace not tied to this PR. No match → report `none found`, move on.
 
 ### 7. Report
 

@@ -5,11 +5,9 @@ description: "Activate when a pull request has review feedback that requires cod
 
 ## Required `<project-root>/docs` reads
 
-Read via shell before fixing PR review feedback — may be gitignored. Missing → note the gap; never invent contents.
+Shell-read before fixing PR review feedback; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`
 
-- `<project-root>/docs/git-hosts.md`
-
-Address PR feedback by making fixes and replying directly to review threads. Tools: git host tool (`<project-root>/docs/git-hosts.md`).
+Fix PR feedback and reply in review threads. Tools: git host (`git-hosts.md`).
 
 Modes: `review` (default) or `auto` — `auto` skips the Step 9 approval gate.
 
@@ -21,13 +19,7 @@ Modes: `review` (default) or `auto` — `auto` skips the Step 9 approval gate.
 
 Non-thread feedback (collect every run — threads alone miss it): git host list reviews → non-empty review bodies; git host list flat comments. Store both as `<flat-feedback>` (author, body, comment id). Skip bot-authored and own-agent comments.
 
-PR metadata: git host view PR + list reviews. CLI fallback:
-```bash
-gh pr view <pr-number> --json number,title,body,url,headRefName,baseRefName,author,state,commits
-gh api repos/{owner}/{repo}/pulls/<pr-number>/reviews
-gh api repos/{owner}/{repo}/issues/<pr-number>/comments
-```
-Extract `<pr-branch>`, `<base-branch>`, `<pr-number>`, `<pr-url>`. `git branch --show-current` → `<current-branch>`. Review attachments when relevant. No threads and no `<flat-feedback>` → output "No changes".
+PR metadata: git host view PR + list reviews (CLI fallback per spec). Extract `<pr-branch>`, `<base-branch>`, `<pr-number>`, `<pr-url>`. `git branch --show-current` → `<current-branch>`. Review attachments when relevant. No threads and no `<flat-feedback>` → output "No changes".
 
 ### 3. Align Local Branch
 `<pr-branch>` unavailable → STOP. Check out via git host checkout PR or `gh pr checkout <pr-number>` → `<active-branch>`. Fails → STOP. No code edits until `<active-branch>` == `<pr-branch>`. Never skip checkout — `<pr-ref>` is authoritative.
@@ -38,7 +30,7 @@ Git host PR diff. Fallback: `gh pr diff <pr-number>` or `git diff <base-branch>.
 ### 5. Analyze Feedback
 1. Review unresolved threads; check review states (`CHANGES_REQUESTED`, `APPROVED`, etc.). Every `<flat-feedback>` item is reviewer feedback, not metadata.
 2. Use `<changes>` to understand the diff. Prioritize critical issues (bugs, security, broken contracts).
-3. Effectively resolved threads (skip): GitHub-unresolved but have "Fixed..."/"Done..." reply + later commit implementing it — verify via commit diff. In doubt → ask via the interactive question tool when one exists.
+3. Effectively resolved threads (skip): GitHub-unresolved but have "Fixed..."/"Done..." reply + later commit implementing it — verify via commit diff. In doubt → ask.
 4. Per actionable thread record `<comment-id>`, `<file>`, `<lines>`, `<category>`, `<suggestion>`, `<reviewer-body>`, `<current-heading>`; flat items the same minus `<file>`/`<lines>`. Evaluate each suggestion against `<changes>` before applying. `noise`/`question` threads → `not-fixing` list with reasons (`<reviewer-body>` recorded there only, for Step 12).
 
 ### 6. Plan Implementation
@@ -67,22 +59,10 @@ Use `<review-feedback>` to refine without widening scope → Step 7. No commit/p
 ### 12. Respond to Threads
 Reply only after commit + push succeed. ALWAYS reply via thread reply API — NEVER standalone PR comments (`gh pr review -c`, `gh pr comment`). Sole exception: flat PR comments (no line anchor) → one flat comment quote-replying (blockquote original + author handle, then response).
 
-Git host reply to review thread (`pr_number`, `comment_id`, `body`). Fallback:
-```bash
-gh api repos/{owner}/{repo}/pulls/<pr-number>/comments/<comment-id>/replies \
-  --method POST --input - <<'EOF'
-{"body":"<reply-text>"}
-EOF
-```
-`--input -` (not `-f body=`) for special characters. Replies short and factual.
+Git host reply to review thread (`pr_number`, `comment_id`, `body`; fallback per spec — `--input -` for special chars). Replies short and factual.
 
 ### 13. Resolve Addressed Threads
-After replying, resolve fully addressed threads via GraphQL `resolveReviewThread` (GraphQL-only; no REST). Map comment IDs to thread node IDs (`PRRT_...`) via git host list review threads, then git host resolve review thread. Fallback:
-```bash
-gh api graphql -f query='{ repository(owner: "<owner>", name: "<repo>") { pullRequest(number: <pr-number>) { reviewThreads(first: 100) { nodes { id isResolved comments(first: 1) { nodes { databaseId body author { login } } } } } } } }'
-gh api graphql -f query='mutation { resolveReviewThread(input: {threadId: "<thread-node-id>"}) { thread { isResolved } } }'
-```
-Match by first comment's `databaseId`. Only fully addressed threads — never intentionally skipped or reviewer-reopened ones. Flat comments have no resolution — reply only (Step 12) → `<threads-resolved>`.
+After replying, resolve fully addressed threads via GraphQL `resolveReviewThread` (GraphQL-only; no REST). Map comment IDs to thread node IDs (`PRRT_...`) by first-comment `databaseId` via git host list review threads (fallback per spec), then git host resolve review thread. Only fully addressed threads — never intentionally skipped or reviewer-reopened ones. Flat comments have no resolution — reply only (Step 12) → `<threads-resolved>`.
 
 ## Output
 Summary of changes and validation results. At the approval gate: one line per fix, not full diffs — e.g. "Fixed N threads across M files" + validation status.

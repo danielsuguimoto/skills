@@ -5,13 +5,11 @@ description: "Container CLI usage reference. Invoke when the project uses a cont
 
 ## Required `<project-root>/docs` reads
 
-Read via shell before running any container CLI command — may be gitignored. Missing → note the gap; never invent contents.
-
-- `<project-root>/docs/container-clis.md`
+Shell-read before running any container CLI command; may be gitignored — missing → note gap, never invent: `<project-root>/docs/container-clis.md`
 
 ## Before Running Any Container CLI Command
 
-- Confirm the tool's config file exists (the spec names it). If missing, stop and ask via the environment's interactive question tool when one exists — the project may not use this container CLI.
+- Confirm the tool's config file exists (the spec names it). If missing, stop and ask — the project may not use this container CLI.
 - Read the config file once for service names and script names — never guess or invent them. Recall what it showed; re-read only when it changes.
 - Use the tool's list/status operations to enumerate scripts and running services when unsure.
 
@@ -19,5 +17,4 @@ Read via shell before running any container CLI command — may be gitignored. M
 
 - Always run from the project root (the directory holding the config file) or use the tool's working-directory flag.
 - Purge/`-v`/destroy flags are destructive — they delete persistent volume data.
-- Prefer JSON output when parsing (a `--json` flag or machine-readable mode).
-- Filter logs with `| tail -N` or `| grep` and report only the error or signal.
+- Prefer JSON/machine-readable output when parsing; report only the error or signal from logs (`| tail -N`, `| grep`).

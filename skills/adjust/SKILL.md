@@ -1,37 +1,23 @@
 ---
 name: adjust
-description: "Apply user-requested adjustments to existing code — fixes, improvements, refactors per notes. Interactive: grills the user to clarify the request, then parses, plans, and executes."
+description: "Apply user-requested adjustments to existing code — fixes, improvements, refactors. Interactive: grills to clarify, then plans and executes."
 ---
 
 # Adjust
 
-Apply the user's adjustment request to existing code — works on the code as it exists; uncommitted, clean, or no VCS are all irrelevant.
+Works on the code as it exists — uncommitted, clean, or no VCS are all irrelevant.
 
 ## Scope Boundary
 
-Act on the request only: fix bugs, apply improvements, refactor per notes. Do NOT:
-
-- Perform any version control operation — commit, push, branch switch, PR, merge.
-- Reply to review threads (none exist).
-- Suggest follow-up work, next steps, or shipping on completion.
-- Widen scope unless the request explicitly asks.
-
-The user ships separately.
+Act on the request only — no VCS operations, no review-thread replies, no follow-up suggestions, no scope widening unless asked. The user ships separately.
 
 ## Quick Reference
 
 - Input: `$ARGUMENTS` = user adjustment request (free-form prose, possibly multi-point), parsed directly.
-- Workspace: stay in the current working directory.
 
 ## Grilling Discipline
 
-Vague requests produce wrong changes — grill before parsing, planning, implementing.
-
-- **One question at a time** — wait for the answer, never batch, via the interactive question tool when one exists.
-- **Recommended answer** per question — one line, no justification.
-- **Ground in evidence** — code can answer it → read first; ask only what evidence can't settle.
-- **Cite file:line** when referencing existing code.
-- **Stop when the target is met.** AFK → proceed with recommended answers, state assumptions.
+Vague requests produce wrong changes — grill per `grill-with-codebase` before parsing, planning, implementing. AFK → proceed with recommended answers, state assumptions.
 
 ### 1. Capture the Request
 

@@ -1,22 +1,19 @@
 ---
 name: new-branch
-description: "Use when starting new work that needs a branch — creates and switches to a categorized branch from a description, ticket/issue link, or current uncommitted/ahead-of-base work. Works before or after implementation begins. Invoke when the user says 'new branch', 'start a branch', or begins a new task."
+description: "Use for 'new branch' requests or new work that needs a branch — creates and switches to a categorized branch from a description, ticket/issue link, or current uncommitted/ahead-of-base work, before or after implementation begins."
 ---
 
 ## Required `<project-root>/docs` reads
 
-Read via shell before creating or switching to the branch — may be gitignored. Missing → note the gap; never invent contents.
-
-- `<project-root>/docs/git-hosts.md`
-- `<project-root>/docs/issue-trackers.md` (only when a ticket/issue link argument is provided)
+Shell-read before creating or switching to the branch; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`, `<project-root>/docs/issue-trackers.md` (only when a ticket/issue link argument is provided)
 
 # Branch From Argument or Work
 
-Create and switch to a categorized branch. All git/gh operations follow `<project-root>/docs/git-hosts.md`.
+Create and switch to a categorized branch. All git/gh operations follow `git-hosts.md`.
 
 | Operation | Tool | CLI fallback |
 |-----------|------|--------------|
-| Load change state | git host change scan | `git branch --show-current` + `git status --short` + `git diff --cached --stat` + `git diff --stat` + `git log origin/<branch>..<branch> --oneline` |
+| Load change state | git host change scan | change-scan fallback per spec (ahead: `git log origin/<branch>..<branch> --oneline`) |
 | Pull, create, publish | git host branch create (`branch_name`) | `git pull origin <branch>` + `git checkout -b <cat>/<slug>` + `git push -u origin <new-branch>` |
 
 ### 1. Interpret Arguments
@@ -24,7 +21,7 @@ Create and switch to a categorized branch. All git/gh operations follow `<projec
 Classify the argument (if any) → `<arg-mode>` (`description`|`ticket`|`none`) + `<branch-context>`:
 
 - **Description** — free-form text, not a URL/issue link → use directly as `<branch-context>`.
-- **Ticket/issue link** — URL or identifier referencing a ticket/issue (GitHub issue, Linear, Jira) → extract content via `<project-root>/docs/issue-trackers.md` (title, summary, labels/type) → `<branch-context>`; extraction fails → fall back to a slug-relevant fragment (issue number, path slug), note the gap.
+- **Ticket/issue link** — URL or identifier referencing a ticket/issue → extract content via `issue-trackers.md` (title, summary, labels/type) → `<branch-context>`; extraction fails → fall back to a slug-relevant fragment (issue number, path slug), note the gap.
 - **None** — no argument; `<branch-context>` empty; name derived from git changes (Step 2).
 
 ### 2. Load Changes
@@ -38,7 +35,7 @@ Otherwise: (1) load change state per the table → `<current-branch>`, `<uncommi
 ### 3. Check Blockers
 
 - Nothing to branch from: `<arg-mode>` = `none` AND `<uncommitted>` AND `<ahead-commits>` all empty → STOP: "Nothing to branch from."
-- Already on a work branch: `<current-branch>` starts with `feature/`, `fix/`, `refactor/`, `docs/`, `test/`, `chore/`, `feat/`, `bugfix/`, `hotfix/`, `perf/`, `build/`, `ci/` → STOP: "Branching skipped because the current branch already looks like a work branch."
+- Already on a work branch: `<current-branch>` has a `(feature|fix|refactor|docs|test|chore|feat|bugfix|hotfix|perf|build|ci)/` prefix → STOP: "Branching skipped because the current branch already looks like a work branch."
 
 Note: `<arg-mode>` = `description`/`ticket` → missing git changes do NOT block; the branch is created from the argument and the empty change state is recorded as validation output.
 

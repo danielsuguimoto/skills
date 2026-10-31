@@ -7,16 +7,14 @@ description: Write prose that reads human-written. Use when drafting or editing 
 
 Governs text a human reads. Agent-facing documents (skills, `AGENTS.md`) follow `writing-for-agents` instead. A compression mode (e.g. `caveman`) governs the agent's own chat replies; this skill governs the text artifacts it produces. Code, commands, paths, error strings, YAML, data, and link targets stay verbatim.
 
-## Why tells exist
-
-A model picks the choice that fits the widest range of readers; a person chooses for one reader and one subject, so human choices are uneven and specific. Every tell below is a default choice. A tell counts in proportion to how rarely a careful writer would make it on purpose: the strongest justify an edit on one sighting, a *weak* tell needs company from other tells in the same passage.
+Every tell below is a default choice. The strongest justify an edit on one sighting; a *weak* tell needs company from other tells in the same passage.
 
 ## Method
 
 1. **Set the voice.** A writing sample from the user overrides every rule below. Match its sentence length, punctuation, word choice, and quirks, including its dash rate. No sample → take voice from the text type: personal writing keeps opinion, humor, and asides; reference and factual text stays neutral and plain.
 2. **Write or rewrite.** Every sentence must give the reader something they did not already have: a fact, a decision, an instruction. Drafting → apply the tells as you write. Editing → mark each tell, then rewrite the sentence around its point rather than patching the flagged phrase.
 3. **Audit.** Re-read asking "what here reads machine-written?" Staging, dashes, triads, and bold labels most often survive a first pass. Then verify the draft added or dropped no fact, name, number, date, quote, citation, or claim: never invent one, and a lost supported claim is an error unless a tell calls for the cut. Missing detail → ask or write the plainer sentence.
-4. **Keep the person.** Cutting tells is half the job; voiceless clean prose is its own tell. Keep or restore the writer's opinions, uncertainty, odd specific details, era-bound references, and genuine asides where the voice allows. Vary sentence length; real writing alternates short and long.
+4. **Keep the person.** Voiceless clean prose is its own tell — keep or restore the writer's opinions, uncertainty, odd specific details, era-bound references, and genuine asides where the voice allows. Vary sentence length; real writing alternates short and long.
 
 ## Tells
 

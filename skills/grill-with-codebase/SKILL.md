@@ -1,6 +1,6 @@
 ---
 name: grill-with-codebase
-description: Use when the user brings a task, ticket, or vague intent touching an existing codebase and wants interrogation to shape a buildable plan, or uses any 'grill' trigger phrases alongside a codebase context.
+description: "Use when a task, ticket, or vague intent touching a codebase needs interrogation into a buildable plan, or on 'grill' trigger phrases."
 ---
 
 I have a task or intent, not a finished plan. Interview me until the answers form a concrete plan. Resolve dependencies between decisions one-by-one.

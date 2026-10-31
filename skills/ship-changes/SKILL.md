@@ -1,22 +1,19 @@
 ---
 name: ship-changes
-description: "Use when shipping current work end-to-end — creating a branch, committing, pushing, and opening a PR. Invoke when the user says 'ship this', 'create a PR', or when work is complete and ready for review."
+description: "Use when shipping current work end-to-end — branch, commit, push, open PR — e.g. 'ship this', 'create a PR', or work complete and ready for review."
 ---
 
 ## Required `<project-root>/docs` reads
 
-Read via shell before shipping end-to-end — may be gitignored. Missing → note the gap; never invent contents.
-
-- `<project-root>/docs/git-hosts.md`
-- `<project-root>/docs/issue-trackers.md`
+Shell-read before shipping end-to-end; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`, `<project-root>/docs/issue-trackers.md`
 
 ## Operations
 
 | Operation | Tool | CLI fallback |
 |-----------|--------------|--------------|
-| Pre-scan change state | git host change scan | `git branch --show-current` + `git status --short` + `git diff --stat` + `git diff --cached --stat` + `git log @{u}..HEAD --oneline` |
+| Pre-scan change state | git host change scan | change-scan fallback per spec |
 
-All git/gh operations follow `<project-root>/docs/git-hosts.md`. Forward git host tool availability to subskills.
+All git/gh operations follow `git-hosts.md`. Forward git host tool availability to subskills.
 
 ### 1. Interpret Arguments
 
@@ -28,7 +25,7 @@ Run the change scan once per the table → `<current-branch>`, `<uncommitted>` (
 
 Build `<change-summary>` from `<uncommitted>` (primary) or `<ahead-commits>` (fallback): 2-4 logical themes, what and why (not how), considering `<additional-context>`.
 
-Derive `<branch-category>` from `<change-summary>` (`feature`, `fix`, `refactor`, `docs`, `test`, `chore`, `perf`, `build`, `ci`).
+Derive `<branch-category>` from `<change-summary>` per `new-branch` categories.
 
 Blocker: `<uncommitted>` and `<ahead-commits>` both empty → STOP: "Nothing to ship."
 
@@ -36,7 +33,7 @@ Forward to every subskill: `<current-branch>`, `<uncommitted>`, `<ahead-commits>
 
 ### 3. Create Work Branch
 
-Skip when `<current-branch>` is NOT the detected default (`git remote show origin | grep "HEAD branch" | awk '{print $NF}'`) AND is already ticket-related → `<new-branch>` = `<current-branch>`.
+Skip when `<current-branch>` is NOT the detected default (per `git-hosts.md` fallback) AND is already ticket-related → `<new-branch>` = `<current-branch>`.
 
 Otherwise invoke `new-branch`, passing `<additional-context>`, `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<branch-category>` → `<new-branch>`. "Nothing to branch from" or "Branching skipped" → STOP and report.
 

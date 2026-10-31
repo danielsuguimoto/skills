@@ -1,14 +1,9 @@
 ---
 name: spawn
-description: >
-  Spawn a subagent to run a raw prompt or invoke a target skill. The
-  subagent's working context stays out of the parent; the parent gets the
-  result. Use when a subagent dispatch is warranted (see the subagents skill
-  for dispatch rationales); spawning a subagent to invoke a skill is usually
-  an anti-pattern.
+description: "Spawn a subagent to run a raw prompt or invoke a target skill — its context stays out of the parent; the parent gets the result. Use when a subagent dispatch is warranted (see subagents for rationales); spawning one to invoke a skill is usually an anti-pattern."
 ---
 
-Spawn a subagent to run work off-thread. The subagent either executes a raw prompt directly or invokes a target skill. The harness infers which from the input — no explicit mode flag.
+Spawn a subagent to run work off-thread — raw prompt or target-skill invocation; the harness infers which from the input.
 
 ## Inputs
 
@@ -17,12 +12,6 @@ Spawn a subagent to run work off-thread. The subagent either executes a raw prom
 ## Procedure
 
 1. Inspect `<input>`. If its leading token matches a registered skill name (via the harness's skill-listing mechanism), treat it as a skill invocation: `<skill-name>` = that token, `<arguments>` = the remainder. Otherwise treat the entire `<input>` as a raw prompt. Do NOT read the target skill's manifest from the parent.
-2. Discover subagent profiles via the harness's native mechanism. Default: general-purpose profile, full tool access, foreground.
-3. Spawn a subagent via the harness's native mechanism:
-   - Skill invocation: prompt the subagent to invoke the target skill via the harness's skill-invocation mechanism with `<skill-name>` and `<arguments>`, then execute under that skill's directives. Front-load any context the target needs beyond `<arguments>`.
-   - Raw prompt: prompt the subagent to execute `<input>` directly. Front-load all context the task needs; subagents are stateless.
-4. Collect the subagent's return via the harness's native result-reading mechanism and output it.
-
-## Output
-
-The subagent's raw return.
+2. Discover subagent profiles via the harness's native mechanism; default: general-purpose, full tool access, foreground.
+3. Spawn via the same mechanism — skill invocation: prompt it to invoke `<skill-name>` + `<arguments>` via the harness's skill-invocation mechanism and execute under that skill's directives, front-loading any needed context; raw prompt: execute `<input>` directly — front-load all context; subagents are stateless.
+4. Return its raw output.
