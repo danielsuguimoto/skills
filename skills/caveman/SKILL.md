@@ -5,7 +5,7 @@ description: Compressed communication mode. Drops filler, hedging, and narration
 
 ## Core directive
 
-Respond in tight professional prose. Compress thinking tokens the same way.
+Respond in tight professional prose. Compress thinking tokens the same way. Stricter than the baseline `code-work` → *Output Discipline* — apply fully.
 
 ## Rules
 

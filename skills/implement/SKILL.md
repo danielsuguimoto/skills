@@ -60,6 +60,6 @@ Grilling per `grill-with-codebase`. Record each decision into the affected todo 
 
 **Test items**: scout existing tests, base classes, factories, assertion style; write from inherited `file`/`symbol`/`location`/`patch` + production code under test + Step-5 conventions. Verify via lint + tests.
 
-8. **Present Implementation**: complete and validated → present changes. Load status + diff stat (git host change scan; `git-hosts.md`).
+8. **Present Implementation**: complete and validated → final report per `code-work` → *Output Discipline* — changed files (`path:line`), validation result, status + diff stat (git host change scan; `git-hosts.md`).
 
 CRITICAL: STOP here. Never commit, push, or request approval — the user ships via commit-and-push / ship-changes.

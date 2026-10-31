@@ -158,7 +158,7 @@ Print output in chat. `total_words <= 5000` → skip silently.
 
 <!-- script: see references/scripts.md §Step 9 - Save manifest, update cost tracker, clean up -->
 
-Tell the user (omit `obsidian/` unless `--obsidian`, `wiki/` unless `--wiki`):
+Output (omit `obsidian/`/`wiki/` lines unless those flags ran):
 ```
 Graph complete. Outputs in PATH_TO_DIR/graphify-out/
 
@@ -169,13 +169,9 @@ Graph complete. Outputs in PATH_TO_DIR/graphify-out/
   wiki/                 - agent-crawlable wiki, start at wiki/index.md (only if --wiki was given)
 ```
 
-Then paste only these GRAPH_REPORT.md sections — never the full report: **God Nodes** · **Surprising Connections** · **Suggested Questions**. Include the token cost (`This run`/`All time`); cohesion scores as raw numbers, not symbols.
+Then paste only these GRAPH_REPORT.md sections — never the full report: **God Nodes** · **Surprising Connections** · **Suggested Questions** + token cost (`This run`/`All time`); cohesion as raw numbers.
 
-Then offer to explore: pick the single most interesting suggested question (most community boundaries crossed / most surprising bridge node) and ask:
-
-> "The most interesting question this graph can answer: **[question]**. Want me to trace it?"
-
-Yes → run `/graphify query "[question]"` and walk the answer through the graph structure — which nodes connect, which community boundaries cross, what the path reveals. Keep going as long as they want; end each answer with a natural follow-up ("this connects to X — want to go deeper?").
+Offer to trace the single most interesting suggested question (most community boundaries crossed / most surprising bridge node): "**[question]**. Want me to trace it?" Yes → `/graphify query "[question]"`, answer through the graph structure — nodes connected, boundaries crossed, what the path reveals — one natural follow-up per answer while they engage.
 
 ---
 

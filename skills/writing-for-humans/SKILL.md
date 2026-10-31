@@ -5,7 +5,7 @@ description: Write prose that reads human-written. Use when drafting or editing 
 
 ## Scope
 
-Governs text a human reads. Agent-facing documents (skills, `AGENTS.md`) follow `writing-for-agents` instead. A compression mode (e.g. `caveman`) governs the agent's own chat replies; this skill governs the text artifacts it produces. Code, commands, paths, error strings, YAML, data, and link targets stay verbatim.
+Governs text a human reads. Agent-facing documents (skills, `AGENTS.md`) follow `writing-for-agents` instead. Chat output follows `code-work` → *Output Discipline* (a compression mode like `caveman` tightens further); this skill governs the text artifacts produced. Code, commands, paths, error strings, YAML, data, and link targets stay verbatim.
 
 Every tell below is a default choice. The strongest justify an edit on one sighting; a *weak* tell needs company from other tells in the same passage.
 

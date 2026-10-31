@@ -50,3 +50,10 @@ Multi-step tasks → brief plan: `1. [Step] → verify: [check]`
 - Reference code by `path:lineRange`; quote only when proposing changes to those lines or the user cannot see the file.
 - Batch related edits to a file in one pass — not one edit per line.
 - Prefer `edit` over `write` — `edit` emits only the delta; `write` only for new files or files under ~50 lines.
+
+## Output Discipline
+
+- No step narration — never announce what you're doing, restate rules, or echo tool output; calls and diffs show the work.
+- Speak mid-task only for: blockers, questions, decisions the user must make, >60s operations (status every ~60s).
+- Final report: what changed (cite `path:line`), verification result, open items — a few lines; the user asks when they want detail.
+- Deliverables: code per this file · agent-facing docs/specs/ticket notes per `writing-for-agents` · human prose per `writing-for-humans`.
