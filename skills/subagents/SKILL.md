@@ -67,6 +67,7 @@ Patterns: **fan-out/fan-in** (N≥3 independent → wait all → optional synthe
 - Define the return shape explicitly; vague prompts produce vague returns.
 - State write vs. read-only — mismatch is the most common delegation failure.
 - Parent retains all git/gh and side-effecting operations unless explicitly authorized.
+- Direct the subagent to emit only its final report — no step narration or progress text in its transcript.
 
 ## Code Exploration
 
