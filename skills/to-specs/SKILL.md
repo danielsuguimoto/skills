@@ -11,7 +11,7 @@ Treat ticket systems generically.
 
 **Effort scales with the task.** A simple localized bug gets a simple spec: context limited to the code the fix touches, no brainstorming, few items. No manufactured complexity — no invented subsystems, speculative hardening, new dependencies, or restyled code for a fix that fits existing patterns. Spec size matches change size: a one-line fix → a short spec + single patch item.
 
-**Loop with the user, never with yourself.** All iteration lives in the grilling phase (step 4) and the user-review gate (step 9): no internal review/refactor/self-critique cycles, no drafts or partial specs to the user.
+**Loop with the user, never with yourself.** All iteration lives in the grilling phase (step 4) and the user-review gate (step 9): no internal review/refactor/self-critique cycles, no drafts or partial specs to the user. Ask every user-facing question via the interactive question tool when one exists — a bare text question ends the turn looking finished instead of awaiting input.
 
 <spec-template>
 
@@ -63,10 +63,10 @@ Skip gate (ALL true): single atomic edit or small localized fix, no design decis
 
 Rules: one item = one single-purpose patch — split compound changes; broader changes → sub-items (`S1a`, `S1b`). Verify paths/symbols against `<repo-context>`; no guesses — unconfirmable target → flag it in the item for step-9 review. No exploratory steps ("investigate X", "consider Y", "ensure X"). No alternative designs after the user agrees on direction. Code changes only — runtime operations (migrations, seeders, cache clears, queue restarts, user/ops actions) belong to deploy, not the spec. The spec lists only what is included: exclusions decided during grilling appear nowhere — no "out of scope" lines.
 
-9. **User Review** (the only spec presentation): present the full shaped spec exactly once — `<spec-title>`, `<spec-description>`, `<requirement-items>`, `<validation-items>`; no brief version first. In the same gate, reflect the user's inputs: list 3-5 key decisions/constraints and where they appear (cite items); confirm coverage of all concrete actions; then ask:
+9. **User Review** (the only spec presentation): present the full shaped spec exactly once — `<spec-title>`, `<spec-description>`, `<requirement-items>`, `<validation-items>`; no brief version first. In the same gate, reflect the user's inputs: list 3-5 key decisions/constraints and where they appear (cite items); confirm coverage of all concrete actions; then ask via the interactive question tool — header `Spec Ready`, options `Sync to Ticket` / `Revise Spec`:
 > Spec ready: `<spec-title>`. Implementation: N items. Validation: N items. Sync to the ticket system, or revise the spec?
 
-Only two outcomes: sync or revise — never offer to apply/implement/execute; user asks to implement → decline, point to the implementation workflow. Wait for the response; sync only after approval.
+Only two outcomes: sync or revise — never offer to apply/implement/execute; user asks to implement → decline, point to the implementation workflow. `Revise Spec` → grill the revision points (step 4), reshape, re-enter this gate; `Sync to Ticket` → step 10. Sync only on that answer.
 
 10. **Sync Ticket**: sync via the issue tracker sync tool (`issue-trackers.md`). Final output: the ticket URL.
 - `title`: `<spec-title>`; `description`: `<spec-description>` (Destination/Problem/Solution/Notes only — no items, no patch code).
