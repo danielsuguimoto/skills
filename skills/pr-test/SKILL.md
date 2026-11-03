@@ -48,9 +48,18 @@ Order setup-free flows first; note test-data prerequisites per scenario.
 
 **Done when:** every `<client-cases>` entry maps to a source scenario · every `<expected-outcomes>` entry maps to a delivery scenario · every flagged artifact maps to an execution scenario · regression callers enumerated · system-pass journeys picked.
 
+### Production Data for Local Reproduction
+
+You may copy production data into a local database as fixture setup when reproducing a production scenario. The READ-ONLY boundary permits this local setup; code and production data stay unchanged.
+
+- Follow project database-tool and data-handling rules (`database-tools.md`). Confirm the source is production and the destination is local before importing.
+- Copy only the records needed for the scenario, including required relationships and tenant context. Preserve reproduction-critical values; mask unrelated sensitive data and exclude secrets from logs, reports, and version control.
+- Isolate local mail, queues, webhooks, and external integrations before exercising copied data so reproduction cannot affect real users or services.
+- Ask before overwriting or deleting existing local data. Use the imported records to replay the reported scenario and verify local persisted effects; never write to production.
+
 ### 6. Exercise the Change
 
-Run the app per project tooling. Drive each scenario through browser automation (`browser-automation.md`) as a **regular user** — real UI navigation, forms, clicks. No console shortcuts, direct API calls, or DB writes to force state; seed/fixture setup only when a scenario genuinely requires it.
+Run the app per project tooling. Drive each scenario through browser automation (`browser-automation.md`) as a **regular user** — real UI navigation, forms, clicks. No console shortcuts, direct API calls, or DB writes to force state; seed/fixture setup, including production-to-local copies, only when a scenario genuinely requires it.
 
 After each scenario, verify **persisted effects** via read-only DB inspection (`database-tools.md`): rows created/updated, status transitions, relationship integrity. Live DB is ground truth — a UI that looks right while the DB is wrong is a failure.
 

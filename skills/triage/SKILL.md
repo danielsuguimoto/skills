@@ -49,6 +49,15 @@ Ambiguous → ask the user before posting. Both apply → debug (root cause answ
 
 **debug:** run context-gathering — code navigation for symbols, database tools for data (live DB is ground truth), doc lookup for framework docs. Beyond code and data: error monitoring for matching reports/stack traces (`bug-trackers.md`); monitoring/incident platforms (`observability-tools.md`) for alerts overlapping the timeframe, scope, and symptoms — a correlated incident may be the cause, not just a clue. Check recent history: `git log`/`git blame`, merges, releases, deploys touching the affected path (`git-hosts.md`) — a regression's culprit beats a forward fix. Scan `<project-root>/docs/` for other configured tools the issue touches. Trace user action → failure; find where actual diverges from expected → `<investigation-findings>`.
 
+### Production Data for Local Reproduction
+
+You may copy production data into a local database as fixture setup when reproducing a production scenario. The READ-ONLY boundary permits this local setup; code and production data stay unchanged.
+
+- Follow project database-tool and data-handling rules (`database-tools.md`). Confirm the source is production and the destination is local before importing.
+- Copy only the records needed for the scenario, including required relationships and tenant context. Preserve reproduction-critical values; mask unrelated sensitive data and exclude secrets from logs, reports, and version control.
+- Isolate local mail, queues, webhooks, and external integrations before exercising copied data so reproduction cannot affect real users or services.
+- Ask before overwriting or deleting existing local data. Use the imported records to replay the reported scenario and verify local persisted effects; never write to production.
+
 ### Findings
 
 Two output shapes — nothing else:
