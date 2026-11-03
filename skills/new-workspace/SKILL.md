@@ -19,7 +19,15 @@ Everything after `new-workspace` is downstream input:
 
 ## 2. Set Up the Workspace
 
-Invoke `using-workspaces` and follow it fully — consent is implied; skip its consent question.
+Resolve the base ref first — the workspace must start from the tip of the remote's default branch (`master`/`main`), never the current checkout, which may be stale or a feature branch:
+
+```bash
+git fetch origin
+git remote set-head origin --auto 2>/dev/null
+BASE=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null || echo origin/main)
+```
+
+Then invoke `using-workspaces` and follow it fully — consent is implied; skip its consent question. Pass `origin/<default>` as the creation base wherever the mechanism accepts one; a mechanism that fixes the base to the current checkout → flag it to the user, don't silently base on it.
 
 ## 3. Hand Off
 
