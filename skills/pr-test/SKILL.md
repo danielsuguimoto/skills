@@ -25,9 +25,11 @@ For each `<ticket-refs>` entry, load via the issue tracker tool (`issue-trackers
 
 Extract `<expected-outcomes>` — one entry per acceptance criterion, validation item, or spec requirement the PR must deliver. A ticket that fails to load → record a gap, don't guess its criteria.
 
+Classify `<request-source>` per ticket: **client-origin** — filed in the customer-facing tracker or carrying a client requester/thread (client bug reports, client-specific feature requests) — or **internal**. Client-origin → extract `<client-cases>`: the reported steps, the records/data and module involved, and the symptom or use case in the client's own terms.
+
 Build `<coverage-map>`: each `<expected-outcomes>` entry → the diff files/modules that should deliver it. Flag outcomes with no corresponding change — the PR may not address every linked card.
 
-**Done when:** every linked ticket loaded or gapped · every criterion/validation item in `<expected-outcomes>` · coverage map built with gaps flagged.
+**Done when:** every linked ticket loaded or gapped · every criterion/validation item in `<expected-outcomes>` · `<request-source>` classified per ticket, `<client-cases>` extracted where client-origin · coverage map built with gaps flagged.
 
 ### 4. Align Local Branch
 
@@ -35,15 +37,16 @@ Record `<previous-branch>` via `git branch --show-current`. Uncommitted changes 
 
 ### 5. Build the Test Plan
 
-From `<coverage-map>`, write `<test-plan>` with three scenario classes:
+From `<coverage-map>`, write `<test-plan>` with four scenario classes:
 
+- **Source** — one scenario per `<client-cases>` entry, replaying the client's case as reported: their steps, their data shapes, their flow. A client bug report → the exact reported failure must now pass; a client-specific feature request → the client's use case performed the way they described it. These are the primary scenarios — Delivery generalizes from them, never substitutes; an `<expected-outcomes>` entry a source scenario already covers needs no duplicate.
 - **Delivery** — one user-level scenario per `<expected-outcomes>` entry: entry point, user action, expected observable result (UI state, DB effect, or both).
 - **Data-artifact** — one execution scenario per migration, seeder, operation, or script flagged in Step 2: run against a populated DB; assert schema lands and existing rows survive (migrations); expected rows/effects land (seeders, operations, scripts); re-run safe where idempotency is claimed.
 - **Regression** — the surface past the diff: direct callers and shared modules traced via code navigation (`code-navigation.md`), each asserting unchanged behavior; project tests covering the changed symbols, run by file/name filter; and a **system pass**: the core journeys every user hits (auth, landing view, primary CRUD flow) exercised even where the diff never touches them.
 
 Order setup-free flows first; note test-data prerequisites per scenario.
 
-**Done when:** every `<expected-outcomes>` entry maps to a delivery scenario · every flagged artifact maps to an execution scenario · regression callers enumerated · system-pass journeys picked.
+**Done when:** every `<client-cases>` entry maps to a source scenario · every `<expected-outcomes>` entry maps to a delivery scenario · every flagged artifact maps to an execution scenario · regression callers enumerated · system-pass journeys picked.
 
 ### 6. Exercise the Change
 
