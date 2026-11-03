@@ -46,7 +46,7 @@ Skip when the reply is purely procedural/status/non-technical and the ticket alr
 - **Data**: reply depends on persisted state (counts, status, samples) → live DB via database tools (`database-tools.md`) — ground truth.
 - **Docs**: framework/library/API/version questions → doc lookup (`doc-lookup.md`) → `<doc-context>`.
 
-Store as `<supporting-context>`; cite `file:line`/query results inline where they back a claim — never dump raw output into the draft.
+Store as `<evidence>` — internal grounding that stays in session. Cite `file:line`/query results inline where they back a claim — never dump raw output into the draft.
 
 ### Draft the Reply
 
@@ -55,17 +55,17 @@ Write `<draft-reply>` as a message the human can send with minimal edits:
 - **Audience match.** Tone/depth per `<requester-profile>` + `<additional-context>`. Customer-facing default: greet, plain language, no jargon, no `file:line` in the body. Internal reviewer: technical, cite `file:line`, no client tone.
 - **Answer first.** Lead with the answer to `<reply-target>`; background/caveats after.
 - **Human prose.** Write `<draft-reply>` per the `writing-for-humans` skill — it is text for a human reader: no staging, stock vocabulary, formatting tics, or chat residue, and keep the requester's own vocabulary where the draft mirrors their words.
-- **Ground every claim.** Technical assertions trace to `<ticket-facts>`, `<supporting-context>`, or `<doc-context>`; ungrounded → `[NEEDS-REVIEW: <what's uncertain>]`, not stated as fact.
+- **Ground every claim.** Technical assertions trace to `<ticket-facts>`, `<evidence>`, or `<doc-context>`; ungrounded → `[NEEDS-REVIEW: <what's uncertain>]`, not stated as fact.
 - **No invented details.** No fabricated dates, IDs, statuses, quotes — say what's missing, flag for the human.
 - **Length matches the question.** One-line answer for a one-line question; structured for multi-part. No padding.
 
 ### Shape the Note
 
-The private note is `<draft-reply>` and nothing else — ready to send verbatim. No headings, supporting sections, or analysis. `[NEEDS-REVIEW]` flags stay inline in the body for the human to resolve before sending.
+The note's body is `<draft-reply>` verbatim — the whole note, nothing around it. `<evidence>`, `<ticket-facts>`, and analysis stay in session: internal grounding, never note content. `[NEEDS-REVIEW]` flags stay inline in the body for the human to resolve before sending.
 
 ### Sync
 
-Post via the issue tracker sync tool — convention per `issue-trackers.md` (`refUrl` = `<ticket-url>`; private note per provider, `DRAFT` prefix fallback). Fails → report error, provide draft in chat.
+Post `<draft-reply>` as the note body via the issue tracker sync tool — convention per `issue-trackers.md` (`refUrl` = `<ticket-url>`; private note per provider, `DRAFT` prefix fallback). Fails → report error, provide draft in chat.
 
 ## Notes
 
