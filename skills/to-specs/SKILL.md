@@ -32,7 +32,7 @@ Treat ticket systems generically.
 
 2. **Load Planning Context**: `<ticket-url>` exists → load ticket context via the issue tracker tool (`issue-trackers.md`), store as `<planning-context>`; attachments per spec → `<attachment-insights>`. No `<ticket-url>` → the request/conversation is `<planning-context>`. Empty or missing → stop.
 
-3. **Interpret Planning Context**: Derive from the full ticket (raw text + comments): `<planning-objective>`, `<operative-constraints>`, `<proposed-technical-direction>`, `<open-questions>` (unresolved only), `<spec-ticket-url>` (a linked spec-destination ticket — e.g., a Trello card URL in a Crisp conversation's comments/links; empty when none). Keep earlier comments defining constraints, business rules, implementation decisions, migration rules, naming, sequencing, scoping. Multiple independent subsystems → flag immediately; help the user identify pieces, relationships, build order; plan the first subsystem through the normal flow. Big problems: name the destination first, keep output on one ticket; split only when the user asks.
+3. **Interpret Planning Context**: Derive from the full ticket (raw text + comments): `<planning-objective>`, `<operative-constraints>`, `<proposed-technical-direction>`, `<open-questions>` (unresolved only), `<spec-ticket-url>` (a linked spec-destination ticket URL in the source ticket's body/comments/links; empty when none). Keep earlier comments defining constraints, business rules, implementation decisions, migration rules, naming, sequencing, scoping. Multiple independent subsystems → flag immediately; help the user identify pieces, relationships, build order; plan the first subsystem through the normal flow. Big problems: name the destination first, keep output on one ticket; split only when the user asks.
 
 4. **Clarify Requirements with User (MANDATORY)**: Run a clarification interview before shaping by default — the only iteration before shaping; loop until shared understanding. Ask the next question; never restate previous answers. Skipping is the exception; justify it in the spec output.
 
@@ -81,7 +81,7 @@ Only two outcomes: sync or revise — never offer to apply/implement/execute; us
   - `{"name": "Validation", "items": [{"name": "<validation-item>", "completed": false}, ...]}`
   - `<requirement-item-encoded>`: `S1: <title> - <file> @ <symbol>::<location> - <instruction>` (no `patch` code — checklists are short tracking items).
   - Verify the `checklists` schema against the sync tool's source before calling.
-- `patches comment`: post the full `<requirement-items>` blocks (with `patch` code) as a ticket comment — keeps implementer code out of the card body, which overflows systems with body limits (e.g. Trello). Skip only when the tracker lacks comments → attach the blocks as a file.
+- `patches comment`: post the full `<requirement-items>` blocks (with `patch` code) as a ticket comment — keeps implementer code out of the card body, which overflows systems with body limits. Skip only when the tracker lacks comments → attach the blocks as a file.
 - `refUrl` — resolve deterministically, never by asking; load the resolved ticket's state first; replace/delete an existing ticket only when the user asks:
   - `<spec-ticket-url>` set and open → update it.
   - `<ticket-url>` points at a ticket on the spec tracker itself and open → update it.
