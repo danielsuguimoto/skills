@@ -41,7 +41,7 @@ From `<coverage-map>`, write `<test-plan>` with four scenario classes:
 
 - **Source** — one scenario per `<client-cases>` entry, replaying the client's case as reported: their steps, their data shapes, their flow. A client bug report → the exact reported failure must now pass; a client-specific feature request → the client's use case performed the way they described it. These are the primary scenarios — Delivery generalizes from them, never substitutes; an `<expected-outcomes>` entry a source scenario already covers needs no duplicate.
 - **Delivery** — one user-level scenario per `<expected-outcomes>` entry: entry point, user action, expected observable result (UI state, DB effect, or both).
-- **Data-artifact** — one execution scenario per migration, seeder, operation, or script flagged in Step 2: run against a populated DB; assert schema lands and existing rows survive (migrations); expected rows/effects land (seeders, operations, scripts); re-run safe where idempotency is claimed.
+- **Data-artifact** — one execution scenario per migration, seeder, operation, or script flagged in Step 2: run against the populated local dev DB; assert schema lands and existing rows survive (migrations); expected rows/effects land (seeders, operations, scripts); re-run safe where idempotency is claimed.
 - **Regression** — the surface past the diff: direct callers and shared modules traced via code navigation (`code-navigation.md`), each asserting unchanged behavior; project tests covering the changed symbols, run by file/name filter; and a **system pass**: the core journeys every user hits (auth, landing view, primary CRUD flow) exercised even where the diff never touches them.
 
 Order setup-free flows first; note test-data prerequisites per scenario.
@@ -63,7 +63,7 @@ Run the app per project tooling. Drive each scenario through browser automation 
 
 After each scenario, verify **persisted effects** via read-only DB inspection (`database-tools.md`): rows created/updated, status transitions, relationship integrity. Live DB is ground truth — a UI that looks right while the DB is wrong is a failure.
 
-Execute each data-artifact scenario per project tooling against a populated testing database, then inspect live schema and rows. A migration that applies but strands stale columns, or a seeder that runs clean but writes wrong rows, is a failure. Artifact output text is not evidence; the database is.
+Execute each data-artifact scenario per project tooling against the populated local dev database — the same DB the browser scenarios exercise, so artifact effects are visible to UI checks — then inspect live schema and rows. A migration that applies but strands stale columns, or a seeder that runs clean but writes wrong rows, is a failure. Artifact output text is not evidence; the database is.
 
 Regressions: run diff-related tests and lint where they exist, plus every regression scenario and the system pass. A test failure the diff did not cause is still a finding — mark it pre-existing after a cheap check against `<base-branch>`.
 
