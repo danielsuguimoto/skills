@@ -5,7 +5,7 @@ description: "Use when a request or skill invocation is prefixed with 'new-works
 
 ## Required `<project-root>/docs` reads
 
-Shell-read **before** creating the workspace; may be gitignored and absent from the new workspace — the in-context copy stays source of truth after the move. Missing → fall back per `using-workspaces`, note gap, never invent: `<project-root>/docs/workspace-isolation.md`
+Shell-read **before** creating the workspace; may be gitignored and absent from the new workspace — the in-context copy stays source of truth after the move. Missing → fall back per `using-workspaces`, note gap, never invent: `<project-root>/docs/workspace-isolation.md`, `<project-root>/docs/issue-trackers.md` (only when the invocation references a ticket/card)
 
 Companion skill: isolate first, then run whatever came next.
 
@@ -17,6 +17,11 @@ Everything after `new-workspace` is downstream input:
 - **Context only** — bare URL, ticket link, file path, reference with no action → informs setup (e.g. naming); not a task.
 - Empty or context-only → standalone mode (Edge Cases).
 
+Then derive `<workspace-name>` — a concise kebab-case slug naming the work:
+
+- Input references a ticket/card (URL or ID) → load it via `issue-trackers.md` and slug from `<ticket-title>` (an ID alone is not a friendly name); keep the payload in context for `<downstream>` to reuse instead of loading it again. Load fails → fall back to the ID, note the gap.
+- Free-text task or description → slug from that text.
+
 ## 2. Set Up the Workspace
 
 Resolve the base ref first — the workspace must start from the tip of the remote's default branch (`master`/`main`), never the current checkout, which may be stale or a feature branch:
@@ -27,7 +32,7 @@ git remote set-head origin --auto 2>/dev/null
 BASE=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null || echo origin/main)
 ```
 
-Then invoke `using-workspaces` and follow it fully — consent is implied; skip its consent question. Pass `origin/<default>` as the creation base wherever the mechanism accepts one; a mechanism that fixes the base to the current checkout → flag it to the user, don't silently base on it.
+Then invoke `using-workspaces` and follow it fully — consent is implied; skip its consent question. Pass `origin/<default>` as the creation base and `<workspace-name>` as the name wherever the mechanism accepts them; a mechanism that fixes the base to the current checkout → flag it to the user, don't silently base on it.
 
 ## 3. Hand Off
 
