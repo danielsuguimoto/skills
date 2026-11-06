@@ -5,7 +5,7 @@ description: "Use database inspection tools for schema, queries, reconciling cou
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before any database query, schema inspection, or read/write operation; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`, `<project-root>/docs/database-tools.md`
+Shell-read before any database query, schema inspection, or read/write operation; may be gitignored — missing → note gap, never invent: `<project-root>/docs/database-tools.md`
 
 ## Source of Truth
 

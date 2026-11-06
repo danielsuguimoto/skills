@@ -5,7 +5,7 @@ description: "Use when shipping current work end-to-end — branch, commit, push
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before shipping end-to-end; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`, `<project-root>/docs/issue-trackers.md`
+Shell-read before shipping end-to-end; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`
 
 ## Operations
 

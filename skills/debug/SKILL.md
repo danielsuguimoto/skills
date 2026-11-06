@@ -5,7 +5,7 @@ description: "Use when a user reports a bug, error, or unexpected behavior and w
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before investigating the bug; may be gitignored — missing → note gap, never invent: `<project-root>/docs/bug-trackers.md`, `<project-root>/docs/code-navigation.md`, `<project-root>/docs/database-tools.md`, `<project-root>/docs/doc-lookup.md`, `<project-root>/docs/memory-providers.md`, `<project-root>/docs/observability-tools.md`, `<project-root>/docs/terminal-wrappers.md`, `<project-root>/docs/terminal-tools.md`
+Shell-read before investigating the bug; may be gitignored — missing → note gap, never invent: `<project-root>/docs/bug-trackers.md`, `<project-root>/docs/code-navigation.md`, `<project-root>/docs/memory-providers.md`, `<project-root>/docs/observability-tools.md`; only when the evidence calls for it — `<project-root>/docs/database-tools.md` (state persists), `<project-root>/docs/doc-lookup.md` (version/API uncertainty)
 
 Troubleshoot and fix a user-reported issue. Three phases, each with a grilling section. This skill **executes fixes**; for read-only root-cause reporting use `triage`.
 

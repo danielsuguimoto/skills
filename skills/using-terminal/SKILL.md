@@ -5,7 +5,7 @@ description: "MANDATORY — terminal/shell command execution: wrapper usage and 
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before running terminal/shell commands; may be gitignored — missing → note gap, never invent: `<project-root>/docs/container-clis.md`, `<project-root>/docs/terminal-wrappers.md`, `<project-root>/docs/terminal-tools.md`
+Shell-read before running terminal/shell commands; may be gitignored — missing → note gap, never invent: `<project-root>/docs/terminal-wrappers.md`, `<project-root>/docs/terminal-tools.md`, `<project-root>/docs/container-clis.md` (only before a container command)
 
 # Terminal Token Compression
 

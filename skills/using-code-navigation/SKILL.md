@@ -5,7 +5,7 @@ description: "Use code navigation tools for symbol-level work instead of grep/re
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before any code navigation lookup; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`, `<project-root>/docs/memory-providers.md`
+Shell-read before any code navigation lookup; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`, `<project-root>/docs/memory-providers.md` (memory operations only)
 
 LSP-backed semantic ops (`code-navigation.md`) — prefer over `grep`/`read` for symbol-level work.
 

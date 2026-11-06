@@ -3,10 +3,6 @@ name: subagents
 description: "Subagent spawning gates. MANDATORY before any spawn, any large context-gathering scan (codebase, DB, docs, memories), or any work splittable into parallel independent tasks."
 ---
 
-## Required `<project-root>/docs` reads
-
-Shell-read before spawning any subagent; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`
-
 Discover profiles through the tool's native mechanism — don't assume a fixed list or path. Verify availability before delegating; missing → fall back to inline.
 
 ## Dispatch Rationales

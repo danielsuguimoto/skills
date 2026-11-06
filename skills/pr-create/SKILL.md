@@ -5,7 +5,7 @@ description: "Use when creating or opening a pull request for the current branch
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before creating the PR; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`, `<project-root>/docs/issue-trackers.md`
+Shell-read before creating the PR; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`, `<project-root>/docs/issue-trackers.md` (Step 10 only — a ticket to link)
 
 ## Operations
 

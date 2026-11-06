@@ -5,7 +5,7 @@ description: "Draft a reply to a ticket and post it as a private note for review
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before drafting the reply; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`, `<project-root>/docs/database-tools.md`, `<project-root>/docs/doc-lookup.md`, `<project-root>/docs/issue-trackers.md`
+Shell-read before drafting the reply; may be gitignored — missing → note gap, never invent: `<project-root>/docs/issue-trackers.md`; only when the gather-context step runs — `<project-root>/docs/code-navigation.md`, `<project-root>/docs/database-tools.md`, `<project-root>/docs/doc-lookup.md`
 
 Load and analyze the ticket, gather context if needed, draft a reply, post it as a private note for human review. READ-ONLY — the note is a draft the human sends; it promises no work (changes, commits, PRs) unless `<additional-context>` explicitly asks.
 

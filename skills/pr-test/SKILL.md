@@ -5,7 +5,7 @@ description: "Use when testing or verifying a pull request end-to-end — exerci
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before testing the PR; may be gitignored — missing → note gap, never invent: `<project-root>/docs/browser-automation.md` (Step 6 only), `<project-root>/docs/code-navigation.md`, `<project-root>/docs/database-tools.md`, `<project-root>/docs/git-hosts.md`, `<project-root>/docs/issue-trackers.md`
+Shell-read before testing the PR; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`, `<project-root>/docs/database-tools.md`, `<project-root>/docs/git-hosts.md`; `<project-root>/docs/issue-trackers.md` (only when the PR references tickets/cards), `<project-root>/docs/browser-automation.md` (Step 6 only)
 
 Test whether a PR **works**, not whether it reads well — and whether the **system** still works around it. The diff marks where the change landed; the blast radius is every behavior, caller, and data artifact it can break. A green feature check inside a broken system is a failed test.
 

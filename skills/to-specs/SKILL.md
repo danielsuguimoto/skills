@@ -5,7 +5,7 @@ description: Use when a request or ticket needs to be turned into a spec of code
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before turning the request into a spec; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`, `<project-root>/docs/database-tools.md`, `<project-root>/docs/doc-lookup.md`, `<project-root>/docs/issue-trackers.md`
+Shell-read before turning the request into a spec; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`, `<project-root>/docs/issue-trackers.md`; only when the spec touches them — `<project-root>/docs/database-tools.md` (persisted state/schema), `<project-root>/docs/doc-lookup.md` (library/API uncertainty)
 
 Treat ticket systems generically.
 

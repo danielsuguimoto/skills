@@ -5,7 +5,7 @@ description: "Use when a ticket needs investigation, debugging, or a response. R
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before investigating the ticket; may be gitignored — missing → note gap, never invent: `<project-root>/docs/bug-trackers.md`, `<project-root>/docs/code-navigation.md`, `<project-root>/docs/database-tools.md`, `<project-root>/docs/doc-lookup.md`, `<project-root>/docs/git-hosts.md`, `<project-root>/docs/issue-trackers.md`, `<project-root>/docs/observability-tools.md`
+Shell-read before investigating the ticket; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`, `<project-root>/docs/issue-trackers.md`; debug branch only — `<project-root>/docs/bug-trackers.md`, `<project-root>/docs/database-tools.md`, `<project-root>/docs/doc-lookup.md`, `<project-root>/docs/git-hosts.md`, `<project-root>/docs/observability-tools.md`
 
 Load ticket context, determine mode (ask or debug), gather evidence, sync the result back. READ-ONLY — no code changes, no commits.
 
