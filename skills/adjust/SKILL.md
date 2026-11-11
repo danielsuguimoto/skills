@@ -32,12 +32,13 @@ One question at a time, rotate until each settles:
 - **Scope** — explicitly out of scope; existing behavior that must not change.
 - **Priority** — multi-point → which matters most; recommend ordering.
 - **Conflict check** — request contradicting an invariant/pattern/design decision → surface with the decisive snippet first.
+- **Spec check** — a spec card reachable (ticket ref in `$ARGUMENTS`/conversation, or linked from the loaded ticket) → load it (shell-read `<project-root>/docs/issue-trackers.md`; take body, Implementation/Validation checklists, patches comment). A request point contradicting a spec item or a locked `Solution` decision → **divergence**: show the spec line vs. the request, ask whether the spec should change. Record each as `<spec-divergence>` (`confirmed`/`declined`); additions the spec simply doesn't cover aren't divergences.
 
 Store as `<request-context>`. Intent still undefined after one round → **stop, list unknowns** — don't act speculatively.
 
 ### 3. Parse Into Actionable Items
 
-Split `<adjust-raw>` + `<request-context>` into `<adjust-item>`s: `id` (`A1`, `A2`, …), `file`, `lines`, `category` (`critical`|`important`|`style`), `suggestion` (one-line imperative), `conflicts-with-design` (`yes` → defend current code, record reason, do NOT apply). `noise`/`question`/`conflicts-with-design: yes` → `<not-applying>` list.
+Split `<adjust-raw>` + `<request-context>` into `<adjust-item>`s: `id` (`A1`, `A2`, …), `file`, `lines`, `category` (`critical`|`important`|`style`), `suggestion` (one-line imperative), `conflicts-with-design` (`yes` → defend current code, record reason, do NOT apply). An item tracing to a `declined` `<spec-divergence>` → `<not-applying>`; a `confirmed` one → flag `diverges-spec`, which exempts it from `conflicts-with-design` rejection — the user already approved overriding the spec'd design. `noise`/`question`/`conflicts-with-design: yes` (and not `diverges-spec`) → `<not-applying>` list.
 
 ### 4. Plan Implementation
 
@@ -55,7 +56,7 @@ Declines → Step 4, revise. Never implement an unconfirmed plan.
 
 ### 6. Implement
 
-Critical first, existing patterns, minimal edits, no comments unless asked → `<changes-count>`.
+Critical first, existing patterns, minimal edits, no comments unless asked → `<changes-count>`. Each `diverges-spec` item also updates the spec card (sync per `issue-trackers.md`): rewrite the matching checklist items, patch blocks, and `Solution`/`Notes` lines so the spec reflects the applied change.
 
 ### 7. Validate Changes
 
@@ -63,4 +64,4 @@ Run the project's lint and test commands → `<validation-results>`, `<validatio
 
 ### 8. Present Results
 
-Concise summary, then stop: one line per applied change · validation status · `<not-applying>` with one-line reasons · `<changes-count>` if tracked.
+Concise summary, then stop: one line per applied change · spec-card updates when applied · validation status · `<not-applying>` with one-line reasons · `<changes-count>` if tracked.
