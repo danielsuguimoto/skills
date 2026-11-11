@@ -52,12 +52,12 @@ Never "fix" the widget to match the raw count — widget filters are intentional
 | Connections, schema, raw `SELECT`/`EXPLAIN`/`SHOW` | Read-only query tool |
 | Widget-matching counts with Eloquent scopes | REPL (`Model::count()` with scopes) |
 | Accessor, cast, or relationship output | REPL |
-| Mutate data | REPL — explicit user approval only |
+| Mutate data | REPL — user approval unless the invoking workflow authorizes local writes |
 | Model events/subscribers, contract resolution (`Repository::resolve()`) | REPL |
 
 ## REPL Safety Rules
 
-- No writes without explicit user confirmation for that action — `save()`, `update()`, `delete()`, `forceDelete()`, `truncate()`, seeder/operation invocation. State what will change and wait.
+- No writes without explicit user confirmation for that action — `save()`, `update()`, `delete()`, `forceDelete()`, `truncate()`, seeder/operation invocation — unless the invoking workflow authorizes local writes (e.g. pr-test on the local environment). When required: state what will change and wait.
 - Experiments: `factory()` or `DB::transaction(function () { ... DB::rollback(); })`.
 - Company scoping applies — repository/contract queries scope to the current company; `queryAll()`/`without*` scopes bypass access controls deliberately.
 - Subscribers fire on model writes — may enqueue jobs, write logs, sync services. Raw `DB::table()` bypasses events — document why when used.

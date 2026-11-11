@@ -1,13 +1,15 @@
 ---
 name: pr-test
-description: "Use when testing or verifying a pull request end-to-end — exercise it as a regular user (UI + database), run its migrations/seeders/operations/scripts, verify linked tickets, and prove the system still works past the diff. READ-ONLY; reports findings in chat; typically post-approval."
+description: "Use when testing or verifying a pull request end-to-end — exercise it as a regular user (UI + database), run its migrations/seeders/operations/scripts, verify linked tickets, and prove the system still works past the diff. Reports findings in chat; leaves production, the PR, and the repo untouched; typically post-approval."
 ---
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before testing the PR; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`, `<project-root>/docs/database-tools.md`, `<project-root>/docs/git-hosts.md`; `<project-root>/docs/issue-trackers.md` (only when the PR references tickets/cards), `<project-root>/docs/browser-automation.md` (Step 6 only)
+Shell-read before testing the PR; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`, `<project-root>/docs/database-tools.md`, `<project-root>/docs/git-hosts.md`; `<project-root>/docs/issue-trackers.md` (only when the PR references tickets/cards), `<project-root>/docs/browser-automation.md` (Step 7 only)
 
 Test whether a PR **works**, not whether it reads well — and whether the **system** still works around it. The diff marks where the change landed; the blast radius is every behavior, caller, and data artifact it can break. A green feature check inside a broken system is a failed test.
+
+**Boundary:** the local environment is fully mutable — checkouts, migrations, seeders, operations, browser-driven writes, and local DB writes all execute as part of testing, without user confirmation. Untouched scope: production systems, the PR thread, and the repo's files and history.
 
 ### 1. Interpret Arguments
 
@@ -21,7 +23,7 @@ Classify `<changes>`. Flag **data artifacts** — migrations, seeders, operation
 
 ### 3. Load Linked Context
 
-For each `<ticket-refs>` entry, load via the issue tracker load tool (`issue-trackers.md`): body, every comment, checklists, attachments; traverse nested links per the spec — every nested ticket feeds `<expected-outcomes>`. Every ticket, spec, and card load — top-level and nested — goes through the tracker tooling documented there alone; the browser is reserved for exercising the app in Step 6. A ref the tracker tooling cannot load → gap per below, no browser fallback.
+For each `<ticket-refs>` entry, load via the issue tracker load tool (`issue-trackers.md`): body, every comment, checklists, attachments; traverse nested links per the spec — every nested ticket feeds `<expected-outcomes>`. Every ticket, spec, and card load — top-level and nested — goes through the tracker tooling documented there alone; the browser is reserved for exercising the app in Step 7. A ref the tracker tooling cannot load → gap per below, no browser fallback.
 
 Extract `<expected-outcomes>` — one entry per acceptance criterion, validation item, or spec requirement the PR must deliver. A ticket that fails to load → record a gap, don't guess its criteria.
 
@@ -48,18 +50,22 @@ Order setup-free flows first; note test-data prerequisites per scenario.
 
 **Done when:** every `<client-cases>` entry maps to a source scenario · every `<expected-outcomes>` entry maps to a delivery scenario · every flagged artifact maps to an execution scenario · regression callers enumerated · system-pass journeys picked.
 
-### Production Data for Local Reproduction
+### 6. Provision Test Data
 
-You may copy production data into a local database as fixture setup when reproducing a production scenario. The READ-ONLY boundary permits this local setup; code and production data stay unchanged.
+Before exercising, verify the local DB holds the records each scenario needs — the client case's data shapes, tenant context, required relationships. Missing → provision it: seeds/factories for generic data; production copies when a scenario reproduces a production case or needs real data shapes.
+
+Production copy rules:
 
 - Follow project database-tool and data-handling rules (`database-tools.md`). Confirm the source is production and the destination is local before importing.
 - Copy only the records needed for the scenario, including required relationships and tenant context. Preserve reproduction-critical values; mask unrelated sensitive data and exclude secrets from logs, reports, and version control.
 - Isolate local mail, queues, webhooks, and external integrations before exercising copied data so reproduction cannot affect real users or services.
-- Ask before overwriting or deleting existing local data. Use the imported records to replay the reported scenario and verify local persisted effects; never write to production.
+- Write only to local — never to production. Ask before overwriting or deleting existing local data.
 
-### 6. Exercise the Change
+**Done when:** every scenario's required records exist locally — seeded, copied, or already present.
 
-Run the app per project tooling. Drive each scenario through browser automation (`browser-automation.md`) as a **regular user** — real UI navigation, forms, clicks. No console shortcuts, direct API calls, or DB writes to force state; seed/fixture setup, including production-to-local copies, only when a scenario genuinely requires it.
+### 7. Exercise the Change
+
+Run the app per project tooling. Drive each scenario through browser automation (`browser-automation.md`) as a **regular user** — real UI navigation, forms, clicks. No console shortcuts, direct API calls, or DB writes to force state — Step 6 provisions whatever data a scenario requires.
 
 After each scenario, verify **persisted effects** via read-only DB inspection (`database-tools.md`): rows created/updated, status transitions, relationship integrity. Live DB is ground truth — a UI that looks right while the DB is wrong is a failure.
 
@@ -71,7 +77,7 @@ Record `<results>` per scenario: `pass`/`fail`/`blocked` with evidence (observed
 
 **Done when:** every scenario attempted · each `<expected-outcomes>` entry has a result · every artifact executed or `blocked` with reason · related-test results and system pass captured.
 
-### 7. Report Findings
+### 8. Report Findings
 
 Chat only — never post to the PR. Per `<expected-outcomes>` entry: verified / failed / untested (with reason). Then:
 
@@ -84,5 +90,5 @@ Chat only — never post to the PR. Per `<expected-outcomes>` entry: verified / 
 ## Notes
 
 - Verifies, never fixes — issues found → user invokes a fix workflow; leave the repo as found (no edits, no stray commits).
-- A scenario that cannot be exercised locally (external service, missing seed) → `blocked` with reason — never `pass` unverified.
+- A scenario that cannot be exercised locally (external-service dependency, data not provisionable from seeds, factories, or production copies) → `blocked` with reason — never `pass` unverified.
 - An artifact too destructive to run locally (drops tables, mutates shared infra) → `blocked` with the risk named; review its code and report what verification the deploy needs instead.
