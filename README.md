@@ -28,6 +28,7 @@ Each subdirectory under `skills/` is a self-contained skill with a `SKILL.md` ma
 | pr-fix | Address PR feedback by making fixes and responding directly to review threads. |
 | pr-fix-ci | Fix failing CI checks on a PR — read logs, fix the code, push, verify green. |
 | pr-test | Test a PR end-to-end — exercise the change as a regular user, verify linked-ticket coverage and database effects, catch regressions. Local environment mutable; production, PR, and repo untouched. |
+| manual-test | Walk the user through a manual PR test — provision the local database, then guide step-by-step while verifying persisted effects. The user drives the UI; the agent sets up and verifies. |
 | post-merge | After a PR is merged and deployed — draft resolution replies for linked customer-success tickets via draft-reply, then clear the work's isolated workspace. |
 | session-to-memory | Extract retention-worthy knowledge from a session and persist it to the active memory provider. |
 | setup-skills | Guide users through initial configuration — creates `<project-root>/docs` folder and generates all spec files needed by other skills. |
