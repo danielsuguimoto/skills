@@ -38,7 +38,7 @@ Store as `<request-context>`. Intent still undefined after one round → **stop,
 
 ### 3. Parse Into Actionable Items
 
-Split `<adjust-raw>` + `<request-context>` into `<adjust-item>`s: `id` (`A1`, `A2`, …), `file`, `lines`, `category` (`critical`|`important`|`style`), `suggestion` (one-line imperative), `conflicts-with-design` (`yes` → defend current code, record reason, do NOT apply). `noise`/`question`/`conflicts-with-design: yes` → `<not-applying>` list. An item tracing to a `declined` `<spec-divergence>` → `<not-applying>`; a `confirmed` one → flag `diverges-spec`.
+Split `<adjust-raw>` + `<request-context>` into `<adjust-item>`s: `id` (`A1`, `A2`, …), `file`, `lines`, `category` (`critical`|`important`|`style`), `suggestion` (one-line imperative), `conflicts-with-design` (`yes` → defend current code, record reason, do NOT apply). An item tracing to a `declined` `<spec-divergence>` → `<not-applying>`; a `confirmed` one → flag `diverges-spec`, which exempts it from `conflicts-with-design` rejection — the user already approved overriding the spec'd design. `noise`/`question`/`conflicts-with-design: yes` (and not `diverges-spec`) → `<not-applying>` list.
 
 ### 4. Plan Implementation
 
