@@ -1,15 +1,15 @@
 ---
 name: manual-test
-description: "Use when the user tests a pull request themselves with agent guidance — prepare the local database to reproduce its scenarios, then walk the user step-by-step through exercising the change and verifying linked tickets while you check persisted effects. Fits hands-on verification, human-only flows (auth/2FA, devices, live sessions), or missing browser automation; the user drives the UI, the agent sets up and verifies."
+description: "Use when the user tests a pull request themselves with agent guidance — prepare the local database to reproduce its scenarios, then walk the user step-by-step through exercising the change and verifying linked tickets while you check persisted effects. Fits hands-on verification, human-only flows (auth/2FA, devices, live sessions), or missing browser automation; the user runs everything the PR ships — UI flows, migrations, operations, scripts — while the agent sets up, guides, and verifies."
 ---
 
 ## Required `<project-root>/docs` reads
 
 Shell-read before preparing the test; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`, `<project-root>/docs/database-tools.md`, `<project-root>/docs/git-hosts.md`; `<project-root>/docs/issue-trackers.md` (only when the PR references tickets/cards)
 
-Test whether a PR **works** with the user as the driver. The agent builds the context, provisions the data, and hands the user exact steps to perform in the real UI; the user reports what they observe; the agent verifies persisted effects in the database. Same bar as `pr-test`, different driver — a UI that looks right while the DB is wrong is a failure.
+Test whether a PR **works** with the user as the driver. The agent builds the context, provisions the data, and hands the user exact steps to perform — UI actions and the commands for any data artifacts; the user reports what they observe; the agent verifies persisted effects in the database. Same bar as `pr-test`, different driver — a UI that looks right while the DB is wrong is a failure.
 
-**Boundary:** the local environment is fully mutable for provisioning — checkouts, migrations, seeders, operations, production copies, and local DB writes all execute as part of setup, without user confirmation. The test actions themselves belong to the user; the agent never drives the UI (that is `pr-test`). Untouched scope: production systems, the PR thread, and the repo's files and history.
+**Boundary:** the local environment is fully mutable for provisioning — checkouts, generic seeders/factories, production copies, and local DB writes all execute as part of setup, without user confirmation. Everything the PR ships is a test action and belongs to the user: UI flows, migrations, operations, seeders, and scripts alike. The agent prepares the pre-artifact state and verifies the after-state; it never drives the UI and never runs a flagged data artifact (that is `pr-test`). Untouched scope: production systems, the PR thread, and the repo's files and history.
 
 ### 1. Interpret Arguments
 
@@ -43,7 +43,7 @@ From `<coverage-map>`, write `<test-plan>` with four scenario classes:
 
 - **Source** — one scenario per `<client-cases>` entry, replaying the client's case as reported: their steps, their data shapes, their flow. A client bug report → the exact reported failure must now pass; a client-specific feature request → the client's use case performed the way they described it. These are the primary scenarios — Delivery generalizes from them, never substitutes; an `<expected-outcomes>` entry a source scenario already covers needs no duplicate.
 - **Delivery** — one user-level scenario per `<expected-outcomes>` entry: entry point, user action, expected observable result (UI state, DB effect, or both).
-- **Data-artifact** — one execution entry per migration, seeder, operation, or script flagged in Step 2. The agent runs these itself in Step 6 — never hand scripts to the user — and the entry records what must land (schema shape, rows, effects) plus any user-visible change a later scenario confirms.
+- **Data-artifact** — one execution scenario per migration, seeder, operation, or script flagged in Step 2, run by the user with three beats: the **pre-check** (inspect the provisioned pre-state — the rows or schema the artifact should change), the **command** (the exact invocation per project tooling), and the **post-check** (what must land — schema shape, rows, effects). The agent verifies landed effects in the DB — command output text is not evidence — plus any user-visible change a later scenario confirms.
 - **Regression** — the surface past the diff: direct callers and shared modules traced via code navigation (`code-navigation.md`), each asserting unchanged behavior; project tests covering the changed symbols, run by the agent via file/name filter; and a **system pass**: the core journeys every user hits (auth, landing view, primary CRUD flow) exercised even where the diff never touches them.
 
 Write each user-facing scenario so the user never guesses: numbered actions in the real UI (exact routes, navigation, field values, clicks), the expected observable result, the DB effect the agent will verify, and the data prerequisites Step 6 must provision. Order setup-free flows first.
@@ -54,7 +54,7 @@ Write each user-facing scenario so the user never guesses: numbered actions in t
 
 Before guiding, verify the local DB holds the records each scenario needs — the client case's data shapes, tenant context, required relationships. Missing → provision it: seeds/factories for generic data; production copies when a scenario reproduces a production case or needs real data shapes.
 
-Execute each flagged data artifact per project tooling against the populated local dev DB — the same DB the user will exercise — then inspect live schema and rows. A migration that applies but strands stale columns, or a seeder that runs clean but writes wrong rows, is a failure. Artifact output text is not evidence; the database is.
+Leave every flagged data artifact **pending**: the DB sits in the pre-artifact state the user inspects before running it. Provision the records each artifact acts on — the buggy rows an operation fixes, the data a migration transforms — on the same local dev DB the user will exercise. An artifact already applied locally → roll it back or re-provision so the user can run it themselves.
 
 Production copy rules:
 
@@ -63,13 +63,13 @@ Production copy rules:
 - Isolate local mail, queues, webhooks, and external integrations before exercising copied data so reproduction cannot affect real users or services.
 - Write only to local — never to production. Ask before overwriting or deleting existing local data.
 
-**Done when:** every scenario's required records exist locally — seeded, copied, or already present · every flagged artifact executed and verified, or `blocked` with reason.
+**Done when:** every scenario's required records exist locally — seeded, copied, or already present · every flagged artifact left pending with its pre-state provisioned, or `blocked` with reason.
 
 ### 7. Guide the User Through the Test
 
 Run the app per project tooling. Present the plan overview first — the scenario list and what it covers — so the user can pace the session, then walk one scenario at a time.
 
-Per scenario: restate what setup is already in place, then hand the user the numbered actions (exact routes, clicks, inputs) and the expected result. Wait for the user's report before advancing; use the interactive question tool for pass/fail/observation where one exists.
+Per scenario: restate what setup is already in place, then hand the user the numbered actions (exact routes, clicks, inputs — or the exact command for a data artifact, with its pre-check and post-check) and the expected result. Wait for the user's report before advancing; use the interactive question tool for pass/fail/observation where one exists.
 
 After each scenario, verify **persisted effects** via read-only DB inspection (`database-tools.md`): rows created/updated, status transitions, relationship integrity. The user's observation and the DB must agree — a mismatch is a failure; report it immediately with the evidence on both sides.
 
@@ -80,7 +80,7 @@ After each scenario, verify **persisted effects** via read-only DB inspection (`
 
 Record `<results>` per scenario: `pass`/`fail`/`blocked` with the user's observation plus agent DB evidence.
 
-**Done when:** every scenario attempted · each `<expected-outcomes>` entry has a result · every artifact executed or `blocked` with reason · user observation and DB state reconciled per scenario · related-test results and system pass captured.
+**Done when:** every scenario attempted · each `<expected-outcomes>` entry has a result · every artifact run by the user or `blocked` with reason · user observation and DB state reconciled per scenario · related-test results and system pass captured.
 
 ### 8. Report Findings
 
@@ -88,12 +88,12 @@ Chat only — never post to the PR. Per `<expected-outcomes>` entry: verified / 
 
 - **Issues** — severity, reproduction steps, evidence, `file:line` where the diff is implicated.
 - **Coverage gaps** — linked tickets/cards the PR does not fully address (`<coverage-map>` flags + failed scenarios).
-- **Data artifacts** — what each executed, or why `blocked`.
+- **Data artifacts** — what the user ran and what landed, or why `blocked`.
 - **Regressions** — adjacent behavior that broke: regression scenarios, test failures (pre-existing vs caused), system-pass failures.
 - **Verdict** — `works` only when delivered outcomes pass AND the system still works around them; otherwise `issues found`, one line.
 
 ## Notes
 
-- The agent never performs the test actions — hands-on driving is the user's. If the agent can drive the UI itself, invoke `pr-test` instead.
+- The agent never performs the test actions — UI flows, migrations, operations, seeders, and scripts all belong to the user. If the agent can drive the UI itself, invoke `pr-test` instead.
 - Verifies, never fixes — issues found → user invokes a fix workflow; leave the repo as found (no edits, no stray commits).
 - An artifact too destructive to run locally (drops tables, mutates shared infra) → `blocked` with the risk named; review its code and report what verification the deploy needs instead.
