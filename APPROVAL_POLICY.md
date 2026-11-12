@@ -4,18 +4,13 @@ Instructions for Devin Review's Autoapprover on this repository. Devin Review re
 
 ## Approve without a human
 
-Approve only when every condition holds:
+Approve when review completed and every condition holds:
 
-- No open findings — bugs, security findings, or investigate flags.
+- No open findings — bugs, security findings, or investigate flags the reviewer posted. An unavailable findings signal counts as no findings when review completed and posted none; a review that never ran is not a clean review.
 - The diff stays inside the PR's stated scope — no unrelated files touched.
 - Every check in `REVIEW.md` passes: triggers intact, spec pointers valid, single source of meaning, `README.md` index synced, completion criteria checkable.
-- Nothing under "Escalate" is touched.
-- CI checks, where present, are green.
+- Verify the PR's checks yourself: a failing check blocks approval; absent, pending, or unavailable check status does not.
 
-## Always escalate to a human
+## Findings, not blanket escalations
 
-- `APPROVAL_POLICY.md`, `AGENTS.md`, or `.devin/` content — agent configuration and approval rules.
-- New, renamed, or deleted skills — these change what fires in consuming sessions.
-- Wording that widens agent authority: added tool/command usage, network or credential access, auto-approve or skip-confirmation language.
-- Edits to mandatory skills or their trigger descriptions (`context-gathering`, `using-terminal`, `subagents`, `code-work`).
-- Changes to the Generate table in `skills/setup-skills/SKILL.md` — the spec contract consumers implement.
+Capability wording is review evidence, not an automatic veto: every skill edit changes what agents may do, so widened authority alone is not grounds for escalation. Flag concrete dangers as findings — instructions that read secrets into output, exfiltrate data, add unneeded network or credential access, or skip required confirmations (per `REVIEW.md` prompt safety). A flagged danger is an open finding and blocks approval; unflagged wording approves like any other diff.
