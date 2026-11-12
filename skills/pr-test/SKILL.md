@@ -1,6 +1,6 @@
 ---
 name: pr-test
-description: "Use when testing or verifying a pull request end-to-end — exercise it as a regular user (UI + database), run its migrations/seeders/operations/scripts, verify linked tickets, and prove the system still works past the diff. Reports findings in chat; leaves production, the PR, and the repo untouched; typically post-approval."
+description: "Use when testing or verifying a pull request end-to-end — exercise it as a regular user (UI + database) or through its real entry points (API contracts, workers/jobs, CLI commands), run its migrations/seeders/operations/scripts, verify linked tickets, and prove the system still works past the diff. Reports findings in chat; leaves production, the PR, and the repo untouched; typically post-approval."
 ---
 
 ## Required `<project-root>/docs` reads

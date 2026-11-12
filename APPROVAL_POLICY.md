@@ -13,4 +13,4 @@ Approve when review completed and every condition holds:
 
 ## Findings, not blanket escalations
 
-Capability wording is review evidence, not an automatic veto: every skill edit changes what agents may do, so widened authority alone is not grounds for escalation. Flag concrete dangers as findings — instructions that read secrets into output, exfiltrate data, add unneeded network or credential access, or skip required confirmations (per `REVIEW.md` prompt safety). A flagged danger is an open finding and blocks approval; unflagged wording approves like any other diff.
+Capability wording is review evidence, not an automatic veto: every skill edit changes what agents may do, so widened authority alone is not grounds for escalation. Flag concrete dangers as findings — the `REVIEW.md` prompt-safety cases, plus skill wording that adds unneeded network or credential access. A flagged danger is an open finding and blocks approval; unflagged wording approves like any other diff.
