@@ -1,6 +1,6 @@
 ---
 name: triage
-description: "Use when a ticket needs investigation, debugging, or a response. READ-ONLY — no code changes."
+description: "Use when a ticket needs investigation, debugging, or a response — the pipeline entry before to-specs (spec-ready code change) or draft-reply (answer or client input needed). READ-ONLY — no code changes."
 ---
 
 ## Required `<project-root>/docs` reads
@@ -21,6 +21,7 @@ Treat ticket systems generically. `<additional-context>` shapes focus. Update ex
 
 Escalate blockers (missing context, ambiguity, inaccessible resource, unclear requirements) in order:
 
+0. **Resolve it yourself first** — a question the ticket, code, or tools can answer is not a blocker. Exhaust those before escalating.
 1. **Ask the user first** — most blockers resolve in seconds. Ask before posting anything to the ticket.
 2. **Post to the ticket only when the user cannot resolve it** — needs another team, customer-side info, or a decision outside the user's authority.
 
@@ -67,6 +68,13 @@ Two output shapes — nothing else:
 
 Done when: reproduced · cause proven with evidence · repro conditions and impact scope known · culprit identified or ruled out. Name what stays unconfirmed in one line, only when it changes the next action.
 
+### Route
+
+The last output line names the follow-up skill — always exactly one:
+
+- `Next: to-specs` — a code change is needed AND spec-ready: root cause proven (or the request unambiguous) and nothing remains that only the client can answer.
+- `Next: draft-reply` — no code change needed (answered, not-a-bug, environment/config resolution), OR client input still missing (can't reproduce, missing information, a decision only the requester can make) — the drafted reply delivers the answer or asks the questions.
+
 **Debug Instrumentation** — only when the user grants write access for diagnosis: tag debug logs with a unique prefix `[DEBUG-a4f2]` (cleanup = one grep); one variable at a time; targeted logs at boundaries — never "log everything and grep".
 
 ### Sync
@@ -76,4 +84,4 @@ Always sync findings back — the spec phase reads prior comments; skipping brea
 ## Notes
 
 - **Traceability:** when `<question>`/`<additional-context>` came from skill arguments and isn't visible on the ticket, open the findings with one `Question:`/`Context:` line.
-- Final output: ticket URL + the findings themselves — the shapes above, nothing more.
+- Final output: ticket URL + findings + `Next:` line — nothing more.
