@@ -52,7 +52,11 @@ Write each user-facing scenario so the user never guesses: numbered actions in t
 
 ### 6. Provision Test Data
 
-Before guiding, verify the local DB holds the records each scenario needs — the client case's data shapes, tenant context, required relationships. Missing → provision it: seeds/factories for generic data; production copies when a scenario reproduces a production case or needs real data shapes.
+Treat missing local data as setup work. For each scenario, identify its required records, tenant context, relationships, permissions, and reproduction-critical values; inspect the live local DB to find what is missing.
+
+Build the smallest faithful fixture: use existing generic seeds/factories where suitable; otherwise create the missing records or adjust dedicated test records through application tooling or direct local DB inserts/updates. Preserve the reported failure's relevant data shapes and relationships, including edge-case or legacy states that ordinary factories omit. Production copies are an option only for source scenarios or when local construction cannot reproduce the required state; unavailable production access alone does not block a locally constructible scenario.
+
+Local provisioning is part of setup, not a repository fix: create fixtures in the local DB without editing tracked files. Additive local writes need no further permission; ask before overwriting or deleting existing local data. Prepare prerequisites only: the user exercises the real flow or flagged artifact in Step 7, rather than the agent writing its expected result into the DB.
 
 Leave every flagged data artifact **pending**: the DB sits in the pre-artifact state the user inspects before running it. Provision the records each artifact acts on — the buggy rows an operation fixes, the data a migration transforms — on the same local dev DB the user will exercise. An artifact already applied locally → roll it back or re-provision so the user can run it themselves.
 
@@ -63,7 +67,9 @@ Production copy rules:
 - Isolate local mail, queues, webhooks, and external integrations before exercising copied data so reproduction cannot affect real users or services.
 - Write only to local — never to production. Ask before overwriting or deleting existing local data.
 
-**Done when:** every scenario's required records exist locally — seeded, copied, or already present · every flagged artifact left pending with its pre-state provisioned, or `blocked` with reason.
+If provisioning fails, try the applicable alternatives above. Mark a scenario `blocked` only when a specific unmet prerequisite remains after concrete provisioning attempts, or a safety/permission boundary prevents them. Record the missing prerequisite, attempted methods and their errors or limitations, and what would unblock the scenario. Continue with scenarios whose prerequisites are available.
+
+**Done when:** every scenario's required records exist locally and inspection confirms the reproduction-critical values and relationships, or that scenario has an evidenced provisioning blocker recorded for the report · every flagged artifact left pending with its pre-state provisioned, or `blocked` with evidence.
 
 ### 7. Guide the User Through the Test
 
@@ -74,7 +80,7 @@ Per scenario: restate what setup is already in place, then hand the user the num
 After each scenario, verify **persisted effects** via read-only DB inspection (`database-tools.md`): rows created/updated, status transitions, relationship integrity. The user's observation and the DB must agree — a mismatch is a failure; report it immediately with the evidence on both sides.
 
 - A reported failure → capture evidence (what the user saw, error text, screenshot), guide one retry if the cause looks like a missed step, then record `fail` — debugging is a fix workflow, not this skill.
-- A scenario the user cannot perform (missing account or device, external-session dependency, unprovisionable data) → `blocked` with reason — never `pass` unverified.
+- A scenario the user cannot perform (for example, an unavailable device or external session) → `blocked` with evidence — never `pass` unverified. Missing local accounts or data return to Step 6; data-related blockers must meet its provisioning criteria.
 - Reset or re-provision data between runs when the user needs to repeat a scenario.
 - Run agent-side regression checks (diff-related tests, lint) alongside the guided pass; a test failure the diff did not cause is still a finding — mark it pre-existing after a cheap check against `<base-branch>`.
 

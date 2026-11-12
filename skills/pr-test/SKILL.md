@@ -58,7 +58,11 @@ Order setup-free flows first; note test-data prerequisites per scenario.
 
 ### 6. Provision Test Data
 
-Before exercising, verify the local DB holds the records each scenario needs — the client case's data shapes, tenant context, required relationships. Missing → provision: seeds/factories for generic data; production copies only for source scenarios or cases seeds/factories cannot reproduce.
+Treat missing local data as setup work. For each scenario, identify its required records, tenant context, relationships, permissions, and reproduction-critical values; inspect the live local DB to find what is missing.
+
+Build the smallest faithful fixture: use existing seeds/factories where suitable; otherwise create the missing records or adjust dedicated test records through application tooling or direct local DB inserts/updates. Preserve the reported failure's relevant data shapes and relationships, including edge-case or legacy states that ordinary factories omit. Production copies are an option only for source scenarios or when local construction cannot reproduce the required state; unavailable production access alone does not block a locally constructible scenario.
+
+Local provisioning is part of testing, not a repository fix: create fixtures in the local DB without editing tracked files. Additive local writes need no further permission; ask before overwriting or deleting existing local data. Keep setup separate from the behavior under test: prepare prerequisites, then exercise the real user flow or artifact in Step 7 rather than writing its expected result into the DB.
 
 Production copy rules (`database-tools.md`):
 
@@ -67,7 +71,9 @@ Production copy rules (`database-tools.md`):
 - Isolate local mail, queues, webhooks, and external integrations before exercising copied data so reproduction cannot affect real users or services.
 - Write only to local — never to production. Ask before overwriting or deleting existing local data.
 
-**Done when:** every scenario's required records exist locally — seeded, copied, or already present.
+If provisioning fails, try the applicable alternatives above. Mark a scenario `blocked` only when a specific unmet prerequisite remains after concrete provisioning attempts, or a safety/permission boundary prevents them. Record the missing prerequisite, attempted methods and their errors or limitations, and what would unblock the scenario. Continue with scenarios whose prerequisites are available.
+
+**Done when:** every scenario's required records exist locally and inspection confirms the reproduction-critical values and relationships, or that scenario has an evidenced provisioning blocker recorded for the report.
 
 ### 7. Exercise the Change
 
@@ -95,5 +101,5 @@ Chat only — never post to the PR.
 ## Notes
 
 - Verifies, never fixes — issues found → user invokes a fix workflow; leave the repo as found (no edits, no stray commits).
-- A scenario that cannot be exercised locally (external-service dependency, data not provisionable from seeds, factories, or production copies) → `blocked` with reason — never `pass` unverified.
+- A scenario that cannot be exercised locally (for example, an unavailable external service) → `blocked` with evidence — never `pass` unverified. Data-related blockers must meet Step 6's provisioning criteria.
 - An artifact too destructive to run locally (drops tables, mutates shared infra) → `blocked` with the risk named; review its code and report what verification the deploy needs instead.
