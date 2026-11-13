@@ -1,11 +1,11 @@
 ---
 name: writing-for-humans
-description: Write prose that reads human-written. Use when drafting or editing text for human readers (docs, PRs, tickets, emails, posts, comments) to strip AI tells without losing facts or voice.
+description: Draft, edit, or review text for clients, partners, or other human audiences in external tools (docs, PRs, tickets, emails, posts, comments), including drafts shown in chat for those audiences. Do not use for replies to the user in session chat or agent-facing documents.
 ---
 
 ## Scope
 
-Governs text a human reads. Agent-facing documents (skills, `AGENTS.md`) follow `writing-for-agents` instead. Chat output follows `code-work` → *Output Discipline* (a compression mode like `caveman` tightens further); this skill governs the text artifacts produced. Code, commands, paths, error strings, YAML, data, and link targets stay verbatim.
+Governs text intended for other humans, including drafts shown to the user in chat for review. Replies to the user in session chat follow `code-work` → *Output Discipline* (a compression mode like `caveman` tightens further). Agent-facing documents (skills, `AGENTS.md`) follow `writing-for-agents`. Code, commands, paths, error strings, YAML, data, and link targets stay verbatim.
 
 Every tell below is a default choice. The strongest justify an edit on one sighting; a *weak* tell needs company from other tells in the same passage.
 
