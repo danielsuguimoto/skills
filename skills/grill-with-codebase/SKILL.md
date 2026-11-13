@@ -13,7 +13,7 @@ Rules:
 
 ## Codebase is the ground truth
 
-The task touches an existing codebase. Before the first question, read the affected code: files, modules, contracts, callers, data flow, tests, nearby invariants. Ground every question and recommended answer in what the code does today, not generic best practice.
+The task touches an existing codebase. When the target is identifiable, read the relevant code before asking questions. If the symptom or target is too unclear to locate it, ask the minimum needed first. Ground later questions and recommendations in current code, not generic best practice.
 
 - A question answerable by exploring the codebase → explore instead of asking. Grill me only on decisions the code can't settle.
 - A question or answer referencing existing code → cite `path:lineRange` so we both look at the same thing.

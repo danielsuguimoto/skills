@@ -1,6 +1,6 @@
 ---
 name: adjust
-description: "Apply user-requested adjustments to existing code — fixes, improvements, refactors. Interactive: grills to clarify, then plans and executes."
+description: "Apply requested fixes, improvements, or refactors to existing code; clarify unresolved decisions before implementation."
 ---
 
 # Adjust
@@ -17,7 +17,7 @@ Act on the request only — no VCS operations, no review-thread replies, no foll
 
 ## Grilling Discipline
 
-Vague requests produce wrong changes — grill per `grill-with-codebase` before parsing, planning, implementing. AFK → proceed with recommended answers, state assumptions.
+Use `grill-with-codebase` only for unresolved decisions that code and the request cannot answer. Proceed directly when scope and intent are clear.
 
 ### 1. Capture the Request
 
@@ -25,10 +25,10 @@ Read `$ARGUMENTS` → `<adjust-raw>`. Empty or only a question → STOP, ask for
 
 ### 2. Grill: Clarify the Request
 
-One question at a time, rotate until each settles:
+Resolve these from the request and code. Ask only about material unknowns:
 
-- **Intent** — desired outcome, restated in one line and confirmed.
-- **Target** — file(s)/symbol(s): confirm named ones against code; locate candidates and ask otherwise.
+- **Intent** — desired outcome.
+- **Target** — confirm named files or symbols against code; locate candidates otherwise.
 - **Scope** — explicitly out of scope; existing behavior that must not change.
 - **Priority** — multi-point → which matters most; recommend ordering.
 - **Conflict check** — request contradicting an invariant/pattern/design decision → surface with the decisive snippet first.
@@ -44,15 +44,9 @@ Split `<adjust-raw>` + `<request-context>` into `<adjust-item>`s: `id` (`A1`, `A
 
 Fast path: every actionable item is a specific suggestion with no conflicts → `<implementation-plan>` = `trivial`, skip to Step 5. Otherwise order `critical` → `important` → `style`, then file, then line; validate each (`invalid` if it breaks behavior or contradicts a contract → `<not-applying>`); map cross-item dependencies → `<dependencies>`.
 
-### 5. Grill: Confirm the Plan
+### 5. Resolve Plan Decisions
 
-Before implementing:
-
-- **The plan** — present ordered `<adjust-item>` + `<not-applying>` lists; proceed?
-- **Scope check** — restate what will NOT change; any adjacent behavior to preserve?
-- **Rollback** — how to undo on regression; recommend minimal, isolated changes.
-
-Declines → Step 4, revise. Never implement an unconfirmed plan.
+Ask only when the plan requires a user decision or confirmation. Otherwise implement the requested changes without presenting a plan.
 
 ### 6. Implement
 
@@ -60,7 +54,7 @@ Critical first, existing patterns, minimal edits, no comments unless asked → `
 
 ### 7. Validate Changes
 
-Run the project's lint and test commands → `<validation-results>`, `<validation-passing>` (`yes`/`no`). Confirm changes address the request points; missed intent → re-implement that item.
+Run checks appropriate to the changes → `<validation-results>`, `<validation-passing>` (`yes`/`no`). Confirm changes address the request points; missed intent → re-implement that item.
 
 ### 8. Present Results
 

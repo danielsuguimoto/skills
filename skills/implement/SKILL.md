@@ -5,13 +5,13 @@ description: "Activate when implementing a ticket or planned change on an existi
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before implementing the ticket or planned change; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`, `<project-root>/docs/git-hosts.md`, `<project-root>/docs/issue-trackers.md`
+Shell-read before implementing: `<project-root>/docs/code-navigation.md`, `<project-root>/docs/git-hosts.md`; also read `<project-root>/docs/issue-trackers.md` when a ticket is supplied. Specs may be gitignored — missing → note gap, never invent.
 
 Use git host operations (`<project-root>/docs/git-hosts.md`) for branch check and pull latest; all git host tools need `repo_path`.
 
-1. **Capture Ticket Reference**: Extract `<ticket-url>` from input (URL → use directly; mention without URL → ask for link).
+1. **Capture Input**: Extract `<ticket-url>` when supplied (mention without URL → ask for link). Otherwise use the approved plan in the request or conversation; no plan → ask for it.
 
-2. **Load Ticket**: via the issue tracker tool (`issue-trackers.md`):
+2. **Load Planning Context**: When `<ticket-url>` exists, use the issue tracker tool (`issue-trackers.md`):
 1. List tracker tools → confirm a ticket-load tool exists; missing → return `BLOCKED` with `NO_MCP_ACCESS`.
 2. Load with `source: <ticket-url>`; attachments per spec → `<attachment-insights>`.
 3. Analyze requirements from name, description, comments, checklists, attachment insights.
@@ -19,7 +19,7 @@ Use git host operations (`<project-root>/docs/git-hosts.md`) for branch check an
 
 Returns (distilled): `<ticket-name>`, `<ticket-url>`, `<ticket-id>`, `<ticket-title>`, `<ticket-summary>`, `<ticket-board>`/`<ticket-websiteId>`, `<ticket-list>`/`<ticket-state>`, `<feature-area>`, `<spec-intent>`, `<acceptance-criteria>`, `<related-entities>`, `<blockers>`, `<gaps>`, `<requirement-items>` (parsed, not yet a todo list).
 
-Planning-phase tickets are approved plans — proceed to implementation, no design/plan approval. Ticket load fails or `BLOCKED` → report and stop.
+Ticket load fails or `BLOCKED` → report and stop. Without a ticket, derive the same fields from the approved plan, leaving ticket-only fields empty. An approved plan or planning-phase ticket needs no further plan approval.
 
 3. **Detect & Use Working Branch**: From `<ticket-title>`/`<ticket-summary>`, load branch + status → `<current-branch>`; check whether the current branch is already a feature/fix branch related to this ticket. Relevance uses ticket content (title/summary slug), not the ticket id — same derivation as `new-branch`.
 
@@ -37,7 +37,7 @@ Planning-phase tickets are approved plans — proceed to implementation, no desi
 - Confirm clean state before proceeding.
 
 4. **Build Todo List**: from `<requirement-items>`, `<acceptance-criteria>`, checklists.
-- **Inherit plan code-targets.** `Implementation` checklist items encode `S1: <title> — <file> @ <symbol>::<location> — <instruction>`; full `<requirement-item>` blocks (with `patch`) are appended to the ticket description. Parse both: checklist → locator triple (`file`/`symbol`/`location`); description block → `patch` + full instruction. Carry verbatim — don't re-derive targets. Checklist item lacking the triple (legacy/non-plan) → `content`-only, flag for resolution in Step 5.
+- **Inherit plan code-targets.** Parse locator triples and patch blocks from the approved plan or ticket, including the ticket's patches comment when present. Carry known `file`/`symbol`/`location` and `patch` verbatim. Flag items without targets for resolution in Step 5.
 
 **Todo format** — one per acceptance criterion/checklist item: `id` (inherited or `T1`, `T2`, …), `content` (short imperative naming the deliverable), `file` (inherited or `TBD`), `symbol`, `location`, `patch` (from plan if present), `status` (`pending`).
 
@@ -58,7 +58,7 @@ None hold → skip to Step 7; don't manufacture questions.
 
 Grilling per `grill-with-codebase`. Record each decision into the affected todo item (`file`/`symbol`/`location`/`patch` or a one-line note). Re-sync the todo list, not the ticket card. Stop when every question resolves; don't re-open settled decisions.
 
-7. **Implement on Working Branch**: focused, minimal changes on the resolved branch. Drive off `<todo-list>`: next `pending` → `in_progress` → apply at inherited `file`/`symbol`/`location` (`patch` as starting delta; when Step-5 drift or Step-6 resolution forces deviation, adapt toward `<spec-intent>`) → verify → `completed`. Exactly one `in_progress` at a time. After each meaningful chunk, run project lint and test commands.
+7. **Implement on Working Branch**: focused, minimal changes on the resolved branch. Drive off `<todo-list>`: next `pending` → `in_progress` → apply at inherited `file`/`symbol`/`location` (`patch` as starting delta; when Step-5 drift or Step-6 resolution forces deviation, adapt toward `<spec-intent>`) → verify → `completed`. Exactly one `in_progress` at a time. Run focused checks as needed and relevant project checks after implementation.
 
 **Test items**: scout existing tests, base classes, factories, assertion style; write from inherited `file`/`symbol`/`location`/`patch` + production code under test + Step-5 conventions. Verify via lint + tests.
 

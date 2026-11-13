@@ -24,7 +24,7 @@ PR metadata: git host view PR + list reviews (CLI fallback per spec). Extract `<
 Anchor `<pr-intent>` — why the PR exists: title, body, commit messages, plus every issue/card reference in body, commits, or branch name loaded via the issue tracker tool (`issue-trackers.md`), nested links traversed per spec. Tracker load fails → fall back to PR title/body; note the gap. Threads supply the what; intent arbitrates scope.
 
 ### 3. Align Local Branch
-`<pr-branch>` unavailable → STOP. Check out via git host checkout PR or `gh pr checkout <pr-number>` → `<active-branch>`. Fails → STOP. No code edits until `<active-branch>` == `<pr-branch>`. Never skip checkout — `<pr-ref>` is authoritative.
+`<pr-branch>` unavailable → STOP. Inspect the worktree and index; uncommitted or untracked changes → STOP and ask the user to preserve them before continuing. Check out via git host checkout PR or `gh pr checkout <pr-number>` → `<active-branch>`. Fails → STOP. No code edits until `<active-branch>` == `<pr-branch>`. Never skip checkout — `<pr-ref>` is authoritative.
 
 ### 4. Load Changes
 Git host PR diff. Fallback: `gh pr diff <pr-number>` or `git diff <base-branch>...<active-branch>` → `<changes>`.
@@ -40,7 +40,7 @@ Git host PR diff. Fallback: `gh pr diff <pr-number>` or `git diff <base-branch>.
 Fast path: every thread is a straightforward suggestion with no conflicts → `<implementation-plan>` = `trivial`, skip to Step 7. Skip fast path when any thread is ambiguous, has cross-thread dependencies, or needs judgment. Otherwise: ordered fix list (`critical` → `important` → `style`, then file, then line); effectively-resolved/`noise`/`current-heading: yes` → `not-fixing`; `invalid` threads (misreading, would break behavior, contradicts `<pr-intent>`) → `not-fixing` with reason (reply why in Step 12). Map cross-thread dependencies as sequential thinking → `<dependencies>`.
 
 ### 7. Implement Fixes
-Critical first, existing patterns, `<active-branch>`, focused minimal changes → `<changes-count>`.
+Critical first, existing patterns, `<active-branch>`, focused minimal changes → `<changes-count>` and `<fix-files>`.
 
 ### 8. Validate Changes
 Lint + tests on changed files. Confirm fixes address feedback → `<validation-results>`, `<validation-passing>` (`yes`/`no`).
@@ -57,7 +57,7 @@ Present gate: fix summary, changed file count, validation results. Ask (header `
 Use `<review-feedback>` to refine without widening scope → Step 7. No commit/push/reply during this step.
 
 ### 11. Commit and Push (after `approved` or `auto`)
-`git add -A`, `git commit -m "<message>"`, `git push origin <active-branch>`. Never generic messages like "address review feedback" → `<pushed>` (`yes`/`no`).
+Inspect the worktree and index again, including changes within `<fix-files>`. Unexpected changes → STOP and preserve them. Stage and commit only `<fix-files>` with explicit pathspecs, then `git push origin <active-branch>`. Never use a generic message like "address review feedback" → `<pushed>` (`yes`/`no`).
 
 ### 12. Respond to Threads
 Reply only after commit + push succeed. ALWAYS reply via thread reply API — NEVER standalone PR comments (`gh pr review -c`, `gh pr comment`). Sole exception: flat PR comments (no line anchor) → one flat comment quote-replying (blockquote original + author handle, then response).

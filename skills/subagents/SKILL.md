@@ -71,13 +71,13 @@ Read-only reconnaissance; the subagent returns a distilled brief — the parent 
 
 `BLOCKED`/`NO_*`/`UNAVAILABLE` → do the work inline; don't retry.
 
-## Offloading Exception (hard gate, overrides stay-inline)
+## Exploration Offloading
 
-A task needing **>5 file reads spanning >2 modules** for exploration/tracing → dispatch a read-only scout BEFORE any inline `read`/`grep`/navigation query. The parent acts on the brief; raw contents never enter parent context.
+For exploration across files or modules, apply the dispatch rationales above. File count alone does not establish that offloading saves time or tokens.
 
 | State | Scan shape | Action |
 |---|---|---|
-| Cold scan — parent doesn't hold the area | Multi-file / multi-module | Subagent scout |
+| Cold scan — parent doesn't hold the area | Multi-file / multi-module | Scout only when a dispatch rationale fires |
 | Warm read — parent holds the bulk | A few lines, one symbol, one file | Inline — dispatch overhead exceeds savings |
 
 Inline exceptions: exact path + line range known · a single navigation symbol lookup/reference call answers it · target file <~50 lines and isolated.

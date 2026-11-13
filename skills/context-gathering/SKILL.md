@@ -21,7 +21,7 @@ Ambiguous → ask BEFORE exploring (goal, module/area, constraints); `grill-with
 
 ### 2. Pull answers
 
-Work the questions one at a time; each has a target and is done when answered.
+Give each question a target and stop when it is answered. Batch independent lookups.
 
 - **Symbols** — routing per `code-work` → *Code Reading* (`code-navigation.md`). Locations and signatures first; bodies only for code you'll change or imitate.
 - **The slice** — follow the change's path: entry point → target → direct callers/collaborators. For a pattern, read the closest similar implementation — one, not a survey. Broad architecture question + graph output exists (`knowledge-graphs.md`) → query the graph instead of browsing source.

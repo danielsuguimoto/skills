@@ -11,7 +11,7 @@ The method needs no dedicated tool — pick whatever carries the chain:
 
 - **Task/todo list** — one item per thought; updates mark revisions, nested items mark branches. Persists the chain across steps and context boundaries.
 - **Inline reasoning** — run the loop mentally for short chains where tool overhead exceeds gain.
-- **Thinking tool** — when the project configures one (`<project-root>/docs/mcp-servers.md`), route every thought through it; it persists revisions and branches natively.
+- **Thinking tool** — use a configured tool (`<project-root>/docs/mcp-servers.md`) when persistent branches or revisions justify its call overhead.
 
 The loop binds either way — tool availability never gates it.
 

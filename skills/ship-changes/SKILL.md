@@ -1,6 +1,6 @@
 ---
 name: ship-changes
-description: "Use when shipping current work end-to-end — branch, commit, push, open PR — e.g. 'ship this', 'create a PR', or work complete and ready for review."
+description: "Ship current work end-to-end: branch, commit, push, and open a PR. Use for explicit shipping requests, not a PR-only request."
 ---
 
 ## Required `<project-root>/docs` reads

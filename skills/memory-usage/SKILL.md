@@ -38,7 +38,7 @@ Write at the moment of learning — defer only bulk review to `session-to-memory
 
 ## Maintain As You Go
 
-Whenever you read or write memory:
+Maintain memory only when requested or needed to use or update a relevant entry:
 
 - Consolidate overlapping entries into the better-named one.
 - Delete stale entries (transient details, reversed decisions, notes no session would use).

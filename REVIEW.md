@@ -10,6 +10,7 @@ Instructions for Devin Review on pull requests in this repository. Repository sh
 4. **Single source** — flag violations of the `AGENTS.md` single-source rule.
 5. **Index sync** — flag violations of the `AGENTS.md` index-sync rule.
 6. **Completion criteria** — flag vague step bounds ("make sure it's correct"); steps need checkable done-conditions, flat reference needs an exhaustiveness bar ("every X").
+7. **Skill efficiency** — check changed skills against the authoring and execution conventions in `AGENTS.md`; flag concrete regressions, not length alone.
 
 ## Critical areas
 

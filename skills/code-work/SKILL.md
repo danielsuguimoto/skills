@@ -20,7 +20,7 @@ Minimum code that solves the problem — nothing speculative: no unasked feature
 
 ## 3. Surgical Changes
 
-Touch only what you must; clean up only your own mess. Don't "improve" adjacent code, comments, or formatting; don't refactor what isn't broken; match existing style even if you'd do it differently; unrelated dead code → mention, don't delete. Orphans YOUR changes create (unused imports/variables/functions) → remove; pre-existing dead code → leave.
+Touch only what the request requires and match existing style. Remove unused imports, variables, or functions created by your changes. Mention unrelated dead code without deleting it.
 
 ## 4. Goal-Driven Execution
 

@@ -9,11 +9,11 @@ Shell-read before turning the request into a spec; may be gitignored — missing
 
 Treat ticket systems generically.
 
-**Effort scales with the task.** A simple localized bug gets a simple spec: context limited to the code the fix touches, no brainstorming, few items. No manufactured complexity — no invented subsystems, speculative hardening, new dependencies, or restyled code for a fix that fits existing patterns. Spec size matches change size: a one-line fix → a short spec + single patch item.
+**Effort scales with the task.** A localized fix gets a short spec and only the context and items it needs.
 
-**Surgical scope — every item is request-bounded.** Each requirement item traces to the request, the ticket, or a locked user decision. Findings surfaced while mapping — pre-existing bugs, dead code, missing hardening, style drift — go in Notes as observations, never as items. The spec touches only the symbols the destination needs; adjacent code the change doesn't break stays untouched.
+**Surgical scope.** Each item traces to the request, ticket, or a locked user decision. Unrelated findings belong in Notes, not implementation items.
 
-**Smallest diff wins.** Prefer modifying existing surfaces over creating new ones — a new file, route, page, link, or endpoint ships only when the request or a locked decision names it. The right spec delivers the request in the fewest items and the smallest patches: completeness, not thoroughness.
+**Smallest diff wins.** Prefer existing surfaces; add new ones only when the request or a locked decision requires them.
 
 **Spec boundary — implementation and automated tests only.** Every spec item is a code change or an executable automated check. Manual/exploratory validation, QA walkthroughs, and environment/ops checks belong to review and deploy, outside the spec — never an item, never an interview question.
 
