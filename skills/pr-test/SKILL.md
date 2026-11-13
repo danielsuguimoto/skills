@@ -40,7 +40,7 @@ Extract `<expected-outcomes>` as the observable behavior the PR promises. Implem
 
 Build a compact `<coverage-map>` from these outcomes to assertions in the planned journeys or focused checks. Flag missing implementation. An outcome whose premise no longer exists → `<premise-drift>`; explain it in the report rather than inventing a scenario for it.
 
-**Done when:** defining tickets are loaded or their gaps recorded; the purpose, observable outcomes, reported cases, artifacts, and concrete critical risks are clear enough to select the QA journeys.
+**Done when:** every defining ticket is loaded or has a recorded gap; every observable promised outcome and reported customer case from loaded sources is recorded; shipped artifacts and identified critical risks are listed; the coverage map records any missing implementation and premise drift.
 
 ### 4. Align Local Branch
 
