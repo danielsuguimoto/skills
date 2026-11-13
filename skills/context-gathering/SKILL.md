@@ -28,7 +28,7 @@ Work the questions one at a time; each has a target and is done when answered.
 - **Persisted state** — only when touched: schema, row counts, sample rows, EXPLAIN plans for the queries involved (`database-tools.md`). Live DB is ground truth.
 - **External docs** — only when a library API/version is genuinely uncertain (`doc-lookup.md`); code already in context answers first.
 
-Widen on evidence — a reference that surprises, an invariant the slice can't explain, a new question an answer raised. Answer it, then return to the list.
+Widen on evidence — a reference that surprises, an invariant the slice can't explain, a new question an answer raised. Answer it, then return to the list. Non-trivial widening runs as sequential thinking — each answer revises the open questions.
 
 ### 3. Verify — ready to act
 

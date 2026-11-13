@@ -3,7 +3,7 @@ name: grill-with-codebase
 description: "Use when a task, ticket, or vague intent touching a codebase needs interrogation into a buildable plan, or on 'grill' trigger phrases."
 ---
 
-I have a task or intent, not a finished plan. Interview me until the answers form a concrete plan. Resolve dependencies between decisions one-by-one.
+I have a task or intent, not a finished plan. Interview me until the answers form a concrete plan. Resolve dependencies between decisions one-by-one — order the chain as sequential thinking; each settled answer revises what stays open.
 
 Rules:
 

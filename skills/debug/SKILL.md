@@ -29,7 +29,7 @@ Don't explore until the symptom is clear.
 
 ## Phase 2 — Planning
 
-Strategy before code — the first plausible idea is usually not the cause.
+Strategy before code — the first plausible idea is usually not the cause. Run the phase as sequential thinking: hypotheses rank, branch, and revise as evidence lands.
 
 **2.1 Grill: Confirm the Strategy** — Hypotheses (present ranked list, confirm/reorder) · Fix approach (minimal patch, refactor, or workaround — recommend one) · Risk tolerance (what must not change — recommend safest boundary) · Test strategy (recommend a failing test reproducing the bug) → `<plan-decisions>`.
 

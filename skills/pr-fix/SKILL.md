@@ -37,7 +37,7 @@ Git host PR diff. Fallback: `gh pr diff <pr-number>` or `git diff <base-branch>.
 5. Premise drift — a suggestion or `<pr-intent>` assumes a bug path, invariant, or behavior the diff/code no longer has (superseding change, misdiagnosed cause) → `not-fixing` candidate; ambiguous → ask. Never fix against a dead premise.
 
 ### 6. Plan Implementation
-Fast path: every thread is a straightforward suggestion with no conflicts → `<implementation-plan>` = `trivial`, skip to Step 7. Skip fast path when any thread is ambiguous, has cross-thread dependencies, or needs judgment. Otherwise: ordered fix list (`critical` → `important` → `style`, then file, then line); effectively-resolved/`noise`/`current-heading: yes` → `not-fixing`; `invalid` threads (misreading, would break behavior, contradicts `<pr-intent>`) → `not-fixing` with reason (reply why in Step 12). Dependencies → `<dependencies>`.
+Fast path: every thread is a straightforward suggestion with no conflicts → `<implementation-plan>` = `trivial`, skip to Step 7. Skip fast path when any thread is ambiguous, has cross-thread dependencies, or needs judgment. Otherwise: ordered fix list (`critical` → `important` → `style`, then file, then line); effectively-resolved/`noise`/`current-heading: yes` → `not-fixing`; `invalid` threads (misreading, would break behavior, contradicts `<pr-intent>`) → `not-fixing` with reason (reply why in Step 12). Map cross-thread dependencies as sequential thinking → `<dependencies>`.
 
 ### 7. Implement Fixes
 Critical first, existing patterns, `<active-branch>`, focused minimal changes → `<changes-count>`.
