@@ -1,6 +1,6 @@
 ---
 name: writing-for-humans
-description: Draft, edit, or review text for clients, partners, or other human audiences in external tools (docs, PRs, tickets, emails, posts, comments), including drafts shown in chat for those audiences. Do not use for replies to the user in session chat or agent-facing documents.
+description: Draft, edit, or review human-facing prose, including third-party drafts shown in chat; excludes session replies and agent-facing documents.
 ---
 
 ## Scope

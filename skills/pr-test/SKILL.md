@@ -1,16 +1,16 @@
 ---
 name: pr-test
-description: "Use when testing or verifying a pull request as a human QA engineer, either with the user performing the actions under guidance or with the agent executing them. Confirm the driver first; prove the PR's purpose through UI/database effects or real API, worker/job, CLI, migration, seeder, operation, and script entry points, plus clear critical edges. User-driven mode fits auth/2FA, devices, live sessions, or missing browser automation. Reports in chat; production stays read-only and PR/repo files/history untouched. Args: `quick` for the main-purpose pass, `budget <N>` to cap scenarios."
+description: "Test or verify a PR through real entry points, with the user or agent driving. Supports `quick` and `budget <N>`."
 ---
 
 ### 0. Confirm the Test Driver
 
 Before loading PR context, checking out a branch, or preparing runtime/data, ask: **Who will drive the test actions?** Use the interactive question tool where available, with these choices:
 
-- **User** — the user performs all test actions: UI interactions (including UI-based setup), API requests, worker/job or CLI invocations, and every shipped migration, seeder, operation, and script, even when it is a prerequisite. The agent prepares minimal non-UI prerequisites, gives exact steps, waits for observations, and verifies effects.
+- **User** — the user performs test actions; the agent guides and verifies them.
 - **Agent** — the agent performs the test actions through real entry points and verifies effects; ask for human-only access or actions when needed.
 
-Record the answer as `<test-driver>` = `user` or `agent`. An unanswered or skipped choice pauses the workflow; there is no default driver. Keep the choice for the session and change it only on the user's request. Both drivers use the same scope, plan, preparation, and proof rules below. Supporting automated checks follow Step 7.
+Record the answer as `<test-driver>` = `user` or `agent`. An unanswered or skipped choice pauses the workflow; there is no default driver. Keep the choice for the session and change it only on the user's request. For `user`, read and follow [user-driven testing](user-driven.md); both drivers use the same scope, plan, preparation, and proof rules below.
 
 ## Required `<project-root>/docs` reads
 
@@ -18,7 +18,7 @@ Shell-read before testing the PR; may be gitignored — missing → note gap, ne
 
 Act as a human QA engineer. Spend most effort proving `<pr-purpose>` through realistic use. Test the main journeys and clear, critical edge cases; touched files and methods are not a coverage checklist. Stop when the scoped behavior has evidence, not when every nearby code path has been exercised.
 
-**Boundary:** local runtime and database changes follow the project's safety and approval rules. Confirm the database target before migrations, seeders, operations, or fixture writes; obtain required approval. Keep production read-only and leave the PR thread and repo files/history untouched. Ask before overwriting or deleting existing local data; use an isolated disposable local database for destructive artifacts. With `<test-driver>` = `user`, setup may use existing generic tooling, but the agent never runs shipped artifacts or takes over UI actions as hidden preparation.
+**Boundary:** local runtime and database changes follow the project's safety and approval rules. Confirm the database target before migrations, seeders, operations, or fixture writes; obtain required approval. Keep production read-only and leave the PR thread and repo files/history untouched. Ask before overwriting or deleting existing local data; use an isolated disposable local database for destructive artifacts.
 
 **Completion gate:** every planned scenario has a result. `PASSED` means execution met its assertions; `FAILED` means it contradicted an assertion; `BLOCKED` means a prerequisite or unavailable/declined action prevented execution under Step 6, with the missing prerequisite, attempted recovery or reason none was suitable, and unblock path recorded; `DEFERRED` means requested depth, scenario budget, or the user ending the session excluded it, with a reason. Missing evidence never means `PASSED` or `FAILED`.
 
@@ -60,8 +60,6 @@ Prioritize the purpose, then clear critical risks. Select complete dependency ch
 
 Give each scenario an ID, source outcome, entry point, prerequisites, and observable assertions; add the risk for an edge scenario. Deferred IDs need only their source and reason. Out-of-scope permutations need no scenario rows; summarize that boundary once. Every non-drifted promised outcome maps to a selected assertion or a deferred ID; implementation and automated-test checklists do not inflate this ledger.
 
-For user-driven scenarios, record the exact navigation, field values, clicks or command, expected observation, and any persisted effect the agent will verify. Show only a short scenario overview before execution; deliver detailed instructions when the user reaches the scenario. Artifact instructions include the pre-check, command, and post-check.
-
 **Done when:** the plan proves the purpose, accounts for required artifacts and clear critical risks, has executable dependency chains, and adds no scenario whose evidence another selected execution already supplies.
 
 ### 6. Prepare Minimal Local Data
@@ -70,7 +68,7 @@ Prepare the main journey first and later prerequisites when needed. Start only t
 
 Use existing tooling and small, one-off commands. Do not create setup scripts, seeders, fixture generators, verification harnesses, or bulk fixture matrices for this QA pass. If faithful reproduction requires substantial custom setup, record the missing data/tooling as `BLOCKED` and request what would unblock it rather than building fixture infrastructure. Reuse compatible records across a journey. Setup supplies prerequisites, never the behavior's expected result; the selected driver executes shipped artifacts as tests in Step 7, not as hidden fixture setup.
 
-For user-driven tests, inspect each selected artifact's target and pre-state and leave it pending for the user. An already-applied artifact is not permission to roll it back or rebuild the working database in either mode. Use a readily available, safe isolated pre-artifact database or snapshot if suitable; otherwise record the missing pre-state as a blocker for that execution and continue independent journeys. Do not reset, clone, or re-provision a database merely to obtain a clean run; never count a no-op against already-repaired data as proof of the original repair.
+An already-applied artifact is not permission to roll it back or rebuild the working database. Use a readily available, safe isolated pre-artifact database or snapshot if suitable; otherwise record the missing pre-state as a blocker for that execution and continue independent journeys. Do not reset, clone, or re-provision a database merely to obtain a clean run; never count a no-op against already-repaired data as proof of the original repair.
 
 Production copies are an option only when a purpose scenario needs historical state that lightweight local preparation cannot reproduce. Follow `database-tools.md`: confirm production source and local destination; copy only needed records and relationships; preserve reproduction-critical values while masking unrelated sensitive data; isolate mail, queues, webhooks, and external integrations before use. Keep secrets out of evidence and version control; write only to local.
 
@@ -84,17 +82,17 @@ For external dependencies, use an available sandbox or existing controlled local
 
 Run coherent journeys serially with shared runtime, browser session, and records. Parallel execution is optional only for genuinely independent agent-driven scenarios with compatible setup under the `subagents` gate; shared mutable state stays serial, and parallelism does not justify duplicate fixture preparation.
 
-With `<test-driver>` = `agent`, perform the selected actions and collect the results. With `<test-driver>` = `user`, guide one scenario at a time: state what setup is ready, give numbered actions and expected observations, and wait for the user's report before advancing. Use the interactive question tool at meaningful checkpoints, not after every click. Never infer success from silence or take over an unperformed user action. A declined/unavailable action is `BLOCKED`; the user ending the session makes unreached scenarios `DEFERRED`. Guide one retry only for an apparent missed step; otherwise record the application failure without debugging beyond scope.
+With `<test-driver>` = `agent`, perform the selected actions and collect the results. With `<test-driver>` = `user`, follow `user-driven.md`.
 
 The selected driver exercises UI journeys as a regular user through real navigation, forms, and clicks; agent-driven UI uses `browser-automation.md`. Exercise API contracts, workers/jobs, CLI commands, and artifacts through their real entry points. Console shortcuts, API calls, and DB writes do not replace the main user-facing journey.
 
-For each selected shipped artifact, inspect the pre-state, have the selected driver run the exact command through project tooling in dependency order, then inspect schema and affected rows. In user-driven mode, hand over the command and expected result, wait for the user's output/report, and verify the post-state yourself. Preserve existing rows where required, verify intended changes, and capture any claimed idempotency rerun. Reuse that execution for its purpose and artifact assertions; command success alone does not prove data correctness.
+For each selected shipped artifact, inspect the pre-state, have the selected driver run the exact command through project tooling in dependency order, then inspect schema and affected rows. Preserve existing rows where required, verify intended changes, and capture any claimed idempotency rerun. Reuse that execution for its purpose and artifact assertions; command success alone does not prove data correctness.
 
 Inspect persisted effects (`database-tools.md`) only for assertions about changed rows, state, or relationships. Query the relevant records, not surrounding tables for general integrity. A UI-only assertion needs no query. A UI that looks right while its asserted persisted effect is wrong fails. For repeats, reuse valid existing state and prepare only what the repeat needs within safety and approval rules; no automatic database rebuild.
 
-Use existing focused tests to answer in-scope questions the QA journeys have not proved; select checks by the unanswered risk, not by every touched file. An executed integration test can prove the backend assertions and real entry points it exercises; unit tests prove their narrower calculations. Reuse this evidence for covered critical cases rather than replaying their matrix manually. Neither proves unexercised browser behavior or an unexecuted shipped artifact. Under the user driver, the agent may run supporting checks only if they do not execute shipped artifacts; give artifact-executing commands to the user. Keep the main QA journey and the runtime evidence appropriate to its entry point.
+Use existing focused tests to answer in-scope questions the QA journeys have not proved; select checks by the unanswered risk, not by every touched file. An executed integration test can prove the backend assertions and real entry points it exercises; unit tests prove their narrower calculations. Reuse this evidence for covered critical cases rather than replaying their matrix manually. Neither proves unexercised browser behavior or an unexecuted shipped artifact. Keep the main QA journey and the runtime evidence appropriate to its entry point.
 
-Save confirming evidence under `<evidence-dir>`, a temporary directory outside the repo: screenshots, runner/test output, relevant read-only queries and results, or blocking errors. Use `<scenario-id>-<slug>` names. One artifact may prove several assertions or scenario IDs; reference it rather than repeating execution, screenshots, or queries for the same observed state. In user-driven mode, record the user's observation as UI evidence; request a screenshot or exact error only when needed to resolve ambiguity or support a finding.
+Save confirming evidence under `<evidence-dir>`, a temporary directory outside the repo: screenshots, runner/test output, relevant read-only queries and results, or blocking errors. Use `<scenario-id>-<slug>` names. One artifact may prove several assertions or scenario IDs; reference it rather than repeating execution, screenshots, or queries for the same observed state.
 
 Record `<results>` by ID: steps/command, expected versus observed behavior, evidence paths, and status; user-driven actions include the user's report. An application error reached through the real scenario is `FAILED`; a setup/tool error preventing it follows Step 6. Label a failure pre-existing only with evidence; otherwise leave attribution unconfirmed instead of expanding into an unrelated investigation.
 
@@ -111,4 +109,4 @@ Chat only; never post to the PR.
 
 ## Notes
 
-Verifies, never fixes. Leave the repo as found: no code or test additions, setup scripts, stray commits, or PR updates. Findings belong in chat; fixes require a separate request. Driver choice changes execution ownership, not the QA scope or proof requirements.
+Verifies, never fixes. Leave the repo as found: no code or test additions, setup scripts, stray commits, or PR updates. Findings belong in chat; fixes require a separate request.

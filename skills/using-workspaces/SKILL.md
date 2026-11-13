@@ -49,13 +49,13 @@ Spec names no mechanism but the harness provides one (dedicated tool/command/fla
 
 Only when neither applies — the fallback in the spec's Tool Details. Around whichever mechanism runs:
 
-- **Directory**: explicit user-declared location wins; else the spec's documented location; else a project-local hidden directory. Project-local → verify ignored first (`git check-ignore -q <dir>`); not ignored → add to `.gitignore` and commit before creating.
+- **Directory**: explicit user-declared location wins; else the spec's documented location; else a project-local hidden directory. Project-local → verify ignored first (`git check-ignore -q <dir>`); not ignored → ask for an ignored location or permission to update `.gitignore`. Never commit as workspace setup.
 - **Sandbox**: permission error on creation → tell the user the sandbox blocked it; work in place, run setup there.
 
 Spec documents no fallback either → ask which mechanism to use; offer to write it into `workspace-isolation.md`.
 
 ## Step 2: Project Setup
 
-Auto-detect and run setup inside the workspace from the manifests present. Copy/snapshot mechanisms may omit regenerable artifacts (`node_modules`, `target`, `dist`, caches) — dependency install is mandatory there even when the source checkout was fully set up.
+Run only setup needed for the requested work. Copy/snapshot mechanisms may omit dependencies; install them only when the work needs them and they are missing.
 
 Report `Workspace ready at <full-path>`.

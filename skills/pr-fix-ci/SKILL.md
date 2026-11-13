@@ -20,7 +20,7 @@ Verify git host auth (`git-hosts.md`). `git rev-parse --show-toplevel` → `<rep
 Anchor `<pr-intent>` — why the PR exists: title, body, commit messages, plus every issue/card reference in body, commits, or branch name loaded via the issue tracker tool (`issue-trackers.md`) when present. Load fails → fall back to PR title/body; note the gap.
 
 ### 3. Align Local Branch
-`<pr-branch>` unavailable → STOP. Check out via git host checkout PR or `gh pr checkout <pr-number>` → `<active-branch>`; fails → STOP. No code edits until `<active-branch>` == `<pr-branch>`.
+`<pr-branch>` unavailable → STOP. Inspect the worktree and index; uncommitted or untracked changes → STOP and ask the user to preserve them before continuing. Check out via git host checkout PR or `gh pr checkout <pr-number>` → `<active-branch>`; fails → STOP. No code edits until `<active-branch>` == `<pr-branch>`.
 
 ### 4. Identify Failing Checks
 From `statusCheckRollup` (or `gh pr checks`), collect checks in `FAILURE`, `ERROR`, `CANCELLED`, `TIMED_OUT` → `<check>` with `<name>`, `<state>`, `<run-id>` (Actions only), `<url>`. Pending/in-progress → wait and re-poll once (transient). None failing → output "No failing checks", stop.
@@ -42,16 +42,16 @@ Record `<classification>`; `flaky`/`infra`/`required-status` → `<not-fixing>` 
 Fast path: every `code` failure straightforward, no cross-check dependencies → `<implementation-plan>` = `trivial`, skip to Step 8. Otherwise ordered fix list (compile/build → test → lint; then shared file, then check); sequential thinking merges failures sharing one root cause → `<dependencies>`.
 
 ### 8. Implement Fix
-On `<active-branch>` — focused, minimal, existing patterns. Root cause, not symptom: never disable a failing test — fix what it asserts unless the assertion is wrong (then fix it with justification) → `<changes-count>`.
+On `<active-branch>` — focused, minimal, existing patterns. Root cause, not symptom: never disable a failing test — fix what it asserts unless the assertion is wrong (then fix it with justification) → `<changes-count>` and `<fix-files>`.
 
 ### 9. Validate Locally
-Reproduce each fixed `<check>`'s `<failing-command>` locally (lint/build/test on changed files); confirm green. A check that can't run locally → state so, rely on Step 12 → `<validation-results>`, `<validation-passing>` (`yes`/`no`).
+Reproduce each fixed `<check>`'s `<failing-command>` locally. Set `<validation-passing>` to `no` if an executed check fails, `unverified` if any check cannot run, and `yes` only if all pass. Record the details in `<validation-results>`.
 
 ### 10. Approval Gate (mandatory in `review` mode)
 Same gate as `pr-fix` Step 9 — `review`/`auto` semantics, `Go Ahead`/`Needs Review` loop (refine → re-validate → re-present until `approved`). Present: failing checks fixed, file count, local validation, `<not-fixing>` items (flaky/infra with suggested re-runs). `<changes-count>` = 0 → surface no-change state.
 
 ### 11. Commit and Push (after `approved` or `auto`)
-`git add -A`, `git commit -m "<message>"` (convention per `commit-and-push`), `git push origin <active-branch>`. Never generic messages like "fix ci". Do not poll CI or loop back — session ends after push.
+Inspect the worktree and index again, including changes within `<fix-files>`. Unexpected changes → STOP and preserve them. Stage and commit only `<fix-files>` with explicit pathspecs (message convention per `commit-and-push`), then `git push origin <active-branch>`. Never use a generic message like "fix ci". Do not poll CI or loop back — session ends after push.
 
 ## Output
 Summary of fixed checks, local validation, pushed state — one line per fix at the gate, e.g. "Fixed N failing checks across M files" + validation + "pushed to `<active-branch>`". Never claim CI green — unverified.

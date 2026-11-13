@@ -66,7 +66,7 @@ Two output shapes — nothing else:
 - **ask** → the answer. Direct, one or two sentences; a `file:line` citation only when it proves the answer.
 - **debug** → `**Root cause:**` what diverges and why, with `file:line` proof and the culprit commit/deploy when identifiable. Then `**Fixes:**` possible fixes, ranked; revert first when a culprit is confirmed. No implementing.
 
-Done when: reproduced · cause proven with evidence · repro conditions and impact scope known · culprit identified or ruled out. Name what stays unconfirmed in one line, only when it changes the next action.
+Finish when evidence proves the cause, reproduction conditions and impact are known, and the culprit is identified or ruled out. Name an unconfirmed detail only when it changes the next action.
 
 ### Route
 

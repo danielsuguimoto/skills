@@ -1,6 +1,6 @@
 ---
 name: using-code-navigation
-description: "Use code navigation tools for symbol-level work instead of grep/read: finding classes, methods, references, cross-module wiring — when tracing, navigating, or refactoring named entities (LSP-supported languages) or for onboarding/memory capture. For plain-text searches, known paths, or non-code files use grep/glob/read."
+description: "Use semantic code navigation for symbols, references, implementations, refactors, and codebase onboarding or memory capture."
 ---
 
 ## Required `<project-root>/docs` reads

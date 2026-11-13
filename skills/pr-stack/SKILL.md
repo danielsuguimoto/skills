@@ -1,6 +1,6 @@
 ---
 name: pr-stack
-description: "Use when evaluating whether an existing pull request should become stacked PRs, comparing stacking with keeping one PR or splitting independently, or converting a PR into a stack. Analyze purpose, linked bugs/specs/tickets/cards, project memories, conventions, and deployment; present the assessment and wait for explicit user agreement before conversion."
+description: "Assess an existing PR for stacking versus one PR or independent splits; convert to a stack only after explicit agreement."
 ---
 
 ## Required `<project-root>/docs` reads

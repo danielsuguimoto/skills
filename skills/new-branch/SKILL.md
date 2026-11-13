@@ -14,7 +14,7 @@ Create and switch to a categorized branch. All git/gh operations follow `git-hos
 | Operation | Tool | CLI fallback |
 |-----------|------|--------------|
 | Load change state | git host change scan | change-scan fallback per spec (ahead: `git log origin/<branch>..<branch> --oneline`) |
-| Pull, create, publish | git host branch create (`branch_name`) | `git pull origin <branch>` + `git checkout -b <cat>/<slug>` + `git push -u origin <new-branch>` |
+| Create branch | git host branch create (`branch_name`), if it does not publish | `git checkout -b <cat>/<slug>` |
 
 ### 1. Interpret Arguments
 
@@ -51,14 +51,8 @@ Categories: `feature` (new functionality) · `fix` (bug fixes) · `refactor` (re
 
 Slug: concise kebab-case, 2-4 descriptive words → `<branch-slug>`. Source: `description`/`ticket` → `<branch-context>` (consult `<change-summary>` only to disambiguate); `none` → `<change-summary>` + `<branch-context>`.
 
-### 5. Pull Latest from Remote
-
-`git pull origin <current-branch>` via git host or CLI. Pull fails (diverged, no tracking) → continue with current state, note it in output.
-
-### 6. Create and Checkout Branch
+### 5. Create and Checkout Branch
 
 `<branch-category>/<branch-slug>` via git host branch create or `git checkout -b` per the table. Branch exists → retry once with numeric suffix (`-2`) → `<new-branch>`.
 
-### 7. Publish Branch to Remote
-
-Push with upstream via git host or `git push -u origin <new-branch>`. Push only ships committed changes; uncommitted stay local → `<published>` `true`/`false`. Output the new branch name.
+Output the new branch name. Pull or publish only when the user explicitly requests it.

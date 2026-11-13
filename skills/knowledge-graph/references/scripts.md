@@ -1,6 +1,6 @@
 # graphify Reference Scripts
 
-Bash/Python code blocks extracted from `SKILL.md` and `queries.md`. The prose decision rules live in the parent files.
+Bash/Python code blocks extracted from `build.md` and `queries.md`. The prose decision rules live in the parent files.
 
 ---
 

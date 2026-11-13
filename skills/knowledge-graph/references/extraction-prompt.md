@@ -1,6 +1,6 @@
 # Chunk extraction prompt
 
-Referenced by `SKILL.md` Step B2 — substitute `FILE_LIST` with the chunk's file list, then use the block verbatim as the prompt.
+Referenced by `build.md` Step B2 — substitute `FILE_LIST` with the chunk's file list, then use the block verbatim as the prompt.
 
 ```
 Read the files listed and extract a knowledge graph fragment.
