@@ -5,7 +5,7 @@ description: "Use when a ticket needs investigation, debugging, or a response �
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before investigating the ticket; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`, `<project-root>/docs/issue-trackers.md`; debug branch only — `<project-root>/docs/bug-trackers.md`, `<project-root>/docs/database-tools.md`, `<project-root>/docs/doc-lookup.md`, `<project-root>/docs/git-hosts.md`, `<project-root>/docs/observability-tools.md`
+Shell-read before investigating the ticket; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`, `<project-root>/docs/issue-trackers.md`; debug branch only — `<project-root>/docs/bug-trackers.md`, `<project-root>/docs/database-tools.md`, `<project-root>/docs/doc-lookup.md`, `<project-root>/docs/observability-tools.md`
 
 Load ticket context, determine mode (ask or debug), gather evidence, sync the result back. READ-ONLY — no code changes, no commits.
 
@@ -48,7 +48,7 @@ Ambiguous → ask the user before posting. Both apply → debug (root cause answ
 
 **ask:** entry points, callers, conventions via `grep`/`find_file_by_name`/code navigation (`code-navigation.md`) → `<repo-context>`; doc lookup for API/version questions (`doc-lookup.md`) → `<doc-context>`.
 
-**debug:** run context-gathering — code navigation for symbols, database tools for data (live DB is ground truth), doc lookup for framework docs. Beyond code and data: error monitoring for matching reports/stack traces (`bug-trackers.md`); monitoring/incident platforms (`observability-tools.md`) for alerts overlapping the timeframe, scope, and symptoms — a correlated incident may be the cause, not just a clue. Check recent history: `git log`/`git blame`, merges, releases, deploys touching the affected path (`git-hosts.md`) — a regression's culprit beats a forward fix. Scan `<project-root>/docs/` for other configured tools the issue touches. Trace user action → failure; find where actual diverges from expected → `<investigation-findings>`. Work the investigation as sequential thinking — branch candidate causes, revise as evidence lands.
+**debug:** run context-gathering — code navigation for symbols, database tools for data (live DB is ground truth), doc lookup for framework docs. Beyond code and data: error monitoring for matching reports/stack traces (`bug-trackers.md`); monitoring/incident platforms (`observability-tools.md`) for alerts overlapping the timeframe, scope, and symptoms — a correlated incident may be the cause, not just a clue. Scan `<project-root>/docs/` for other configured tools the issue touches. Trace user action → failure; find where actual diverges from expected → `<investigation-findings>`. Work the investigation as sequential thinking — branch candidate causes, revise as evidence lands.
 
 ### Production Data for Local Reproduction
 
@@ -64,9 +64,9 @@ You may copy production data into a local database as fixture setup when reprodu
 Two output shapes — nothing else:
 
 - **ask** → the answer. Direct, one or two sentences; a `file:line` citation only when it proves the answer.
-- **debug** → `**Root cause:**` what diverges and why, with `file:line` proof and the culprit commit/deploy when identifiable. Then `**Fixes:**` possible fixes, ranked; revert first when a culprit is confirmed. No implementing.
+- **debug** → `**Root cause:**` what diverges and why, with `file:line` proof. Then `**Fixes:**` possible fixes, ranked. No implementing.
 
-Finish when evidence proves the cause, reproduction conditions and impact are known, and the culprit is identified or ruled out. Name an unconfirmed detail only when it changes the next action.
+Finish when evidence proves the cause and reproduction conditions and impact are known. Name an unconfirmed detail only when it changes the next action.
 
 ### Route
 
