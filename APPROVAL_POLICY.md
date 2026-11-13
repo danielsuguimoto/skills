@@ -13,4 +13,6 @@ Approve when review completed and every condition holds:
 
 ## Findings, not blanket escalations
 
-Capability wording is review evidence, not an automatic veto: every skill edit changes what agents may do, so widened authority alone is not grounds for escalation. Flag concrete dangers as findings — the `REVIEW.md` prompt-safety cases, plus skill wording that adds unneeded network or credential access. A flagged danger is an open finding and blocks approval; unflagged wording approves like any other diff.
+- Approval keys on findings posted on the current diff — the approver does not escalate on a risk no finding names. A skill's subject matter is not a finding: this repo ships prose, not executable code, so a skill governing shipping, secrets, or deletion does not raise the approval bar on its own.
+- Capability wording is review evidence, not an automatic veto: every skill edit changes what agents may do, so widened authority alone is not grounds for escalation. Flag concrete dangers as findings — the `REVIEW.md` prompt-safety cases, plus skill wording that adds unneeded network or credential access. A flagged danger blocks approval; unflagged wording approves like any other diff.
+- A resolved finding stops blocking; its theme does not persist as a standing veto. A re-review with no open findings approves.
