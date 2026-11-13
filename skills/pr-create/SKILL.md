@@ -15,7 +15,7 @@ As a subskill, the invoking skill owns Steps 1-10; on "Nothing to ship.", procee
 
 ### 1. Interpret Arguments
 
-Base branch → `<base>`; auto-create ticket → `<ticket-mode>` = `auto`; ticket URL/reference → `<ticket-url>` + `<ticket-mode>` = `provided`; skip ticket → `skip`; guidance/focus areas → `<additional-context>`; no base → detect default in Step 2.
+Base branch → `<base>`; auto-create ticket → `<ticket-mode>` = `auto`; ticket URL/reference → `<ticket-url>` + `<ticket-mode>` = `provided`; skip ticket → `skip`; guidance/focus areas → `<additional-context>`; files deliberately left uncommitted → `<excluded>`; no base → detect default in Step 2.
 
 ### 2. Load & Analyze Changes
 
@@ -24,7 +24,7 @@ Base branch → `<base>`; auto-create ticket → `<ticket-mode>` = `auto`; ticke
 
 ### 3. Check Blockers
 
-Uncommitted changes → STOP (report + list files). On base branch → STOP (suggest `git checkout -b <feature-name>`). No changes → STOP ("Nothing to include in a PR.").
+Uncommitted changes outside `<excluded>` → STOP (report + list files). A staged `<excluded>` path → STOP (staged work escapes the exclusion). On base branch → STOP (suggest `git checkout -b <feature-name>`). No changes → STOP ("Nothing to include in a PR.").
 
 ### 4. Summarize Changes
 
