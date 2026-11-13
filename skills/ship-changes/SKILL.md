@@ -21,11 +21,11 @@ Ticket URL/reference → `<ticket-url>` · wording influencing branch name/commi
 
 ### 2. Pre-Scan Changes (Shared Context)
 
-Run the change scan once per the table → `<current-branch>`, `<uncommitted>` (status + file list + diff stat), `<ahead-commits>` (`@{u}..HEAD` log, empty if none). If the change scan does not return file paths, collect them with `git status --short` or `git diff --name-only`.
+Run the change scan once per the table → `<current-branch>`, `<uncommitted>` (status + file list + diff stat), `<ahead-commits>` (`@{u}..HEAD` log, empty if none). If the change scan omits file paths, collect the full changed-file list (untracked included) via the change-scan fallback (`git-hosts.md`).
 
 Anchor `<ship-intent>` — why the changes exist: the session's work and, when `<ticket-url>` is defined, the ticket's title/summary via the issue tracker tool (`issue-trackers.md`). Tool fails → fall back to session work and diff; note the gap. Diff stats and commit messages carry the what; intent supplies the why.
 
-Reconcile `<uncommitted>` against `<ship-intent>`: each changed file maps to a theme or is flagged. Inspect `git diff -- <file>` when a file's role is unclear. Flagged files (unrelated work, debug artifacts, secrets/dotenv) — ask the user; never sweep them in. Store as `<excluded>` (empty when none).
+Reconcile `<uncommitted>` against `<ship-intent>`: each changed file maps to a theme or is flagged. Inspect the file's diff (per `git-hosts.md`) when its role is unclear. Flagged files (unrelated work, debug artifacts, secrets/dotenv) — ask the user; never sweep them in. Store as `<excluded>` (empty when none).
 
 Derive `<included>` = changed files in `<uncommitted>` that are not in `<excluded>`.
 
@@ -38,7 +38,7 @@ Derive `<branch-category>` from `<change-summary>` per `new-branch` categories.
 Forward to subskills:
 - `new-branch`: `<additional-context>`, `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<branch-category>`.
 - `commit-and-push`: `<additional-context>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<excluded>`.
-- `pr-create`: `<change-summary>`, `<ticket-url>` when defined, `<base>` when defined.
+- `pr-create`: `<change-summary>`, `<excluded>`, `<ticket-url>` when defined, `<base>` when defined.
 
 ### 3. Create Work Branch
 
@@ -54,6 +54,6 @@ Invoke `commit-and-push`, passing `<additional-context>`, `<uncommitted>`, `<ahe
 
 ### 5. Create Pull Request
 
-Create the PR, passing `<change-summary>` (reused — scan post-commit git state but keep the semantic summary), `<ticket-url>` when defined, `<base>` when defined. Output the PR URL. Verify the pr-create subskill posted the `<pr-url>` mention in every referenced ticket (its Step 10); skipped → run it now.
+Create the PR, passing `<change-summary>` (reused — scan post-commit git state but keep the semantic summary), `<excluded>`, `<ticket-url>` when defined, `<base>` when defined. Output the PR URL. Verify the pr-create subskill posted the `<pr-url>` mention in every referenced ticket (its Step 10); skipped → run it now.
 
 **Mandatory:** the pr-create subskill must run its PR-template check (its Step 6) before composing the body — forwarded `<change-summary>` triggers its Step-4 skip path but does NOT exempt the template check. Accept `<pr-template>` = `none` only when the subskill confirms it probed the repo.
