@@ -19,9 +19,9 @@ Use git host operations (`<project-root>/docs/git-hosts.md`) for branch check an
 
 Returns (distilled): `<ticket-name>`, `<ticket-url>`, `<ticket-id>`, `<ticket-title>`, `<ticket-summary>`, `<ticket-board>`/`<ticket-websiteId>`, `<ticket-list>`/`<ticket-state>`, `<feature-area>`, `<spec-intent>`, `<acceptance-criteria>`, `<related-entities>`, `<blockers>`, `<gaps>`, `<requirement-items>` (parsed, not yet a todo list).
 
-Ticket load fails or `BLOCKED` → report and stop. Without a ticket, derive the same fields from the approved plan, leaving ticket-only fields empty. An approved plan or planning-phase ticket needs no further plan approval.
+Ticket load fails or `BLOCKED` → report and stop. Without a ticket, derive the applicable fields from the approved plan, leaving ticket-only fields empty. Set `<work-title>`/`<work-summary>` from the ticket title/summary or, without a ticket, the approved plan's title/scope. An approved plan or planning-phase ticket needs no further plan approval.
 
-3. **Detect & Use Working Branch**: From `<ticket-title>`/`<ticket-summary>`, load branch + status → `<current-branch>`; check whether the current branch is already a feature/fix branch related to this ticket. Relevance uses ticket content (title/summary slug), not the ticket id — same derivation as `new-branch`.
+3. **Detect & Use Working Branch**: Load branch + status → `<current-branch>`; check whether the current feature/fix branch relates to `<work-title>`/`<work-summary>`. Relevance uses the work title/summary slug, not the ticket id — same derivation as `new-branch`.
 
 **Hard rules — no exceptions:**
 - NEVER create a branch — no `git checkout -b`, no branch-create tool, no `new-branch` invocation. Branch creation is the user's job via `new-branch`, invoked separately.
@@ -29,7 +29,7 @@ Ticket load fails or `BLOCKED` → report and stop. Without a ticket, derive the
 - The only permitted switch is to `master`/`main`, only when the current branch is unrelated.
 
 **Resolution:**
-- Relevant: current branch slug matches a slug from `<ticket-title>`/`<ticket-summary>`, or falls under `feature/*`|`fix/*`|`feat/*` with a ticket-derived slug → stay; pull/rebase onto its base only if behind.
+- Relevant: current branch slug matches a slug from `<work-title>`/`<work-summary>`, or falls under `feature/*`|`fix/*`|`feat/*` with a work-derived slug → stay; pull/rebase onto its base only if behind.
 - Current is `master`/`main` → stay.
 - Unrelated → switch to `master`/`main`.
 - Uncommitted changes → STOP; ask user to stash/commit first — never discard.
