@@ -39,7 +39,7 @@ Classify `<request-source>` per ticket: client-origin (customer-facing tracker o
 
 Build `<coverage-map>`: each `<expected-outcomes>` entry → the diff files/modules that should deliver it. Flag outcomes with no corresponding change — the PR may not address every linked card.
 
-Flag `<premise-drift>` — an `<expected-outcomes>` or `<client-cases>` entry whose assumed bug path, invariant, or behavior no longer exists in the diff's code (superseding change, misdiagnosed root cause); report in Step 8 rather than forcing a scenario onto a dead premise.
+Flag `<premise-drift>` — an `<expected-outcomes>` or `<client-cases>` entry whose assumed bug path, invariant, or behavior no longer exists in the diff's code (superseding change, misdiagnosed root cause). Drifted entries get no scenario — Step 5 skips them and Step 7 accounting excludes them; report in Step 8 rather than forcing a scenario onto a dead premise.
 
 **Done when:** every linked ticket loaded · every criterion/validation item in `<expected-outcomes>` · `<request-source>` classified per ticket, `<client-cases>` extracted where client-origin · coverage map built with gaps and premise drift flagged.
 
@@ -58,7 +58,7 @@ From `<coverage-map>`, write `<test-plan>` with scenario classes gated by flag:
 
 Assign each scenario a stable ID and record its source criterion/artifact/caller, prerequisites, actual execution entry point, and explicit assertions. Include applicable negative, permission, boundary, and legacy-data cases required by the acceptance criteria or changed behavior. Order setup-free flows first. A missing implementation still needs an execution scenario that demonstrates the missing behavior.
 
-**Done when:** every `<client-cases>` entry maps to a source scenario · every `<expected-outcomes>` entry maps to a scenario · every flagged artifact maps to an execution scenario · regression scope set per path · every scenario has an ID, execution entry point, prerequisites, and assertions. This is complete coverage of the scoped scenarios, not a claim of exhaustive application or code coverage.
+**Done when:** every non-`<premise-drift>` `<client-cases>` entry maps to a source scenario · every non-`<premise-drift>` `<expected-outcomes>` entry maps to a scenario · every flagged artifact maps to an execution scenario · regression scope set per path · every scenario has an ID, execution entry point, prerequisites, and assertions. This is complete coverage of the scoped scenarios, not a claim of exhaustive application or code coverage.
 
 ### 6. Prepare Every Scenario
 
@@ -95,9 +95,9 @@ Regressions: run diff-related tests and lint where they exist; `shared-surface` 
 
 Record `<results>` by scenario ID: execution steps/command, expected assertions, observed results, evidence (UI state/capture, read-only query and result, test output, or error text), and `PASSED`/`FAILED`. Code inspection and a green test suite support diagnosis; neither substitutes for an unexecuted user flow or artifact. A runtime error reached through the real scenario is failure evidence; a tool/setup error preventing that execution returns to Step 6.
 
-Before reporting, reconcile `<coverage-map>`, `<test-plan>`, and `<results>`: every criterion, client case, artifact, and required regression maps to executed scenario IDs; each ID has evidence and a result; planned count = `PASSED` count + `FAILED` count. Reopen missing rows, partial assertions, and evidence gaps, then execute them. Keep scenarios in the ledger when difficult; completion requires their results, not their removal.
+Before reporting, reconcile `<coverage-map>`, `<test-plan>`, and `<results>`: every non-`<premise-drift>` criterion, client case, artifact, and required regression maps to executed scenario IDs; each ID has evidence and a result; planned count = `PASSED` count + `FAILED` count. Reopen missing rows, partial assertions, and evidence gaps, then execute them. Keep scenarios in the ledger when difficult; completion requires their results, not their removal.
 
-**Done when:** every planned scenario executed with every assertion evaluated · each `<expected-outcomes>` entry has evidence-backed results · every artifact executed and effects inspected · required regressions executed · reconciliation passes.
+**Done when:** every planned scenario executed with every assertion evaluated · each non-`<premise-drift>` `<expected-outcomes>` entry has evidence-backed results · every artifact executed and effects inspected · required regressions executed · reconciliation passes.
 
 ### 8. Report Findings
 

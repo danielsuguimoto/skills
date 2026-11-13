@@ -27,7 +27,7 @@ Per `<ticket-refs>` entry, load via the issue tracker tool (`issue-trackers.md`)
 
 - **Customer-success ticket** → `<customer-tickets>` — filed in the customer-facing tracker where customers report issues (per the spec), or carries a customer requester/thread. Resolution replies belong here.
 - **Internal ticket** → `<internal-tickets>` — planning cards, spec tickets, dev tasks. No customer reply.
-- **Premise drift** — a `<customer-tickets>` entry whose reported problem `<pr-summary>` doesn't cover (the PR shipped a different fix, or the issue was superseded) → no resolution draft; flag in Step 7.
+- **Premise drift** — a customer-success ticket whose reported problem `<pr-summary>` doesn't cover (the PR shipped a different fix, or the issue was superseded) → `<drifted-tickets>` — no resolution draft; reported per ticket in Step 7.
 
 Ambiguous → ask the user rather than drafting to the wrong audience.
 
@@ -46,7 +46,7 @@ List isolated workspaces per `workspace-isolation.md`; find the one created for 
 
 ### 7. Report
 
-Chat only: `<pr-url>` merge state · classification counts · draft note URL per customer ticket · workspace removed or `none found`.
+Chat only: `<pr-url>` merge state · classification counts · draft note URL per customer ticket · `<drifted-tickets>` per entry: ticket URL, reported problem, why `<pr-summary>` doesn't cover it · workspace removed or `none found`.
 
 ## Notes
 
