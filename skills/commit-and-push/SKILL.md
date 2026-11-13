@@ -12,39 +12,43 @@ Shell-read before committing or pushing; may be gitignored — missing → note 
 | Operation | Tool (`git-hosts.md`) | CLI fallback |
 |-----------|--------------|--------------|
 | Load change state | git host change scan | change-scan fallback per spec |
-| Stage and commit | git host commit (with `message`) | `git add -A` + `git commit -m "<message>"` |
+| Stage and commit | git host commit (with `message` and file list) | `git add -- <included>` + `git commit -m "<message>"` |
 | Push to remote | git host push | `git push` (retry `git push -u origin <branch>` if no upstream) |
 
 ### 1. Interpret Arguments
 
 - Wording influencing commit message → `<additional-context>`
+- Files to leave out (forwarded by an orchestrator or named by the user) → `<excluded>`
 - Otherwise undefined
 
 ### 2. Load Changes
 
-If a pre-scan was already forwarded, skip to step 3.
+If a pre-scan was already forwarded:
+- Use `<uncommitted>` (full set) and `<ahead-commits>` directly.
+- Compute `<included>` = changed files in `<uncommitted>` that are not in `<excluded>`.
+- If `<change-summary>` was not forwarded, build it from `<included>` and `<additional-context>`.
 
 Otherwise:
 
-- **2a.** Load uncommitted changes via the operations table above. Store `<uncommitted>`.
+- **2a.** Load uncommitted changes (status + file list + diff stat) via the operations table above. If file paths are missing, collect them with `git status --short` or `git diff --name-only`. Store `<uncommitted>`.
 - **2b.** If `<uncommitted>` is empty, load commits ahead using `@{u}..HEAD`. Store `<ahead-commits>`.
-- **2c.** Analyze scope:
-  - Primary `<uncommitted>`; fallback `<ahead-commits>` (push only, no commit).
+- **2c.** Compute `<included>` = changed files in `<uncommitted>` that are not in `<excluded>`.
+- **2d.** Analyze scope from `<included>` (primary) or `<ahead-commits>` (push only, no commit):
   - Group into logical themes. Summarize "what" and "why", not "how".
   - Store as `<change-summary>`, including `<additional-context>`.
 
 ### 3. Check Blockers
 
-- If `<uncommitted>` and `<ahead-commits>` are both empty, STOP: "Nothing to commit or push"
+- If `<included>` and `<ahead-commits>` are both empty, STOP: "Nothing to commit or push"
 
 ### 4. Create Commit
 
-Skip if `<uncommitted>` is empty (push ahead commits only).
+Skip if `<included>` is empty (push ahead commits only).
 
 Commit message: `<prefix>: <message>` — lowercase, under 50 chars, no body. Prefixes: feat, fix, chore, docs, refactor, test, style.
 
 Commit:
-1. Stage (`-A` or specific files).
+1. Stage `<included>` explicitly (file paths from Step 2).
 2. Generate message from `<change-summary>` and `<additional-context>`.
 3. Commit via git host commit or `git commit -m`; store `<hash>`.
 

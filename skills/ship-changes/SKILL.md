@@ -5,7 +5,7 @@ description: "Use when shipping current work end-to-end — branch, commit, push
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before shipping end-to-end; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`
+Shell-read before shipping end-to-end; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`, `<project-root>/docs/issue-trackers.md` (Step 2 only — `<ticket-url>` provided)
 
 ## Operations
 
@@ -21,15 +21,24 @@ Ticket URL/reference → `<ticket-url>` · wording influencing branch name/commi
 
 ### 2. Pre-Scan Changes (Shared Context)
 
-Run the change scan once per the table → `<current-branch>`, `<uncommitted>` (status + diff stat), `<ahead-commits>` (`@{u}..HEAD` log, empty if none).
+Run the change scan once per the table → `<current-branch>`, `<uncommitted>` (status + file list + diff stat), `<ahead-commits>` (`@{u}..HEAD` log, empty if none). If the change scan does not return file paths, collect them with `git status --short` or `git diff --name-only`.
 
-Build `<change-summary>` from `<uncommitted>` (primary) or `<ahead-commits>` (fallback): 2-4 logical themes, what and why (not how), considering `<additional-context>`.
+Anchor `<ship-intent>` — why the changes exist: the session's work and, when `<ticket-url>` is defined, the ticket's title/summary via the issue tracker tool (`issue-trackers.md`). Tool fails → fall back to session work and diff; note the gap. Diff stats and commit messages carry the what; intent supplies the why.
+
+Reconcile `<uncommitted>` against `<ship-intent>`: each changed file maps to a theme or is flagged. Inspect `git diff -- <file>` when a file's role is unclear. Flagged files (unrelated work, debug artifacts, secrets/dotenv) — ask the user; never sweep them in. Store as `<excluded>` (empty when none).
+
+Derive `<included>` = changed files in `<uncommitted>` that are not in `<excluded>`.
+
+Blocker: `<included>` empty and `<ahead-commits>` empty → STOP: "Nothing to ship."
+
+Build `<change-summary>` from `<included>` (primary) or `<ahead-commits>` (fallback), grounded in `<ship-intent>`: 2-4 logical themes, what and why (not how), considering `<additional-context>`.
 
 Derive `<branch-category>` from `<change-summary>` per `new-branch` categories.
 
-Blocker: `<uncommitted>` and `<ahead-commits>` both empty → STOP: "Nothing to ship."
-
-Forward to every subskill: `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<branch-category>` — subskills then skip their own Load Changes, Analyze Scope, and Determine Category steps.
+Forward to subskills:
+- `new-branch`: `<additional-context>`, `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<branch-category>`.
+- `commit-and-push`: `<additional-context>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<excluded>`.
+- `pr-create`: `<change-summary>`, `<ticket-url>` when defined, `<base>` when defined.
 
 ### 3. Create Work Branch
 
@@ -39,9 +48,9 @@ Otherwise invoke `new-branch`, passing `<additional-context>`, `<current-branch>
 
 ### 4. Commit and Push
 
-`<uncommitted>` empty → skip the commit substep; still push when `<ahead-commits>` is non-empty.
+`<included>` empty → skip the commit substep; still push when `<ahead-commits>` is non-empty.
 
-Invoke `commit-and-push`, passing `<additional-context>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>` → `<hash>`, `<push-target>`. "Nothing to commit or push" → STOP and report.
+Invoke `commit-and-push`, passing `<additional-context>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<excluded>` → `<hash>`, `<push-target>`. "Nothing to commit or push" → STOP and report.
 
 ### 5. Create Pull Request
 

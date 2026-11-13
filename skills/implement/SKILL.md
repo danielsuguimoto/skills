@@ -15,8 +15,9 @@ Use git host operations (`<project-root>/docs/git-hosts.md`) for branch check an
 1. List tracker tools → confirm a ticket-load tool exists; missing → return `BLOCKED` with `NO_MCP_ACCESS`.
 2. Load with `source: <ticket-url>`; attachments per spec → `<attachment-insights>`.
 3. Analyze requirements from name, description, comments, checklists, attachment insights.
+4. Anchor `<spec-intent>` — why the spec exists: the loaded ticket's Problem Statement/Solution/Notes, plus its linked source ticket (customer request, bug report, triage findings) when one exists. A spec ticket signals via a `refUrl`/links field or a source URL in its body; load the source and fold its title/summary into `<spec-intent>`. Source load fails → fall back to the loaded ticket's own Problem Statement/Solution/Notes and note the gap. Items are the how; intent arbitrates every later adaptation.
 
-Returns (distilled): `<ticket-name>`, `<ticket-url>`, `<ticket-id>`, `<ticket-title>`, `<ticket-summary>`, `<ticket-board>`/`<ticket-websiteId>`, `<ticket-list>`/`<ticket-state>`, `<feature-area>`, `<acceptance-criteria>`, `<related-entities>`, `<blockers>`, `<gaps>`, `<requirement-items>` (parsed, not yet a todo list).
+Returns (distilled): `<ticket-name>`, `<ticket-url>`, `<ticket-id>`, `<ticket-title>`, `<ticket-summary>`, `<ticket-board>`/`<ticket-websiteId>`, `<ticket-list>`/`<ticket-state>`, `<feature-area>`, `<spec-intent>`, `<acceptance-criteria>`, `<related-entities>`, `<blockers>`, `<gaps>`, `<requirement-items>` (parsed, not yet a todo list).
 
 Planning-phase tickets are approved plans — proceed to implementation, no design/plan approval. Ticket load fails or `BLOCKED` → report and stop.
 
@@ -42,7 +43,7 @@ Planning-phase tickets are approved plans — proceed to implementation, no desi
 
 Rules: one item = one deliverable (split compounds); every criterion maps to exactly one item; order by dependency (schema → model → service → UI → tests); no workflow items (context, validation, presentation, commit); mark `in_progress` on start, `completed` once verified — never `in_progress` across context boundaries; missing requirement → add `pending` with justification; re-sync only on drift.
 
-5. **Gather Codebase Context**: pass `<feature-area>`, `<related-entities>`, `<acceptance-criteria>`, module path, inherited code-target triples. Validate each inherited target against current code (file exists, symbol at location, patch applies); report drift. Resolve `TBD` targets only for non-plan cards. Require a distilled brief: entry points, related modules, callers, conventions, file:line citations → `<context-files>`.
+5. **Gather Codebase Context**: pass `<feature-area>`, `<related-entities>`, `<acceptance-criteria>`, `<spec-intent>`, module path, inherited code-target triples. Validate each inherited target against current code (file exists, symbol at location, patch applies) and premise (the bug path, invariant, or behavior `<spec-intent>` assumes still holds); report target and premise drift. Resolve `TBD` targets only for non-plan cards. Require a distilled brief: entry points, related modules, callers, conventions, file:line citations → `<context-files>`.
 
 `BLOCKED` → `grep` model/route/feature-flag names, `find_file_by_name` for controllers/repositories/resources, code navigation (`code-navigation.md`); read 1-2 key files; resolve `TBD` items → `<context-files>`.
 
@@ -51,12 +52,13 @@ Rules: one item = one deliverable (split compounds); every criterion maps to exa
 - `<gaps>`/`<blockers>` from Step 2 are non-empty and material.
 - A todo item has multiple reasonable shapes the plan's `patch` doesn't disambiguate.
 - A planned change conflicts with an existing invariant, lifecycle hook, or convention.
+- Step-5 premise validation shows the spec's assumed bug path, invariant, or expected behavior no longer holds — premise drift, a misdiagnosed root cause, or a superseding change.
 
 None hold → skip to Step 7; don't manufacture questions.
 
 Grilling per `grill-with-codebase`. Record each decision into the affected todo item (`file`/`symbol`/`location`/`patch` or a one-line note). Re-sync the todo list, not the ticket card. Stop when every question resolves; don't re-open settled decisions.
 
-7. **Implement on Working Branch**: focused, minimal changes on the resolved branch. Drive off `<todo-list>`: next `pending` → `in_progress` → apply at inherited `file`/`symbol`/`location` (`patch` as starting delta; adapt to Step-5 drift or Step-6 resolution) → verify → `completed`. Exactly one `in_progress` at a time. After each meaningful chunk, run project lint and test commands.
+7. **Implement on Working Branch**: focused, minimal changes on the resolved branch. Drive off `<todo-list>`: next `pending` → `in_progress` → apply at inherited `file`/`symbol`/`location` (`patch` as starting delta; when Step-5 drift or Step-6 resolution forces deviation, adapt toward `<spec-intent>`) → verify → `completed`. Exactly one `in_progress` at a time. After each meaningful chunk, run project lint and test commands.
 
 **Test items**: scout existing tests, base classes, factories, assertion style; write from inherited `file`/`symbol`/`location`/`patch` + production code under test + Step-5 conventions. Verify via lint + tests.
 
