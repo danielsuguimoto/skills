@@ -27,13 +27,13 @@ For each `<ticket-refs>` entry, load via the issue tracker load tool (`issue-tra
 
 Extract `<expected-outcomes>` — one entry per acceptance criterion, validation item, or spec requirement the PR must deliver. A ticket that fails to load → record a gap, don't guess its criteria.
 
-Classify `<request-source>` per ticket: **client-origin** — filed in the customer-facing tracker or carrying a client requester/thread (client bug reports, client-specific feature requests) — or **internal**. Client-origin → extract `<client-cases>`: the reported steps, the records/data and module involved, and the symptom or use case in the client's own terms.
+Classify `<request-source>` per loaded ticket — an unloaded ticket records an unknown source alongside its gap: **client-origin** — filed in the customer-facing tracker or carrying a client requester/thread (client bug reports, client-specific feature requests) — or **internal**. Client-origin → extract `<client-cases>`: the reported steps, the records/data and module involved, and the symptom or use case in the client's own terms.
 
 Build `<coverage-map>`: each `<expected-outcomes>` entry → the diff files/modules that should deliver it. Flag outcomes with no corresponding change — the PR may not address every linked card.
 
 Flag `<premise-drift>` — an `<expected-outcomes>` or `<client-cases>` entry whose assumed bug path, invariant, or behavior no longer exists in the diff's code (superseding change, misdiagnosed root cause). Drifted entries get no scenario — Step 5 skips them and Step 7 accounting excludes them; report in Step 8 rather than forcing a scenario onto a dead premise.
 
-**Done when:** every linked ticket loaded or gapped · every criterion/validation item in `<expected-outcomes>` · `<request-source>` classified per ticket, `<client-cases>` extracted where client-origin · coverage map built with gaps and premise drift flagged.
+**Done when:** every linked ticket loaded or gapped · every criterion/validation item from loaded sources in `<expected-outcomes>` · `<request-source>` classified for loaded tickets, with unknown sources recorded for unloaded tickets · `<client-cases>` extracted where client-origin is established · coverage map built with gaps and premise drift flagged.
 
 ### 4. Align Local Branch
 
