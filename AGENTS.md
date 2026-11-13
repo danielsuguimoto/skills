@@ -4,7 +4,7 @@ Skills repository: `skills/<name>/SKILL.md` manifests plus the `README.md` skill
 
 ## Conventions
 
-- Compressed grammatical prose per `skills/writing-for-agents` and `skills/caveman` — no filler, hedging, or restated instructions.
+- Compressed grammatical prose per `skills/caveman` — no filler, hedging, or restated instructions.
 - A skill's frontmatter `description` names every distinct case the skill handles; it is the pointer that decides invocation.
 - `<angle-bracket>` placeholders for variables; `path:line` for file references.
 - Tool names and CLIs live in `docs/` specs — skill bodies name spec files, not tools. The canonical spec list is the Generate table in `skills/setup-skills/SKILL.md`.

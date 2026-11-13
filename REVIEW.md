@@ -5,10 +5,10 @@ Instructions for Devin Review on pull requests in this repository. Repository sh
 ## Strategy
 
 1. **Scope** — every changed file serves the PR's stated intent. Flag unrelated edits; repo rule is exact scope.
-2. **Triggers** — a changed skill's frontmatter `description` must still name every distinct case the skill handles. It is the pointer that decides invocation; a weakened trigger means the skill silently stops firing.
-3. **Spec pointers** — every `<project-root>/docs/<file>.md` reference must name a spec from the Generate table in `skills/setup-skills/SKILL.md` (the contract for consuming projects).
-4. **Single source** — flag a rule or convention restated in a second file; the same meaning in two places drifts.
-5. **Index sync** — `README.md`'s table matches the skill set after this diff.
+2. **Triggers** — verify the `AGENTS.md` trigger convention on changed skills; a weakened trigger means the skill silently stops firing.
+3. **Spec pointers** — verify the `AGENTS.md` spec-pointer convention on `docs/` references (the Generate table is the contract for consuming projects).
+4. **Single source** — flag violations of the `AGENTS.md` single-source rule.
+5. **Index sync** — flag violations of the `AGENTS.md` index-sync rule.
 6. **Completion criteria** — flag vague step bounds ("make sure it's correct"); steps need checkable done-conditions, flat reference needs an exhaustiveness bar ("every X").
 
 ## Critical areas
