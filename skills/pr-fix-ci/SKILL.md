@@ -39,7 +39,7 @@ Classify each `<check>`:
 Record `<classification>`; `flaky`/`infra`/`required-status` → `<not-fixing>` with reason. All failures non-`code` → summary + stop (suggest re-runs where applicable).
 
 ### 7. Plan Fix
-Fast path: every `code` failure straightforward, no cross-check dependencies → `<implementation-plan>` = `trivial`, skip to Step 8. Otherwise ordered fix list (compile/build → test → lint; then shared file, then check); merge failures sharing one root cause → `<dependencies>`.
+Fast path: every `code` failure straightforward, no cross-check dependencies → `<implementation-plan>` = `trivial`, skip to Step 8. Otherwise ordered fix list (compile/build → test → lint; then shared file, then check); sequential thinking merges failures sharing one root cause → `<dependencies>`.
 
 ### 8. Implement Fix
 On `<active-branch>` — focused, minimal, existing patterns. Root cause, not symptom: never disable a failing test — fix what it asserts unless the assertion is wrong (then fix it with justification) → `<changes-count>`.

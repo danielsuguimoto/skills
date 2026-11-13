@@ -31,6 +31,7 @@ Each subdirectory under `skills/` is a self-contained skill with a `SKILL.md` ma
 | manual-test | Walk the user through a manual PR test — provision the local database, then guide step-by-step while verifying persisted effects. The user drives the UI; the agent sets up and verifies. |
 | post-merge | After a PR is merged and deployed — draft resolution replies for linked customer-success tickets via draft-reply, then clear the work's isolated workspace. |
 | session-to-memory | Extract retention-worthy knowledge from a session and persist it to the active memory provider. |
+| sequential-thinking | Sequential thinking method for non-trivial tasks — thought chains that revise, branch, and verify before concluding. |
 | setup-skills | Guide users through initial configuration — creates `<project-root>/docs` folder and generates all spec files needed by other skills. |
 | ship-changes | Ship current work end-to-end — branch, commit, push, open PR. |
 | spawn | Invoke a target skill inside a subagent so its content stays isolated to the subagent's context. |
