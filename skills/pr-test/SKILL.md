@@ -39,7 +39,9 @@ Classify `<request-source>` per ticket: client-origin (customer-facing tracker o
 
 Build `<coverage-map>`: each `<expected-outcomes>` entry → the diff files/modules that should deliver it. Flag outcomes with no corresponding change — the PR may not address every linked card.
 
-**Done when:** every linked ticket loaded · every criterion/validation item in `<expected-outcomes>` · `<request-source>` classified per ticket, `<client-cases>` extracted where client-origin · coverage map built with gaps flagged.
+Flag `<premise-drift>` — an `<expected-outcomes>` or `<client-cases>` entry whose assumed bug path, invariant, or behavior no longer exists in the diff's code (superseding change, misdiagnosed root cause); report in Step 8 rather than forcing a scenario onto a dead premise.
+
+**Done when:** every linked ticket loaded · every criterion/validation item in `<expected-outcomes>` · `<request-source>` classified per ticket, `<client-cases>` extracted where client-origin · coverage map built with gaps and premise drift flagged.
 
 ### 4. Align Local Branch
 
@@ -103,7 +105,7 @@ Chat only — never post to the PR.
 
 - **Verdict** — `PASSED` only when every planned scenario passed; `FAILED` when at least one executed scenario failed and all planned scenarios have results. Include total, passed, and failed counts.
 - **Scenario results** — one row per scenario ID: criterion/artifact/regression, `PASSED` or `FAILED`, expected vs. observed behavior, and concrete evidence. Include passing scenarios, artifact effects, and regression checks rather than hiding them in a count.
-- **Failures** — reason, evidence, and `file:line` where the diff is implicated; distinguish caused from pre-existing failures. Include linked requirements the PR does not deliver, backed by their executed scenarios.
+- **Failures** — reason, evidence, and `file:line` where the diff is implicated; distinguish caused from pre-existing failures. Include linked requirements the PR does not deliver, backed by their executed scenarios. Report `<premise-drift>` here — the assumed bug path or behavior gone, what superseded it — distinct from scenario `FAILED`.
 - **Test boundaries** — identify sandbox/substitute use and the exact behavior it proved. Claim only what the execution demonstrates.
 
 ## Notes

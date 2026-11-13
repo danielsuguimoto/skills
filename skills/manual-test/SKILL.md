@@ -31,7 +31,9 @@ Classify `<request-source>` per ticket: **client-origin** — filed in the custo
 
 Build `<coverage-map>`: each `<expected-outcomes>` entry → the diff files/modules that should deliver it. Flag outcomes with no corresponding change — the PR may not address every linked card.
 
-**Done when:** every linked ticket loaded or gapped · every criterion/validation item in `<expected-outcomes>` · `<request-source>` classified per ticket, `<client-cases>` extracted where client-origin · coverage map built with gaps flagged.
+Flag `<premise-drift>` — an `<expected-outcomes>` or `<client-cases>` entry whose assumed bug path, invariant, or behavior no longer exists in the diff's code (superseding change, misdiagnosed root cause); report in Step 8 rather than forcing a scenario onto a dead premise.
+
+**Done when:** every linked ticket loaded or gapped · every criterion/validation item in `<expected-outcomes>` · `<request-source>` classified per ticket, `<client-cases>` extracted where client-origin · coverage map built with gaps and premise drift flagged.
 
 ### 4. Align Local Branch
 
@@ -93,7 +95,7 @@ Record `<results>` per scenario: `pass`/`fail`/`blocked` with the user's observa
 Chat only — never post to the PR. Per `<expected-outcomes>` entry: verified / failed / untested (with reason). Then:
 
 - **Issues** — severity, reproduction steps, evidence, `file:line` where the diff is implicated.
-- **Coverage gaps** — linked tickets/cards the PR does not fully address (`<coverage-map>` flags + failed scenarios).
+- **Coverage gaps** — linked tickets/cards the PR does not fully address (`<coverage-map>` flags + failed scenarios + `<premise-drift>` items — assumed bug path or behavior gone, what superseded it).
 - **Data artifacts** — what the user ran and what landed, or why `blocked`.
 - **Regressions** — adjacent behavior that broke: regression scenarios, test failures (pre-existing vs caused), system-pass failures.
 - **Verdict** — `works` only when delivered outcomes pass AND the system still works around them; otherwise `issues found`, one line.

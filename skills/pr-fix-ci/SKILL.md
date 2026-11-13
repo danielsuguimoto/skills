@@ -5,7 +5,7 @@ description: "Activate when a pull request has failing CI checks that require co
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before fixing failing CI checks; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`
+Shell-read before fixing failing CI checks; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`; `<project-root>/docs/issue-trackers.md` (Step 2 only — when the PR references tickets)
 
 Fix failing CI checks on a PR: read logs, fix code, push, verify. Tools: git host (`<project-root>/docs/git-hosts.md`). Check source: `gh pr checks` / `gh pr view --json statusCheckRollup`.
 
@@ -16,6 +16,8 @@ Modes: `review` (default) or `auto` — `auto` skips the Step 10 approval gate. 
 
 ### 2. Load PR Context
 Verify git host auth (`git-hosts.md`). `git rev-parse --show-toplevel` → `<repo-path>` (use as `cwd`). View PR via git host view PR (includes checks) or spec CLI fallback. Extract `<pr-branch>`, `<base-branch>`, `<pr-number>`, `<pr-url>`. `git branch --show-current` → `<current-branch>`.
+
+Anchor `<pr-intent>` — why the PR exists: title, body, commit messages, plus every issue/card reference in body, commits, or branch name loaded via the issue tracker tool (`issue-trackers.md`) when present. Load fails → fall back to PR title/body; note the gap.
 
 ### 3. Align Local Branch
 `<pr-branch>` unavailable → STOP. Check out via git host checkout PR or `gh pr checkout <pr-number>` → `<active-branch>`; fails → STOP. No code edits until `<active-branch>` == `<pr-branch>`.
@@ -32,6 +34,7 @@ Classify each `<check>`:
 - `flaky` — transient (network timeout, race, known-flaky test) → re-run, don't fix code.
 - `infra` — environment/runner (missing secret, service down, quota) → report; re-run only if user confirms.
 - `required-status` — required check missing/pending (e.g. no recent review) → out of scope; report.
+- Premise check — a `code` failure in code the PR doesn't touch, or one showing `<pr-intent>`'s assumed behavior no longer holds → verify against `<base-branch>`; pre-existing or drifted → `<not-fixing>` with reason. Don't widen scope silently.
 
 Record `<classification>`; `flaky`/`infra`/`required-status` → `<not-fixing>` with reason. All failures non-`code` → summary + stop (suggest re-runs where applicable).
 

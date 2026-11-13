@@ -27,6 +27,7 @@ Per `<ticket-refs>` entry, load via the issue tracker tool (`issue-trackers.md`)
 
 - **Customer-success ticket** → `<customer-tickets>` — filed in the customer-facing tracker where customers report issues (per the spec), or carries a customer requester/thread. Resolution replies belong here.
 - **Internal ticket** → `<internal-tickets>` — planning cards, spec tickets, dev tasks. No customer reply.
+- **Premise drift** — a `<customer-tickets>` entry whose reported problem `<pr-summary>` doesn't cover (the PR shipped a different fix, or the issue was superseded) → no resolution draft; flag in Step 7.
 
 Ambiguous → ask the user rather than drafting to the wrong audience.
 
