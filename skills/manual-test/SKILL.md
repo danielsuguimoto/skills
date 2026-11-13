@@ -31,7 +31,9 @@ Classify `<request-source>` per ticket: **client-origin** — filed in the custo
 
 Build `<coverage-map>`: each `<expected-outcomes>` entry → the diff files/modules that should deliver it. Flag outcomes with no corresponding change — the PR may not address every linked card.
 
-**Done when:** every linked ticket loaded or gapped · every criterion/validation item in `<expected-outcomes>` · `<request-source>` classified per ticket, `<client-cases>` extracted where client-origin · coverage map built with gaps flagged.
+Flag `<premise-drift>` — an `<expected-outcomes>` or `<client-cases>` entry whose assumed bug path, invariant, or behavior no longer exists in the diff's code (superseding change, misdiagnosed root cause). Drifted entries get no scenario — Step 5 skips them and Step 7 accounting excludes them; report in Step 8 rather than forcing a scenario onto a dead premise.
+
+**Done when:** every linked ticket loaded or gapped · every criterion/validation item in `<expected-outcomes>` · `<request-source>` classified per ticket, `<client-cases>` extracted where client-origin · coverage map built with gaps and premise drift flagged.
 
 ### 4. Align Local Branch
 
@@ -48,7 +50,7 @@ From `<coverage-map>`, write `<test-plan>` with four scenario classes:
 
 Write each user-facing scenario so the user never guesses: numbered actions in the real UI (exact routes, navigation, field values, clicks), the expected observable result, the DB effect the agent will verify, and the data prerequisites Step 6 must provision. Order setup-free flows first.
 
-**Done when:** every `<client-cases>` entry maps to a source scenario · every `<expected-outcomes>` entry maps to a delivery scenario · every flagged artifact maps to an execution entry · regression callers enumerated · system-pass journeys picked.
+**Done when:** every non-`<premise-drift>` `<client-cases>` entry maps to a source scenario · every non-`<premise-drift>` `<expected-outcomes>` entry maps to a delivery scenario · every flagged artifact maps to an execution entry · regression callers enumerated · system-pass journeys picked.
 
 ### 6. Provision Test Data
 
@@ -86,14 +88,14 @@ After each scenario, verify **persisted effects** via read-only DB inspection (`
 
 Record `<results>` per scenario: `pass`/`fail`/`blocked` with the user's observation plus agent DB evidence.
 
-**Done when:** every scenario attempted · each `<expected-outcomes>` entry has a result · every artifact run by the user or `blocked` with reason · user observation and DB state reconciled per scenario · related-test results and system pass captured.
+**Done when:** every scenario attempted · each non-`<premise-drift>` `<expected-outcomes>` entry has a result · every artifact run by the user or `blocked` with reason · user observation and DB state reconciled per scenario · related-test results and system pass captured.
 
 ### 8. Report Findings
 
 Chat only — never post to the PR. Per `<expected-outcomes>` entry: verified / failed / untested (with reason). Then:
 
 - **Issues** — severity, reproduction steps, evidence, `file:line` where the diff is implicated.
-- **Coverage gaps** — linked tickets/cards the PR does not fully address (`<coverage-map>` flags + failed scenarios).
+- **Coverage gaps** — linked tickets/cards the PR does not fully address (`<coverage-map>` flags + failed scenarios + `<premise-drift>` items — assumed bug path or behavior gone, what superseded it).
 - **Data artifacts** — what the user ran and what landed, or why `blocked`.
 - **Regressions** — adjacent behavior that broke: regression scenarios, test failures (pre-existing vs caused), system-pass failures.
 - **Verdict** — `works` only when delivered outcomes pass AND the system still works around them; otherwise `issues found`, one line.
