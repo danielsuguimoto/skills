@@ -1,6 +1,6 @@
 ---
 name: manual-test
-description: "Use when the user tests a pull request themselves with agent guidance — prepare the local database to reproduce its scenarios, then walk the user step-by-step through exercising the change and verifying linked tickets while you check persisted effects. Fits hands-on verification, human-only flows (auth/2FA, devices, live sessions), or missing browser automation; the user runs everything the PR ships — UI flows, migrations, operations, scripts — while the agent sets up, guides, and verifies."
+description: "Use when the user tests a pull request themselves with agent guidance — prepare the local database to reproduce its scenarios, then walk the user step-by-step through exercising the change and verifying linked tickets while you check persisted effects. Fits hands-on verification, human-only flows (auth/2FA, devices, live sessions), or missing browser automation; the user runs everything the PR ships — UI flows, migrations, operations, scripts — while the agent sets up, guides, and verifies. Args: `quick` for a shallow delivery-only pass, `budget <N>` to cap executed scenarios."
 ---
 
 ## Required `<project-root>/docs` reads
@@ -13,27 +13,27 @@ Test whether a PR **works** with the user as the driver. The agent builds the co
 
 ### 1. Interpret Arguments
 
-PR number/URL → `<pr-ref>`; extra focus areas or constraints → `<additional-context>`; no arguments → derive from conversation or the open PR for the current branch (git host list PRs, `git-hosts.md`).
+PR number/URL → `<pr-ref>`; `quick` → `<test-depth>` = `quick` (default `full`); `budget <N>` → `<scenario-budget>` = `<N>` (default uncapped); extra focus areas or constraints → `<additional-context>`; no arguments → derive from conversation or the open PR for the current branch (git host list PRs, `git-hosts.md`).
 
 ### 2. Load PR Context
 
 View PR + diff via git host (`git-hosts.md`). Extract `<pr-purpose>` (why — title, body, commit messages), `<pr-branch>`, `<base-branch>`, `<pr-number>`, `<pr-url>`, `<changes>`, `<ticket-refs>` (every issue/card reference in body, commits, or branch name — git host or external tracker). Unloadable → STOP.
 
-Classify `<changes>`. Flag **data artifacts** — migrations, seeders, operations, one-off scripts — code whose only real test is execution against a populated database. Flag shared/infra files (config, middleware, providers, base classes, factories) — blast radius spans the whole app. Both feed the test plan; neither is covered by a UI scenario alone.
+Classify `<changes>` → flags. **`data-artifacts`** — migrations, seeders, operations, one-off scripts — code whose only real test is execution against a populated database. **`shared-surface`** — config, middleware, providers, base classes, factories — blast radius spans the whole app. Both feed the test plan; neither is covered by a UI scenario alone.
 
 ### 3. Load Linked Context
 
-For each `<ticket-refs>` entry, load via the issue tracker load tool (`issue-trackers.md`): body, every comment, checklists, attachments; traverse nested links per the spec — every nested ticket feeds `<expected-outcomes>`. Every ticket, spec, and card load — top-level and nested — goes through the tracker tooling documented there alone. A ref the tracker tooling cannot load → gap per below, no browser fallback.
+For each `<ticket-refs>` entry, load via the issue tracker load tool (`issue-trackers.md`): body and checklists. Load comments, attachments, and nested links — every nested ticket feeds `<expected-outcomes>` — only on `client-origin` or when the body leaves acceptance criteria ambiguous. Every ticket, spec, and card load — top-level and nested — goes through the tracker tooling documented there alone. A ref the tracker tooling cannot load → gap per below, no browser fallback.
 
 Extract `<expected-outcomes>` — one entry per acceptance criterion, validation item, or spec requirement the PR must deliver. A ticket that fails to load → record a gap, don't guess its criteria.
 
-Classify `<request-source>` per ticket: **client-origin** — filed in the customer-facing tracker or carrying a client requester/thread (client bug reports, client-specific feature requests) — or **internal**. Client-origin → extract `<client-cases>`: the reported steps, the records/data and module involved, and the symptom or use case in the client's own terms.
+Classify `<request-source>` per loaded ticket — an unloaded ticket records an unknown source alongside its gap: **client-origin** — filed in the customer-facing tracker or carrying a client requester/thread (client bug reports, client-specific feature requests) — or **internal**. Client-origin → extract `<client-cases>`: the reported steps, the records/data and module involved, and the symptom or use case in the client's own terms.
 
 Build `<coverage-map>`: each `<expected-outcomes>` entry → the diff files/modules that should deliver it. Flag outcomes with no corresponding change — the PR may not address every linked card.
 
 Flag `<premise-drift>` — an `<expected-outcomes>` or `<client-cases>` entry whose assumed bug path, invariant, or behavior no longer exists in the diff's code (superseding change, misdiagnosed root cause). Drifted entries get no scenario — Step 5 skips them and Step 7 accounting excludes them; report in Step 8 rather than forcing a scenario onto a dead premise.
 
-**Done when:** every linked ticket loaded or gapped · every criterion/validation item in `<expected-outcomes>` · `<request-source>` classified per ticket, `<client-cases>` extracted where client-origin · coverage map built with gaps and premise drift flagged.
+**Done when:** every linked ticket loaded or gapped · every criterion/validation item from loaded sources in `<expected-outcomes>` · `<request-source>` classified for loaded tickets, with unknown sources recorded for unloaded tickets · `<client-cases>` extracted where client-origin is established · coverage map built with gaps and premise drift flagged.
 
 ### 4. Align Local Branch
 
@@ -46,11 +46,15 @@ From `<coverage-map>`, write `<test-plan>` with four scenario classes:
 - **Source** — one scenario per `<client-cases>` entry, replaying the client's case as reported: their steps, their data shapes, their flow. A client bug report → the exact reported failure must now pass; a client-specific feature request → the client's use case performed the way they described it. These are the primary scenarios — Delivery generalizes from them, never substitutes; an `<expected-outcomes>` entry a source scenario already covers needs no duplicate.
 - **Delivery** — one user-level scenario per `<expected-outcomes>` entry: entry point, user action, expected observable result (UI state, DB effect, or both).
 - **Data-artifact** — one execution scenario per migration, seeder, operation, or script flagged in Step 2, run by the user with three beats: the **pre-check** (inspect the provisioned pre-state — the rows or schema the artifact should change), the **command** (the exact invocation per project tooling), and the **post-check** (what must land — schema shape, rows, effects). The agent verifies landed effects in the DB — command output text is not evidence — plus any user-visible change a later scenario confirms.
-- **Regression** — the surface past the diff: direct callers and shared modules traced via code navigation (`code-navigation.md`), each asserting unchanged behavior; project tests covering the changed symbols, run by the agent via file/name filter; and a **system pass**: the core journeys every user hits (auth, landing view, primary CRUD flow) exercised even where the diff never touches them.
+- **Regression** — baseline: project tests covering the changed symbols, run by the agent via file/name filter. `shared-surface` adds: direct callers and shared modules traced via code navigation (`code-navigation.md`), each asserting unchanged behavior, plus a **system pass** — the core journeys every user hits (auth, landing view, primary CRUD flow) exercised even where the diff never touches them.
 
-Write each user-facing scenario so the user never guesses: numbered actions in the real UI (exact routes, navigation, field values, clicks), the expected observable result, the DB effect the agent will verify, and the data prerequisites Step 6 must provision. Order setup-free flows first.
+`quick` depth → build only delivery scenarios plus the baseline regression suite — regardless of flags; the skipped classes (source, data-artifact, traced-caller, system pass) report as `deferred` in Step 8. When a `quick` scenario fails where a skipped class applied, escalate that area to `full`.
 
-**Done when:** every non-`<premise-drift>` `<client-cases>` entry maps to a source scenario · every non-`<premise-drift>` `<expected-outcomes>` entry maps to a delivery scenario · every flagged artifact maps to an execution entry · regression callers enumerated · system-pass journeys picked.
+Order execution source → delivery → data-artifact → regression, setup-free flows first; a scenario asserting another scenario's effects runs after it. `<scenario-budget>` cuts the tail of that order: mark cut scenarios `deferred` with the budget as the reason.
+
+Write each user-facing scenario so the user never guesses: numbered actions in the real UI (exact routes, navigation, field values, clicks), the expected observable result, the DB effect the agent will verify, and the data prerequisites Step 6 must provision.
+
+**Done when:** every non-`<premise-drift>` `<client-cases>` entry maps to a source scenario (a delivery scenario under `quick` depth) · every non-`<premise-drift>` `<expected-outcomes>` entry maps to a delivery scenario · every flagged artifact maps to an execution entry (`deferred` under `quick` depth or past `<scenario-budget>`) · regression scope set per flag and depth — baseline suite always, traced callers and system pass only on `shared-surface` + `full`.
 
 ### 6. Provision Test Data
 
@@ -69,9 +73,9 @@ Production copy rules:
 - Isolate local mail, queues, webhooks, and external integrations before exercising copied data so reproduction cannot affect real users or services.
 - Write only to local — never to production. Ask before overwriting or deleting existing local data.
 
-If provisioning fails, try the applicable alternatives above. Mark a scenario `blocked` only when a specific unmet prerequisite remains after concrete provisioning attempts, or a safety/permission boundary prevents them. Record the missing prerequisite, attempted methods and their errors or limitations, and what would unblock the scenario. Continue with scenarios whose prerequisites are available.
+If provisioning fails, try the applicable alternatives above — cap recovery at three attempts per scenario (a diagnosed cause, a repair, a retry). Mark a scenario `blocked` when a specific unmet prerequisite remains after the cap, or a safety/permission boundary prevents attempts. Record the missing prerequisite, attempted methods and their errors or limitations, and what would unblock the scenario. Continue with scenarios whose prerequisites are available.
 
-**Done when:** every scenario's required records exist locally and inspection confirms the reproduction-critical values and relationships, or that scenario has an evidenced provisioning blocker recorded for the report · every flagged artifact left pending with its pre-state provisioned, or `blocked` with evidence.
+**Done when:** every non-`deferred` scenario's required records exist locally and inspection confirms the reproduction-critical values and relationships, or that scenario has an evidenced provisioning blocker recorded for the report · every non-`deferred` flagged artifact left pending with its pre-state provisioned, or `blocked` with evidence.
 
 ### 7. Guide the User Through the Test
 
@@ -82,23 +86,24 @@ Per scenario: restate what setup is already in place, then hand the user the num
 After each scenario, verify **persisted effects** via read-only DB inspection (`database-tools.md`): rows created/updated, status transitions, relationship integrity. The user's observation and the DB must agree — a mismatch is a failure; report it immediately with the evidence on both sides.
 
 - A reported failure → capture evidence (what the user saw, error text, screenshot), guide one retry if the cause looks like a missed step, then record `fail` — debugging is a fix workflow, not this skill.
-- A scenario the user cannot perform (for example, an unavailable device or external session) → `blocked` with evidence — never `pass` unverified. Missing local accounts or data return to Step 6; data-related blockers must meet its provisioning criteria.
+- A scenario the user cannot or declines to perform (for example, an unavailable device or external session) → `blocked` with evidence — never `pass` unverified. Missing local accounts or data return to Step 6; data-related blockers must meet its provisioning criteria.
+- The session ending before a scenario is reached → `deferred`, reason recorded.
 - Reset or re-provision data between runs when the user needs to repeat a scenario.
 - Run agent-side regression checks (diff-related tests, lint) alongside the guided pass; a test failure the diff did not cause is still a finding — mark it pre-existing after a cheap check against `<base-branch>`.
 
-Record `<results>` per scenario: `pass`/`fail`/`blocked` with the user's observation plus agent DB evidence.
+Record `<results>` per scenario: `pass`/`fail`/`blocked`/`deferred` — attempted scenarios carry the user's observation plus agent DB evidence; `blocked`/`deferred` carry their reason and evidence.
 
-**Done when:** every scenario attempted · each non-`<premise-drift>` `<expected-outcomes>` entry has a result · every artifact run by the user or `blocked` with reason · user observation and DB state reconciled per scenario · related-test results and system pass captured.
+**Done when:** every scenario attempted, `blocked`, or `deferred` · each non-`<premise-drift>` `<expected-outcomes>` entry has a result · every non-`deferred` artifact run by the user or `blocked` with reason · user observation and DB state reconciled per scenario · related-test results and system pass captured or `deferred`.
 
 ### 8. Report Findings
 
-Chat only — never post to the PR. Per `<expected-outcomes>` entry: verified / failed / untested (with reason). Then:
+Chat only — never post to the PR. Per `<expected-outcomes>` entry: verified / failed / untested (`blocked` or `deferred`, with reason). Then:
 
 - **Issues** — severity, reproduction steps, evidence, `file:line` where the diff is implicated.
 - **Coverage gaps** — linked tickets/cards the PR does not fully address (`<coverage-map>` flags + failed scenarios + `<premise-drift>` items — assumed bug path or behavior gone, what superseded it).
-- **Data artifacts** — what the user ran and what landed, or why `blocked`.
+- **Data artifacts** — what the user ran and what landed, or why `blocked`/`deferred`.
 - **Regressions** — adjacent behavior that broke: regression scenarios, test failures (pre-existing vs caused), system-pass failures.
-- **Verdict** — `works` only when delivered outcomes pass AND the system still works around them; otherwise `issues found`, one line.
+- **Verdict** — `works` only when delivered outcomes pass AND the system still works around them · `issues found` when at least one scenario failed, one line · `incomplete` when nothing failed but `blocked`/`deferred` scenarios remain.
 
 ## Notes
 

@@ -1,6 +1,6 @@
 ---
 name: pr-test
-description: "Use when testing or verifying a pull request end-to-end — exercise it as a regular user (UI + database) or through its real entry points (API contracts, workers/jobs, CLI commands), run its migrations/seeders/operations/scripts, verify linked tickets, and prove the system still works past the diff. Reports findings in chat; leaves production, the PR, and the repo untouched; typically post-approval."
+description: "Use when testing or verifying a pull request end-to-end — exercise it as a regular user (UI + database) or through its real entry points (API contracts, workers/jobs, CLI commands), run its migrations/seeders/operations/scripts, verify linked tickets, and prove the system still works past the diff. Reports findings in chat; leaves production, the PR, and the repo untouched; typically post-approval. Args: `quick` for a shallow delivery-only pass, `budget <N>` to cap executed scenarios."
 ---
 
 ## Required `<project-root>/docs` reads
@@ -11,11 +11,11 @@ Test whether a PR **works**, not whether it reads well — and whether the **sys
 
 **Boundary:** the local environment is fully mutable — checkouts, migrations, seeders, operations, browser-driven writes, and local DB writes all execute as part of testing, without user confirmation. Untouched scope: production systems, the PR thread, and the repo's files and history.
 
-**Completion gate:** finish only when every planned scenario has an evidence-backed `PASSED` or `FAILED` result. `PASSED` means the executed behavior met every assertion; `FAILED` means the executed behavior contradicted an assertion. Missing setup, access, tools, or execution is unfinished work, not a product result. Resolve it through the recovery loop in Step 6; request the specific user action when a genuine permission/access boundary requires it. Keep the run incomplete until execution resumes. Never turn missing evidence into a verdict.
+**Completion gate:** finish only when every planned scenario has an evidence-backed result — `PASSED`, `FAILED`, `BLOCKED`, or `DEFERRED`. `PASSED` means the executed behavior met every assertion; `FAILED` means it contradicted an assertion; `BLOCKED` means execution never reached the assertions after the Step 6 recovery budget ran out or a needed user action was declined or unavailable — it requires recorded evidence: the missing prerequisite, attempted recoveries and their errors, what would unblock it; `DEFERRED` means the plan cut the scenario by `quick` depth or `<scenario-budget>` — it needs only its recorded reason. Never turn missing evidence into `PASSED` or `FAILED`.
 
 ### 1. Interpret Arguments
 
-PR number/URL → `<pr-ref>`; extra focus areas or constraints → `<additional-context>`; no arguments → derive from conversation or the open PR for the current branch (git host list PRs, `git-hosts.md`).
+PR number/URL → `<pr-ref>`; `quick` → `<test-depth>` = `quick` (default `full`); `budget <N>` → `<scenario-budget>` = `<N>` (default uncapped); extra focus areas or constraints → `<additional-context>`; no arguments → derive from conversation or the open PR for the current branch (git host list PRs, `git-hosts.md`).
 
 ### 2. Load PR Context
 
@@ -31,17 +31,17 @@ No flags → **feature path**: delivery scenarios plus the covering test suite �
 
 ### 3. Load Linked Context
 
-For each `<ticket-refs>` entry, load via the issue tracker load tool (`issue-trackers.md`): body and checklists. Load comments, attachment contents, and nested links only on `client-origin` or when the body leaves acceptance criteria ambiguous. If the tracker tool fails, try the configured alternatives, including the authenticated browser. An access boundary requiring the user → request access or the missing ticket content; resume when available.
+For each `<ticket-refs>` entry, load via the issue tracker load tool (`issue-trackers.md`): body and checklists. Load comments, attachment contents, and nested links only on `client-origin` or when the body leaves acceptance criteria ambiguous. If the tracker tool fails, try the configured alternatives, including the authenticated browser. An access boundary requiring the user → ask once for access or the missing ticket content; supplied → resume; declined or unavailable → drop that ticket's outcomes, flag the unloaded ticket in Step 8, and continue with the criteria the loaded sources support.
 
 Extract `<expected-outcomes>` — one entry per acceptance criterion, validation item, or spec requirement the PR must deliver. Resolve missing linked context before finalizing the plan; derive criteria from loaded sources, never guesses.
 
-Classify `<request-source>` per ticket: client-origin (customer-facing tracker or client requester/thread) → set the flag and extract `<client-cases>` — the reported steps, the records/data and module involved, and the symptom or use case in the client's own terms.
+Classify `<request-source>` per loaded ticket — an unloaded ticket records an unknown source alongside its gap: client-origin (customer-facing tracker or client requester/thread) → set the flag and extract `<client-cases>` — the reported steps, the records/data and module involved, and the symptom or use case in the client's own terms.
 
 Build `<coverage-map>`: each `<expected-outcomes>` entry → the diff files/modules that should deliver it. Flag outcomes with no corresponding change — the PR may not address every linked card.
 
 Flag `<premise-drift>` — an `<expected-outcomes>` or `<client-cases>` entry whose assumed bug path, invariant, or behavior no longer exists in the diff's code (superseding change, misdiagnosed root cause). Drifted entries get no scenario — Step 5 skips them and Step 7 accounting excludes them; report in Step 8 rather than forcing a scenario onto a dead premise.
 
-**Done when:** every linked ticket loaded · every criterion/validation item in `<expected-outcomes>` · `<request-source>` classified per ticket, `<client-cases>` extracted where client-origin · coverage map built with gaps and premise drift flagged.
+**Done when:** every linked ticket loaded or dropped with its gap recorded · every criterion/validation item from loaded sources in `<expected-outcomes>` · `<request-source>` classified for loaded tickets, with unknown sources recorded for unloaded tickets · `<client-cases>` extracted where client-origin is established · coverage map built with gaps and premise drift flagged.
 
 ### 4. Align Local Branch
 
@@ -56,9 +56,13 @@ From `<coverage-map>`, write `<test-plan>` with scenario classes gated by flag:
 - **Data-artifact** (`data-artifacts`) — one execution scenario per flagged migration, seeder, operation, or script: run against the populated local dev DB; assert schema lands and existing rows survive (migrations); expected rows/effects land (seeders, operations, scripts); re-run safe where idempotency is claimed.
 - **Regression** — feature path: the project tests covering the changed files, run by file/name filter. `shared-surface` adds: direct callers traced via code navigation (`code-navigation.md`), each asserting unchanged behavior, plus a **system pass** — the core journeys every user hits (auth, landing view, primary CRUD flow) exercised even where the diff never touches them.
 
-Assign each scenario a stable ID and record its source criterion/artifact/caller, prerequisites, actual execution entry point, and explicit assertions. Include applicable negative, permission, boundary, and legacy-data cases required by the acceptance criteria or changed behavior. Order setup-free flows first. A missing implementation still needs an execution scenario that demonstrates the missing behavior.
+`quick` depth → build only the feature-path classes — delivery scenarios plus the covering regression suite — regardless of flags; the skipped classes (source, data-artifact, traced-caller, system pass) report as `DEFERRED` in Step 8. When a `quick` scenario fails where a skipped class applied, escalate that area to `full`.
 
-**Done when:** every non-`<premise-drift>` `<client-cases>` entry maps to a source scenario · every non-`<premise-drift>` `<expected-outcomes>` entry maps to a scenario · every flagged artifact maps to an execution scenario · regression scope set per path · every scenario has an ID, execution entry point, prerequisites, and assertions. This is complete coverage of the scoped scenarios, not a claim of exhaustive application or code coverage.
+Order execution source → delivery → data-artifact → regression, setup-free flows first; a scenario asserting another scenario's effects runs after it. `<scenario-budget>` cuts the tail of that order: mark cut scenarios `DEFERRED` with the budget as the reason.
+
+Assign each scenario a stable ID and record its source criterion/artifact/caller, prerequisites, actual execution entry point, and explicit assertions. Include applicable negative, permission, boundary, and legacy-data cases required by the acceptance criteria or changed behavior. A missing implementation still needs an execution scenario that demonstrates the missing behavior.
+
+**Done when:** every non-`<premise-drift>` `<client-cases>` entry maps to a source scenario (a delivery scenario under `quick` depth) · every non-`<premise-drift>` `<expected-outcomes>` entry maps to a scenario · every flagged artifact maps to an execution scenario (`DEFERRED` under `quick` depth or past `<scenario-budget>`) · regression scope set per path · every scenario has an ID, execution entry point, prerequisites, and assertions. This is complete coverage of the scoped scenarios, not a claim of exhaustive application or code coverage.
 
 ### 6. Prepare Every Scenario
 
@@ -75,15 +79,17 @@ Production copy rules (`database-tools.md`):
 - Isolate local mail, queues, webhooks, and external integrations before exercising copied data so reproduction cannot affect real users or services.
 - Write only to local — never to production. Ask before overwriting or deleting existing local data.
 
-**Recovery loop:** when setup or execution fails, capture the exact error, inspect its cause using the available tools/codebase/logs, repair local setup within the boundary, and retry the same scenario. Try applicable fixture methods above and configured tool alternatives rather than treating the first failure as a stopping point. Continue independent scenarios while resolving the prerequisite; return to every unfinished ID before reporting.
+**Recovery loop:** when setup or execution fails, capture the exact error, inspect its cause using the available tools/codebase/logs, repair local setup within the boundary, and retry the same scenario. Try applicable fixture methods above and configured tool alternatives rather than treating the first failure as a stopping point. Cap recovery at three attempts per scenario — an attempt is a diagnosed cause, a repair, and a retry; exhausted → record the scenario `BLOCKED` and move on. Continue independent scenarios while resolving the prerequisite; return to every unfinished ID before reporting.
 
 For external dependencies, use an available sandbox or a controlled local substitute at the external boundary while executing the real application path. Record what was substituted and what the evidence proves. A substitute can prove application handling of a response; it cannot prove the real provider accepted a request. A criterion requiring the real provider still requires that execution.
 
-If further progress needs user access, credentials, approval, or a human-only action, ask for that specific action with the exact error and attempted recoveries. Keep the affected scenario pending and the run incomplete; resume it after the prerequisite is supplied. Safety boundaries remain binding: use an isolated disposable local copy for destructive artifacts only with any required approval, and never act on production or shared infrastructure.
+If further progress needs user access, credentials, approval, or a human-only action, ask once for that specific action with the exact error and attempted recoveries. Supplied → resume the scenario; declined or unanswered → record it `BLOCKED` and move on. Safety boundaries remain binding: use an isolated disposable local copy for destructive artifacts only with any required approval, and never act on production or shared infrastructure.
 
-**Done when:** every scenario's runtime prerequisites are ready · required records exist locally · inspection confirms reproduction-critical values and relationships. Unmet prerequisites keep this step open.
+**Done when:** every non-`DEFERRED` scenario's runtime prerequisites are ready · required records exist locally · inspection confirms reproduction-critical values and relationships. Unmet prerequisites keep their scenarios in the recovery loop until ready or `BLOCKED`.
 
 ### 7. Exercise the Change
+
+Independent scenarios run in parallel — dispatch each scenario's setup and execution to a subagent where the platform supports it, but only at ≥3 independent scenarios (the `subagents` parallel-time-win gate); fewer run inline. Scenarios sharing mutable local state (the same records, tenant, browser session, or fixture) stay serial.
 
 Run the app per project tooling. Drive UI scenarios through browser automation (`browser-automation.md`) as a **regular user** — real UI navigation, forms, clicks. Exercise non-UI scenarios through their actual entry points: CLI command, worker/job dispatch, API for an API contract, or the artifact runner. For a UI scenario, console shortcuts, direct API calls, and DB writes cannot replace the user action — Step 6 provisions prerequisites, never the expected result.
 
@@ -93,22 +99,22 @@ Execute each data-artifact scenario per project tooling against the populated lo
 
 Regressions: run diff-related tests and lint where they exist; `shared-surface` adds the traced-caller scenarios and the system pass. A test failure the diff did not cause is still a finding — mark it pre-existing after a cheap check against `<base-branch>`.
 
-Record `<results>` by scenario ID: execution steps/command, expected assertions, observed results, evidence (UI state/capture, read-only query and result, test output, or error text), and `PASSED`/`FAILED`. Code inspection and a green test suite support diagnosis; neither substitutes for an unexecuted user flow or artifact. A runtime error reached through the real scenario is failure evidence; a tool/setup error preventing that execution returns to Step 6.
+Record `<results>` by scenario ID: execution steps/command, expected assertions, observed results, evidence (UI state/capture, read-only query and result, test output, or error text), and `PASSED`/`FAILED`/`BLOCKED`. Code inspection and a green test suite support diagnosis; neither substitutes for an unexecuted user flow or artifact. A runtime error reached through the real scenario is failure evidence; a tool/setup error preventing that execution returns to Step 6.
 
-Before reporting, reconcile `<coverage-map>`, `<test-plan>`, and `<results>`: every non-`<premise-drift>` criterion, client case, artifact, and required regression maps to executed scenario IDs; each ID has evidence and a result; planned count = `PASSED` count + `FAILED` count. Reopen missing rows, partial assertions, and evidence gaps, then execute them. Keep scenarios in the ledger when difficult; completion requires their results, not their removal.
+Before reporting, reconcile `<coverage-map>`, `<test-plan>`, and `<results>`: every non-`<premise-drift>` criterion, client case, artifact, and required regression maps to scenario IDs; each ID carries a final result — `PASSED`/`FAILED` with evidence, `BLOCKED` with its recovery record, `DEFERRED` with its reason; every referenced ticket loaded or its unloaded state recorded; planned count = `PASSED` + `FAILED` + `BLOCKED` + `DEFERRED`. Reopen missing rows, partial assertions, and evidence gaps, then execute them. Keep scenarios in the ledger when difficult; completion requires their results, not their removal.
 
-**Done when:** every planned scenario executed with every assertion evaluated · each non-`<premise-drift>` `<expected-outcomes>` entry has evidence-backed results · every artifact executed and effects inspected · required regressions executed · reconciliation passes.
+**Done when:** every planned scenario holds a result — executed with every assertion evaluated, or `BLOCKED`/`DEFERRED` recorded per their rules · each non-`<premise-drift>` `<expected-outcomes>` entry maps to scenario results · every artifact and required regression executed or recorded `BLOCKED`/`DEFERRED` · reconciliation passes.
 
 ### 8. Report Findings
 
 Chat only — never post to the PR.
 
-- **Verdict** — `PASSED` only when every planned scenario passed; `FAILED` when at least one executed scenario failed and all planned scenarios have results. Include total, passed, and failed counts.
-- **Scenario results** — one row per scenario ID: criterion/artifact/regression, `PASSED` or `FAILED`, expected vs. observed behavior, and concrete evidence. Include passing scenarios, artifact effects, and regression checks rather than hiding them in a count.
-- **Failures** — reason, evidence, and `file:line` where the diff is implicated; distinguish caused from pre-existing failures. Include linked requirements the PR does not deliver, backed by their executed scenarios. Report `<premise-drift>` here — the assumed bug path or behavior gone, what superseded it — distinct from scenario `FAILED`.
-- **Test boundaries** — identify sandbox/substitute use and the exact behavior it proved. Claim only what the execution demonstrates.
+- **Verdict** — `PASSED` when every executed scenario passed, no `BLOCKED` scenarios remain, and every referenced ticket loaded · `FAILED` when at least one executed scenario failed · `INCOMPLETE` when nothing failed but `BLOCKED` scenarios remain or a referenced ticket stayed unloaded. Include total, passed, failed, and blocked counts; `DEFERRED` items list separately.
+- **Scenario results** — one row per scenario ID: criterion/artifact/regression, result, expected vs. observed behavior, and concrete evidence. `BLOCKED` rows carry the missing prerequisite and attempted recoveries; `DEFERRED` rows carry the `quick` depth or `<scenario-budget>` that cut them. Include passing scenarios, artifact effects, and regression checks rather than hiding them in a count.
+- **Failures** — reason, evidence, and `file:line` where the diff is implicated; distinguish caused from pre-existing failures. Include linked requirements the PR does not deliver, backed by their executed scenarios; name any referenced ticket that stayed unloaded — its criteria unknown, not absent. Report `<premise-drift>` here — the assumed bug path or behavior gone, what superseded it — distinct from scenario `FAILED`.
+- **Test boundaries** — identify sandbox/substitute use and the exact behavior it proved; name the scenario classes a `quick` run or `<scenario-budget>` never exercised. Claim only what the execution demonstrates.
 
 ## Notes
 
 - Verifies, never fixes — issues found → user invokes a fix workflow; leave the repo as found (no edits, no stray commits).
-- Final findings require the completion gate. An unresolved prerequisite calls for a specific unblock request, not a finished report with skipped, unverified, not-checked, or blocked scenarios. Honest incompletion never becomes a fabricated `PASSED` or `FAILED`.
+- Final findings require the completion gate. `BLOCKED` and `DEFERRED` are first-class results — the report names each with its reason and unblock path, never a silent skip. Honest incompletion never becomes a fabricated `PASSED` or `FAILED`.
