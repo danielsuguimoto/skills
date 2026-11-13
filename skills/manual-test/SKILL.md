@@ -50,7 +50,7 @@ From `<coverage-map>`, write `<test-plan>` with four scenario classes:
 
 `quick` depth → build only delivery scenarios plus the baseline regression suite — regardless of flags; the skipped classes (source, data-artifact, traced-caller, system pass) report as `deferred` in Step 8. When a `quick` scenario fails where a skipped class applied, escalate that area to `full`.
 
-Order execution source → delivery → data-artifact → regression, setup-free flows first. `<scenario-budget>` cuts the tail of that order: mark cut scenarios `deferred` with the budget as the reason.
+Order execution source → delivery → data-artifact → regression, setup-free flows first; a scenario asserting another scenario's effects runs after it. `<scenario-budget>` cuts the tail of that order: mark cut scenarios `deferred` with the budget as the reason.
 
 Write each user-facing scenario so the user never guesses: numbered actions in the real UI (exact routes, navigation, field values, clicks), the expected observable result, the DB effect the agent will verify, and the data prerequisites Step 6 must provision.
 
