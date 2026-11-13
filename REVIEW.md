@@ -1,26 +1,15 @@
 # Review Guidelines
 
-Instructions for Devin Review on pull requests in this repository.
-
-## Repository shape
-
-Agent-facing documents, not executable code: `skills/<name>/SKILL.md` manifests plus the `README.md` skill index. Consumers are AI agents — a skill's prose is the product. `docs/` and `.devin/` are gitignored local state. No build or test suite; verify by reading.
+Instructions for Devin Review on pull requests in this repository. Repository shape and authoring conventions live in `AGENTS.md` — verify the diff against them.
 
 ## Strategy
 
 1. **Scope** — every changed file serves the PR's stated intent. Flag unrelated edits; repo rule is exact scope.
-2. **Triggers** — a changed skill's frontmatter `description` must still name every distinct case the skill handles. It is the pointer that decides invocation; a weakened trigger means the skill silently stops firing.
-3. **Spec pointers** — every `<project-root>/docs/<file>.md` reference must name a spec from the Generate table in `skills/setup-skills/SKILL.md` (the contract for consuming projects).
-4. **Single source** — flag a rule or convention restated in a second file; the same meaning in two places drifts.
-5. **Index sync** — added, renamed, or removed skills must update `README.md`'s table.
+2. **Triggers** — verify the `AGENTS.md` trigger convention on changed skills; a weakened trigger means the skill silently stops firing.
+3. **Spec pointers** — verify the `AGENTS.md` spec-pointer convention on `docs/` references (the Generate table is the contract for consuming projects).
+4. **Single source** — flag violations of the `AGENTS.md` single-source rule.
+5. **Index sync** — flag violations of the `AGENTS.md` index-sync rule.
 6. **Completion criteria** — flag vague step bounds ("make sure it's correct"); steps need checkable done-conditions, flat reference needs an exhaustiveness bar ("every X").
-
-## Conventions
-
-- Compressed grammatical prose per `skills/writing-for-agents` and `skills/caveman` — no filler, hedging, or restated instructions.
-- `<angle-bracket>` placeholders for variables; `path:line` for file references.
-- Tool names and CLIs live in `docs/` specs — skill bodies name spec files, not tools.
-- Commits: `<prefix>: <message>` lowercase under 50 chars — feat, fix, chore, docs, refactor, test, style.
 
 ## Critical areas
 
