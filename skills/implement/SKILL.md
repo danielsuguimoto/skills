@@ -47,21 +47,22 @@ Rules: one item = one deliverable (split compounds); every criterion maps to exa
 
 `BLOCKED` → `grep` model/route/feature-flag names, `find_file_by_name` for controllers/repositories/resources, code navigation (`code-navigation.md`); read 1-2 key files; resolve `TBD` items → `<context-files>`.
 
-6. **Resolve Open Questions (optional)**: grill the user before implementing ONLY when at least one holds:
+6. **Resolve Open Questions (optional)**: grill the user ONLY when at least one holds — pre-implementation or on Step-7 loop-back:
 - An inherited code-target triple fails Step-5 validation and the right replacement is ambiguous.
 - `<gaps>`/`<blockers>` from Step 2 are non-empty and material.
+- Spec requirements contradict each other — no implementation satisfies all as written.
 - A todo item has multiple reasonable shapes the plan's `patch` doesn't disambiguate.
 - A planned change conflicts with an existing invariant, lifecycle hook, or convention.
-- Step-5 premise validation shows the spec's assumed bug path, invariant, or expected behavior no longer holds — premise drift, a misdiagnosed root cause, or a superseding change.
+- Premise validation — Step 5 or surfaced mid-edit — shows the spec's assumed bug path, invariant, or expected behavior no longer holds: premise drift, a misdiagnosed root cause, or a superseding change.
 
 None hold → skip to Step 7; don't manufacture questions.
 
 Grilling per `grill-with-codebase`. Record each decision into the affected todo item (`file`/`symbol`/`location`/`patch` or a one-line note). Re-sync the todo list, not the ticket card. Stop when every question resolves; don't re-open settled decisions.
 
-7. **Implement on Working Branch**: focused, minimal changes on the resolved branch. Drive off `<todo-list>`: next `pending` → `in_progress` → apply at inherited `file`/`symbol`/`location` (`patch` as starting delta; when Step-5 drift or Step-6 resolution forces deviation, adapt toward `<spec-intent>`) → verify → `completed`. Exactly one `in_progress` at a time. Run focused checks as needed and relevant project checks after implementation.
+7. **Implement on Working Branch**: focused, minimal changes on the resolved branch. Drive off `<todo-list>`: next `pending` → `in_progress` → apply at inherited `file`/`symbol`/`location` (`patch` as starting delta; drift at any point → adapt toward `<spec-intent>`; fresh premise drift surfaced mid-edit → loop back to Step 6) → verify (deliverable observable via focused check, test, or probe demonstrating the criterion) → `completed`. Exactly one `in_progress` at a time. Run focused checks as needed and relevant project checks after implementation.
 
 **Test items**: scout existing tests, base classes, factories, assertion style; write from inherited `file`/`symbol`/`location`/`patch` + production code under test + Step-5 conventions. Verify via lint + tests.
 
-8. **Present Implementation**: complete and validated → final report per `code-work` → *Output Discipline* — changed files (`path:line`), validation result, status + diff stat (git host change scan; `git-hosts.md`).
+8. **Audit & Present Implementation**: reconcile the full diff against `<spec-intent>` — every acceptance criterion demonstrated or flagged; a miss → Step 7 (drift → Step 6). Clean → final report per `code-work` → *Output Discipline* — changed files (`path:line`), validation result, status + diff stat (git host change scan; `git-hosts.md`).
 
 CRITICAL: STOP here. Never commit, push, or request approval — the user ships via commit-and-push / ship-changes.
