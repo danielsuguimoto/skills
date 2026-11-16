@@ -33,8 +33,8 @@ If a conflict requires a product decision or cannot be resolved safely, leave th
 
 Confirm `git ls-files -u` is empty, inspect the staged merge for conflict markers and unintended changes, and run relevant checks for the resolved files. Report any checks that fail or cannot run; leave the merge pending until failures are understood.
 
-Present the source and PR branches, resolved paths, and verification results. Ask for explicit confirmation before creating the merge commit. On approval, complete the merge with the repository's commit convention and verify that the resulting commit has both the recorded PR head and source commit as parents.
+Present the source and PR branches, the verified push destination `<head-repository>:<pr-branch>` (fork heads included), resolved paths, and verification results. Ask (header `Approval`): "Ready to commit and push to `<head-repository>:<pr-branch>`?" Options: `Go Ahead` → `approved`; `Needs Review` → `concerns` (requires feedback). `concerns` → apply the feedback, re-verify, re-present.
 
-## 5. Push only on request
+## 5. Commit and push
 
-The merge is local until pushed. Push only when the user explicitly requests it and confirms the destination. Re-fetch the PR head first; if it changed since preparation, stop and report rather than overwriting it. Push normally to the verified head repository and PR branch, never force-push. Report the merge commit, validation results, and whether the PR branch was pushed.
+On `approved`, complete the merge with the repository's commit convention and verify that the resulting commit has both the recorded PR head and source commit as parents. Re-fetch the PR head first; if it changed since preparation, stop and report rather than overwriting it. Push normally to the verified head repository and PR branch, never force-push. Report the merge commit and the pushed ref.
