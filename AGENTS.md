@@ -10,7 +10,7 @@ Skills repository: `skills/<name>/SKILL.md` manifests plus the `README.md` skill
 - Minimize execution reads, tool calls, reasoning, user questions, and chat output; preserve evidence, correctness, and required approvals.
 - `<angle-bracket>` placeholders for variables; `path:line` for file references.
 - Tool names and CLIs live in `docs/` specs — skill bodies name spec files, not tools. The canonical spec list is the Generate table in `skills/setup-skills/SKILL.md`.
-- Single source of truth — a rule or convention lives in one file; restated rules drift.
+- Skills are self-contained — standalone installs ship only the skill's own directory; restate shared rules locally instead of referencing another skill.
 - Added, renamed, or removed skills update the `README.md` table.
 
 ## Git

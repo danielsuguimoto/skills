@@ -44,7 +44,7 @@ Check the repo for a GitHub PR template → `<pr-template>` verbatim (headings, 
 
 Generate `<pr-title>`, `<pr-body>`, and (when `auto`) `<ticket-title>`/`<ticket-body>` from `<resolved-base>`, `<ticket-mode>`, `<ticket-url>` (when `provided`), `<additional-context>`, `<pr-template>`.
 
-`<pr-title>` follows the commit-message convention (`commit-and-push` Step 4); prefix = the dominant change type.
+`<pr-title>`: `<prefix>: <message>` — lowercase, under 50 chars. Prefixes: feat, fix, chore, docs, refactor, test, style; prefix = the dominant change type.
 
 `<ticket-mode>` = `auto`: reuse `<change-summary>` themes from actual commits/diff. Title ≤70 chars reflecting the delivered outcome; description = what and why; checklists = 2-4 functional sections + final `Validation` section (reviewer-facing: "Verify that...", "Confirm that..."). Create via git host create issue (title, body, assignee `@me`) or CLI fallback with temp file. No attribution lines. Issue URL → `<ticket-url>`.
 
