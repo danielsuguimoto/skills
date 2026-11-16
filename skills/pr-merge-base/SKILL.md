@@ -33,7 +33,7 @@ If a conflict requires a product decision or cannot be resolved safely, leave th
 
 Confirm `git ls-files -u` is empty, inspect the staged merge for conflict markers and unintended changes, and run relevant checks for the resolved files. Report any checks that fail or cannot run; leave the merge pending until failures are understood.
 
-Present the source and PR branches, resolved paths, and verification results. Ask (header `Approval`): "Ready to commit and push?" Options: `Go Ahead` → `approved`; `Needs Review` → `concerns` (requires feedback). `concerns` → apply the feedback, re-verify, re-present.
+Present the source and PR branches, the verified push destination `<head-repository>:<pr-branch>` (fork heads included), resolved paths, and verification results. Ask (header `Approval`): "Ready to commit and push to `<head-repository>:<pr-branch>`?" Options: `Go Ahead` → `approved`; `Needs Review` → `concerns` (requires feedback). `concerns` → apply the feedback, re-verify, re-present.
 
 ## 5. Commit and push
 
