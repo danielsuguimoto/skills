@@ -8,4 +8,4 @@ Guide one scenario at a time. State what setup is ready, give numbered actions a
 
 Never infer success from silence or take over an unperformed user action. A declined or unavailable action is `BLOCKED`; scenarios unreached when the user ends the session are `DEFERRED`. For artifacts, wait for the user's command output and verify the post-state. Supporting automated checks may run only if they do not execute shipped artifacts; give artifact-executing commands to the user.
 
-Record the user's observation as UI evidence. Request a screenshot or exact error only when needed to resolve ambiguity or support a finding. Distinguish user observations from agent-executed checks in the report.
+Record the user's observation as UI evidence in the common [reporting contract](reporting.md), with supplied screenshots in its evidence directories. Request a screenshot or exact error only when needed to resolve ambiguity or support a finding. Distinguish user observations from agent-executed checks in the report; an observation without a screenshot is not itself a proof gap.

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>&lt;pr-title&gt; — PR test report</title>
+<style>
+:root {
+  --ink: #1e293b;
+  --muted: #475569;
+  --line: #cbd5e1;
+  --link: #1d4ed8;
+  --pass: #15803d;
+  --fail: #b91c1c;
+  --warn: #b45309;
+  --paper: #ffffff;
+  --wash: #f1f5f9;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  line-height: 1.5;
+}
+a { color: var(--link); }
+a:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+}
+.page {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 3rem;
+}
+p, dd, td, li, figcaption, summary { max-width: 65ch; }
+h1 { font-size: 1.4rem; margin: 1rem 0 0.25rem; overflow-wrap: anywhere; }
+h2 { font-size: 1.15rem; margin: 1.75rem 0 0.5rem; border-bottom: 1px solid var(--line); padding-bottom: 0.25rem; }
+h3 { font-size: 1rem; margin: 1.25rem 0 0.25rem; }
+.meta {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.15rem 1rem;
+  margin: 0.75rem 0;
+  font-size: 0.9rem;
+}
+.meta dt { font-weight: 600; color: var(--muted); }
+.meta dd { margin: 0; overflow-wrap: anywhere; }
+.status {
+  display: inline-block;
+  padding: 0.05rem 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 0.25rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+.status[data-status="passed"] { color: var(--pass); border-color: var(--pass); }
+.status[data-status="failed"] { color: var(--fail); border-color: var(--fail); }
+.status[data-status="blocked"],
+.status[data-status="deferred"],
+.status[data-status="incomplete"],
+.status[data-status="proof-gap"],
+.status[data-status="unverified"],
+.status[data-status="planned"],
+.status[data-status="running"],
+.status[data-status="in-progress"] { color: var(--warn); border-color: var(--warn); }
+.status[data-status="unresolved"] { color: var(--muted); }
+.status[data-status="finished"] { color: var(--ink); }
+#index { overflow-x: auto; }
+#index:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+#index table { min-width: 42rem; }
+table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+th, td { text-align: left; vertical-align: top; padding: 0.3rem 0.6rem 0.3rem 0; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+#index td:first-child, #index td:nth-child(4) { white-space: nowrap; }
+th { color: var(--muted); font-weight: 600; }
+.labels { list-style: none; display: inline; margin: 0; padding: 0; }
+.labels li { display: inline; }
+.labels li + li::before { content: ", "; color: var(--muted); }
+.scenario { margin-bottom: 2rem; }
+.scenario-head p { margin: 0.25rem 0; }
+.field-list { margin: 0.5rem 0; }
+.field-list dt { font-weight: 600; color: var(--muted); }
+.field-list dd { margin: 0 0 0.5rem 1rem; overflow-wrap: anywhere; }
+.pairs { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+@media (min-width: 60rem) {
+  .pairs { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); align-items: start; }
+}
+.assertion { border-top: 1px solid var(--line); padding-top: 0.5rem; margin-top: 0.75rem; }
+.evidence-refs ul, .exceptions ul { margin: 0.25rem 0; padding-left: 1.25rem; }
+figure { margin: 0.5rem 0 1rem; }
+figure img { max-width: 100%; height: auto; border: 1px solid var(--line); }
+figcaption { font-size: 0.85rem; color: var(--muted); margin-top: 0.25rem; }
+details { margin: 0.5rem 0; }
+details summary { cursor: pointer; font-weight: 600; color: var(--muted); }
+pre {
+  background: var(--wash);
+  border: 1px solid var(--line);
+  padding: 0.6rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.85rem;
+}
+.gap { border: 1px dashed var(--warn); padding: 0.4rem 0.6rem; font-size: 0.9rem; }
+.boundaries { font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<main class="page">
+<header>
+<h1>PR test report — <a href="&lt;pr-url&gt;">&lt;pr-title&gt; (#&lt;pr-number&gt;)</a></h1>
+<dl class="meta">
+<dt>Branch / tested commit</dt><dd>&lt;pr-branch&gt; @ &lt;tested-commit-sha&gt;</dd>
+<dt>Driver</dt><dd>&lt;test-driver&gt;</dd>
+<dt>Depth / budget</dt><dd>&lt;test-depth&gt; / &lt;scenario-budget&gt;</dd>
+<dt>Environment</dt><dd>&lt;sanitized-environment-or-entry-point&gt;</dd>
+<dt>Started / updated</dt><dd>&lt;started-at-with-tz&gt; / &lt;updated-at-with-tz&gt;</dd>
+<dt>Finished</dt><dd>&lt;finished-at-with-tz-or-—&gt;</dd>
+<dt>Phase</dt><dd><span class="status" data-status="in-progress">IN_PROGRESS</span></dd>
+<dt>Verdict</dt><dd><span class="status" data-status="unresolved">&lt;verdict-or-unresolved&gt;</span></dd>
+<dt>Counts</dt><dd>&lt;total-planned&gt; planned — passed &lt;passed-count&gt;, failed &lt;failed-count&gt;, blocked &lt;blocked-count&gt;, deferred &lt;deferred-count&gt;, unresolved &lt;unresolved-count&gt;</dd>
+</dl>
+</header>
+
+<section id="index" aria-label="Scenario index" tabindex="0">
+<h2>Scenario index</h2>
+<table>
+<thead><tr><th>ID</th><th>Title</th><th>Labels</th><th>Result</th><th>Proof</th></tr></thead>
+<tbody>
+<tr data-template="index-row">
+<td><a href="#scenario-&lt;scenario-id-lower&gt;">&lt;Snn&gt;</a></td>
+<td>&lt;scenario-title&gt;</td>
+<td><ul class="labels"><li>&lt;purpose|data-artifact|critical-edge&gt;</li></ul></td>
+<td><span class="status" data-status="&lt;status-key&gt;">&lt;STATUS-OR-PROGRESS&gt;</span></td>
+<td>&lt;proof-summary&gt;</td>
+</tr>
+</tbody>
+</table>
+</section>
+
+<section class="scenario" id="scenario-&lt;scenario-id-lower&gt;" data-template="scenario">
+<h2>&lt;Snn&gt; — &lt;scenario-title&gt; <span class="status" data-status="&lt;status-key&gt;">&lt;STATUS-OR-PROGRESS&gt;</span></h2>
+<div class="scenario-head">
+<dl class="field-list">
+<dt>Source</dt><dd>&lt;source-outcome-or-link&gt;</dd>
+<dt>Entry point</dt><dd>&lt;entry-point&gt;</dd>
+<dt>Prerequisites</dt><dd>&lt;prerequisites&gt;</dd>
+</dl>
+<dl class="field-list" data-optional="edge-risk">
+<dt>Critical edge risk</dt><dd>&lt;concrete-risk&gt;</dd>
+</dl>
+<div data-optional="actions">
+<h3>Actions</h3>
+<ol data-template="actions">
+<li>&lt;action-with-input-conditions&gt;</li>
+</ol>
+</div>
+<pre data-optional="command">&lt;executed-command&gt;</pre>
+<dl class="field-list" data-optional="artifact">
+<dt>Artifact pre-state</dt><dd>&lt;pre-state&gt;</dd>
+<dt>Artifact post-state</dt><dd>&lt;post-state&gt;</dd>
+<dt>Idempotency</dt><dd>&lt;idempotency-proof&gt;</dd>
+</dl>
+<dl class="field-list" data-optional="blocker">
+<dt>Missing prerequisite</dt><dd>&lt;missing-prerequisite&gt;</dd>
+<dt>Recovery</dt><dd>&lt;attempted-recovery-or-none-fit&gt;</dd>
+<dt>Unblock path</dt><dd>&lt;unblock-path&gt;</dd>
+</dl>
+<dl class="field-list" data-optional="deferred">
+<dt>Source</dt><dd>&lt;deferred-source&gt;</dd>
+<dt>Reason</dt><dd>&lt;deferred-reason&gt;</dd>
+</dl>
+</div>
+<div class="pairs">
+<div>
+<div class="assertion" id="assertion-&lt;assertion-id-lower&gt;" data-template="assertion">
+<h3>&lt;Snn.Ann&gt; <span class="status" data-status="&lt;status-key&gt;">&lt;finding&gt;</span></h3>
+<dl class="field-list">
+<dt>Expected</dt><dd>&lt;expected-behavior&gt;</dd>
+<dt>Observed</dt><dd>&lt;observed-behavior-or-unverified&gt;</dd>
+<dt>Finding</dt><dd>&lt;behavioral-finding-and-attribution&gt;</dd>
+</dl>
+<div class="evidence-refs">
+<strong>Evidence:</strong>
+<ul data-template="evidence-refs">
+<li><a href="#evidence-&lt;evidence-id-lower&gt;">&lt;Ennn&gt;</a> — &lt;what-it-proves&gt;</li>
+</ul>
+</div>
+<p class="gap" data-optional="proof-gap"><strong>Proof gap:</strong> &lt;missing-capture&gt; — &lt;error-or-limitation&gt;</p>
+</div>
+</div>
+<div>
+<figure id="evidence-&lt;evidence-id-lower&gt;" data-template="evidence">
+<template data-template="screenshot"><img src="&lt;relative-artifact-path&gt;" alt="&lt;useful-alt-text&gt;"></template>
+<figcaption>
+<strong>&lt;Ennn&gt;</strong> (&lt;type&gt;) — &lt;observed-fact-and-proof-limit&gt;.
+Action by &lt;driver&gt;; observation supplied/verified by &lt;supplier-verifier&gt;.
+Supports <a href="#assertion-&lt;assertion-id-lower&gt;">&lt;Snn.Ann&gt;</a>.
+<a href="&lt;relative-artifact-path&gt;" data-optional="artifact-link">Open original</a>
+</figcaption>
+</figure>
+<div class="evidence" id="evidence-&lt;evidence-id-lower&gt;" data-template="evidence-text">
+<p><strong>&lt;Ennn&gt;</strong> (&lt;type&gt;) — &lt;observed-fact-and-proof-limit&gt;.</p>
+<p data-optional="inline-observation">&lt;inline-observation-or-excerpt&gt;</p>
+<details data-optional="output-excerpt"><summary>Captured output</summary><pre>&lt;output-excerpt&gt;</pre></details>
+<p>Action by &lt;driver&gt;; observation supplied/verified by &lt;supplier-verifier&gt;. Supports <a href="#assertion-&lt;assertion-id-lower&gt;">&lt;Snn.Ann&gt;</a>. <a href="&lt;relative-artifact-path&gt;" data-optional="artifact-link">Open artifact</a></p>
+</div>
+</div>
+</div>
+</section>
+
+<section id="shared-evidence" data-optional="shared">
+<h2>Shared evidence</h2>
+&lt;shared-evidence-items&gt;
+</section>
+
+<section id="boundaries">
+<h2>Test boundaries</h2>
+<ul class="boundaries" data-template="boundaries">
+<li>&lt;boundary-entry&gt;</li>
+</ul>
+</section>
+</main>
+</body>
+</html>
