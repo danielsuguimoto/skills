@@ -29,7 +29,7 @@ Ticket load fails or `BLOCKED` → report and stop. Without a ticket, derive the
 - The only permitted switch is to `master`/`main`, only when the current branch is unrelated.
 
 **Resolution:**
-- Relevant: current branch slug matches a slug from `<work-title>`/`<work-summary>`, or falls under `feature/*`|`fix/*`|`feat/*` with a work-derived slug → stay; fetch its upstream — behind → fast-forward only, diverged → STOP and report; then pull/rebase onto its base only if behind.
+- Relevant: current branch slug matches a slug from `<work-title>`/`<work-summary>`, or falls under `feature/*`|`fix/*`|`feat/*` with a work-derived slug → stay. If an upstream is configured, fetch it — behind → fast-forward only, diverged → STOP and report. Without an upstream, skip upstream sync without creating or publishing a remote branch. In either case, pull/rebase onto its base only if behind.
 - Current is `master`/`main` → stay.
 - Unrelated → switch to `master`/`main`.
 - Uncommitted changes → STOP; ask user to stash/commit first — never discard.
