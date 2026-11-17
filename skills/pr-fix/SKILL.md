@@ -24,7 +24,7 @@ PR metadata: git host view PR + list reviews (CLI fallback per spec). Extract `<
 Anchor `<pr-intent>` — why the PR exists: title, body, commit messages, plus every issue/card reference in body, commits, or branch name loaded via the issue tracker tool (`issue-trackers.md`), nested links traversed per spec. Tracker load fails → fall back to PR title/body; note the gap. Threads supply the what; intent arbitrates scope.
 
 ### 3. Align Local Branch
-`<pr-branch>` unavailable → STOP. Inspect the worktree and index; uncommitted or untracked changes → STOP and ask the user to preserve them before continuing. Check out via git host checkout PR or `gh pr checkout <pr-number>` → `<active-branch>`. Fails → STOP. No code edits until `<active-branch>` == `<pr-branch>`. Never skip checkout — `<pr-ref>` is authoritative.
+`<pr-branch>` unavailable → STOP. Inspect the worktree and index; uncommitted or untracked changes → STOP and ask the user to preserve them before continuing. Fetch the PR head and record its commit → `<pr-head-commit>`. Check out via git host checkout PR or `gh pr checkout <pr-number>` → `<active-branch>`. Fails → STOP. Behind `<pr-head-commit>` → fast-forward only; diverged or unpushed local commits → STOP and report. No code edits until `<active-branch>` == `<pr-branch>` and HEAD == `<pr-head-commit>`. Never skip checkout — `<pr-ref>` is authoritative.
 
 ### 4. Load Changes
 Git host PR diff. Fallback: `gh pr diff <pr-number>` or `git diff <base-branch>...<active-branch>` → `<changes>`.

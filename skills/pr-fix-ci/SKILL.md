@@ -20,7 +20,7 @@ Verify git host auth (`git-hosts.md`). `git rev-parse --show-toplevel` → `<rep
 Anchor `<pr-intent>` — why the PR exists: title, body, commit messages, plus every issue/card reference in body, commits, or branch name loaded via the issue tracker tool (`issue-trackers.md`) when present. Load fails → fall back to PR title/body; note the gap.
 
 ### 3. Align Local Branch
-`<pr-branch>` unavailable → STOP. Inspect the worktree and index; uncommitted or untracked changes → STOP and ask the user to preserve them before continuing. Check out via git host checkout PR or `gh pr checkout <pr-number>` → `<active-branch>`; fails → STOP. No code edits until `<active-branch>` == `<pr-branch>`.
+`<pr-branch>` unavailable → STOP. Inspect the worktree and index; uncommitted or untracked changes → STOP and ask the user to preserve them before continuing. Fetch the PR head and record its commit → `<pr-head-commit>`. Check out via git host checkout PR or `gh pr checkout <pr-number>` → `<active-branch>`; fails → STOP. Behind `<pr-head-commit>` → fast-forward only; diverged or unpushed local commits → STOP and report. No code edits until `<active-branch>` == `<pr-branch>` and HEAD == `<pr-head-commit>`.
 
 ### 4. Identify Failing Checks
 From `statusCheckRollup` (or `gh pr checks`), collect checks in `FAILURE`, `ERROR`, `CANCELLED`, `TIMED_OUT` → `<check>` with `<name>`, `<state>`, `<run-id>` (Actions only), `<url>`. Pending/in-progress → wait and re-poll once (transient). None failing → output "No failing checks", stop.
