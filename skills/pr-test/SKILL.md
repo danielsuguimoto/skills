@@ -30,6 +30,8 @@ PR number/URL → `<pr-ref>`; `quick` → `<test-depth>` = `quick` (default `ful
 
 Read the PR and diff (`git-hosts.md`). Extract `<pr-purpose>`, `<pr-branch>`, `<base-branch>`, `<pr-number>`, `<pr-url>`, and the tickets that define its requirements as `<ticket-refs>`. Distinguish those tickets from historical or incidental references. Unloadable PR → STOP.
 
+Load reviewer feedback through `git-hosts.md`: review threads with resolution state, non-empty review bodies, and flat comments, automated reviewers included. Extract `<review-findings>` — each concrete claim, question, or claimed fix about observable in-scope behavior — with source link and state; a finding about code or behavior the current head no longer carries is `<premise-drift>`. Style, naming, and process remarks are not findings. Unloadable feedback → record the gap and continue.
+
 Identify `<data-artifacts>` — shipped migrations, seeders, operations, and scripts — and any clear, critical risk directly caused by the change. Read code only to locate execution entry points, understand a reproduction-critical condition, or diagnose a concrete failure. Shared code changes alone do not require caller inventories or an application-wide pass.
 
 ### 3. Load Linked Context
@@ -40,7 +42,7 @@ Extract `<expected-outcomes>` as the observable behavior the PR promises. Implem
 
 Build a compact `<coverage-map>` from these outcomes to assertions in the planned journeys or focused checks. Flag missing implementation. An outcome whose premise no longer exists → `<premise-drift>`; explain it in the report rather than inventing a scenario for it.
 
-**Done when:** every defining ticket is loaded or has a recorded gap; every observable promised outcome and reported customer case from loaded sources is recorded; shipped artifacts and identified critical risks are listed; the coverage map records any missing implementation and premise drift.
+**Done when:** every defining ticket is loaded or has a recorded gap; every observable promised outcome, reported customer case, and behavioral review finding from loaded sources is recorded; shipped artifacts and identified critical risks are listed; the coverage map records any missing implementation and premise drift.
 
 ### 4. Align Local Branch
 
@@ -53,12 +55,13 @@ Write a small `<test-plan>` around natural user journeys. A journey may span pag
 - **Purpose** — exercise the PR's promised behavior, including the reported customer failure where applicable. Reuse that execution for the requirements it proves.
 - **Data-artifact** — in `full`, execute every `<data-artifacts>` entry against representative populated local data and verify its schema/row effects. Fold this into a purpose scenario when the same execution proves both; otherwise add a dedicated artifact scenario. Re-run only where idempotency is claimed.
 - **Critical edge** — add only an explicit requirement or an obvious, high-impact failure tied to the purpose or a changed security/data-integrity boundary. State the concrete risk. Use representative cases, not permutations of roles, tenants, dates, flags, and legacy states. Keep detailed input matrices in existing focused tests.
+- **Reviewer finding** — admit a `<review-findings>` entry that claims, questions, or claims to fix a distinct in-scope behavior a selected execution does not already prove. Verify the claim against the tested head; a confirmed defect fails like any other. Fold the check into the journey sharing its entry point rather than adding a standalone scenario. Findings without observable behavior need no scenario.
 
-`quick` selects the main-purpose journeys, including the reported failure, and defers standalone artifact and optional edge checks. Run and verify artifacts that are prerequisites for those journeys, recording them within the journey rather than deferring required setup. A failed `quick` scenario stays `FAILED`; expand depth only when the user requests it.
+`quick` selects the main-purpose journeys, including the reported failure, and defers standalone artifact, reviewer-finding, and optional edge checks. Run and verify artifacts that are prerequisites for those journeys, recording them within the journey rather than deferring required setup. A failed `quick` scenario stays `FAILED`; expand depth only when the user requests it.
 
-Prioritize the purpose, then clear critical risks. Select complete dependency chains before applying `<scenario-budget>`: prerequisites run before dependent assertions and count within a journey when they are part of the same scenario. If a required chain cannot fit, defer it and select a smaller complete journey rather than a check whose prerequisite was cut. Apply depth and budget before detailed setup or data provisioning.
+Prioritize the purpose, then clear critical risks and admitted reviewer findings. Select complete dependency chains before applying `<scenario-budget>`: prerequisites run before dependent assertions and count within a journey when they are part of the same scenario. If a required chain cannot fit, defer it and select a smaller complete journey rather than a check whose prerequisite was cut. Apply depth and budget before detailed setup or data provisioning.
 
-Give each scenario an ID, source outcome, entry point, prerequisites, and observable assertions; add the risk for an edge scenario. Read [reporting.md](reporting.md) before materializing this plan; assign its scenario/assertion IDs and intended proof checkpoints without adding scenarios. Deferred IDs need only their source and reason. Out-of-scope permutations need no scenario rows; summarize that boundary once. Every non-drifted promised outcome maps to a selected assertion or a deferred ID; implementation and automated-test checklists do not inflate this ledger.
+Give each scenario an ID, source outcome, entry point, prerequisites, and observable assertions; add the risk for an edge or reviewer-finding scenario. Read [reporting.md](reporting.md) before materializing this plan; assign its scenario/assertion IDs and intended proof checkpoints without adding scenarios. Deferred IDs need only their source and reason. Out-of-scope permutations need no scenario rows; summarize that boundary once. Every non-drifted promised outcome and each behavioral `<review-findings>` entry maps to a selected assertion or a deferred ID; findings without observable behavior need no rows, and implementation and automated-test checklists do not inflate this ledger.
 
 **Done when:** the plan proves the purpose, accounts for required artifacts and clear critical risks, has executable dependency chains, and adds no scenario whose evidence another selected execution already supplies. Initialize its in-progress report under reporting.md before Step 6; unresolved storage safety or replacement approval pauses testing.
 
@@ -106,7 +109,7 @@ Finalize the local HTML report under [reporting.md](reporting.md); never post fi
 
 - **Verdict** — name the driver. `FAILED` if an evidenced executed scenario failed; otherwise `INCOMPLETE` if no purpose journey executed, a blocker remains, a defining ticket is missing, a required capture has a proof gap, or mixed revisions prevent a clean tested-revision claim; otherwise `PASSED` for the exercised scope. A report delivery blocker prevents an unqualified pass. Include passed, failed, blocked, and deferred counts.
 - **Report** — give the absolute `index.html` location. Keep scenario details, expected versus observed behavior, evidence, failures, and test boundaries in the report rather than repeating its table in chat.
-- **Actionable findings** — summarize concrete failures, blockers/unblock paths, missing requirements or defining tickets, premise drift, and proof gaps that need attention. Cite `file:line` only where the diff is implicated; distinguish confirmed pre-existing failures from unknown attribution. Claim only what the evidence proves, not exhaustive application coverage.
+- **Actionable findings** — summarize concrete failures, blockers/unblock paths, missing requirements or defining tickets, premise drift, verdicts on admitted `<review-findings>` (confirmed, rebutted, unverified), and proof gaps that need attention. Cite `file:line` only where the diff is implicated; distinguish confirmed pre-existing failures from unknown attribution. Claim only what the evidence proves, not exhaustive application coverage.
 
 ## Notes
 
