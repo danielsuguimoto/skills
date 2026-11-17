@@ -3,24 +3,40 @@ name: subagents
 description: "Subagent spawning gates. MANDATORY before any spawn, any large context-gathering scan (codebase, DB, docs, memories), or any work splittable into parallel independent tasks."
 ---
 
-Discover profiles through the tool's native mechanism — don't assume a fixed list or path. Verify availability before delegating; missing → fall back to inline.
+## Sequential Gate
+
+Keep sequential work in the parent. If B needs A's result, run A then B inline. This gate applies to one blocking handoff as well as a chain of subagents; waiting for a child is not parallel work.
+
+Only an explicit user request to delegate that work overrides this gate. Context offloading, model cost, role specialization, and foreground execution do not. Apply this gate before the dispatch rationales or profile discovery.
 
 ## Dispatch Rationales
 
-Spawn **only** when at least one holds — first two are strict; when in doubt, stay inline.
+After the sequential gate passes, spawn **only** when at least one holds — first two are strict; when in doubt, stay inline.
 
 | Rationale | When to delegate |
 |-----------|------------------|
 | Parallel time win | **≥3 independent workstreams**, no shared writes. Below 3, coordination overhead eats the gain. |
-| Context offloading | Project scanning whose raw output is **verifiably large** (state the estimated token/line count) AND the parent needs only a distilled brief. "Might bloat" is not a rationale. |
-| Explicit user request | User asks to spawn/delegate/parallelize — honor even when no gate fires. |
+| Context offloading | Exceptional read-only research that passes the context-offloading gate below. |
+| Explicit user request | User asks to spawn/delegate/parallelize that work. A request to complete a task or use a skill is not delegation permission. |
+
+### Context-Offloading Gate
+
+Start inline with path listings, targeted searches, and bounded reads. A folder with 10 files is ordinary inline work; file count, repository size, unfamiliarity, and multiple modules do not justify delegation.
+
+Offload only when those probes establish **all** of the following:
+
+- The question requires inspecting **more than 10,000 tokens** of still-unread, task-relevant material. Name the sources and give a size estimate grounded in observed output; count relevant sections, not whole folders or unrelated file contents.
+- Narrower searches or reads cannot answer the question. State why.
+- The parent needs only a cited brief and will not reread the raw material.
+
+Unknown size or uncertain necessity → stay inline. The size floor is necessary, not permission by itself; the sequential gate still applies.
 
 ## Pre-Spawn Checklist (fill inline before every dispatch)
 
 1. **Rationale** — which gate fires? State it.
 2. **Parallelism** — if parallel-time-win: list the ≥3 independent workstreams; confirm no shared writes.
-3. **Offload size** — if context-offloading: state the raw output's estimated size; confirm only a distilled brief is needed.
-4. **Profile** — name it; confirm it matches task shape (scout ≠ strong model, synthesis ≠ fast model).
+3. **Offload evidence** — if context-offloading: record the evidence for every condition in the context-offloading gate.
+4. **Profile** — discover available profiles through the tool's native mechanism; name the matching profile (scout ≠ strong model, synthesis ≠ fast model). Missing → inline.
 5. **Foreground/background** — foreground default; background only if all background conditions hold (state them).
 
 Can't fill all five → do the work inline.
@@ -53,9 +69,9 @@ Route by task shape — strong models cost latency and tokens; weak models fail 
 
 ## Parallel Execution
 
-**Don't parallelize** when: streams share file writes (serialize/merge) · one feeds the next (serialize/fan-in) · sync cost exceeds time saved · the work is a bounded single stream.
+Keep work inline when streams share file writes, sync cost exceeds time saved, or the work is a bounded single stream. Apply the sequential gate to dependencies.
 
-Patterns: **fan-out/fan-in** (N≥3 independent → wait all → optional synthesis subagent) · **pipeline** (A feeds B → serialize) · **scatter/gather** (N≥3, parent synthesizes inline when results are small).
+Patterns: **fan-out/fan-in** or **scatter/gather** (N≥3 independent → wait all → parent synthesizes inline).
 
 ## Dispatch Contract (every spawn)
 
