@@ -32,7 +32,7 @@ Ask about each tool category via the native user-prompting mechanism — three s
 
 | Question | Header | Options |
 |----------|--------|---------|
-| What code navigation/LSP tool do you use? | Code navigation | Serena, Sourcegraph, None |
+| What code navigation/LSP tool do you use? | Code navigation | Sourcegraph, None |
 | What browser automation tool do you use? | Browser | Playwright, Aside, None |
 | What knowledge graph tool do you use? | Knowledge graph | Graphify, None |
 | What container CLI do you use? | Container CLI | Kool, Docker Compose, None |
@@ -41,7 +41,7 @@ Ask about each tool category via the native user-prompting mechanism — three s
 
 | Question | Header | Options |
 |----------|--------|---------|
-| What persistent memory provider do you use? | Memory | Serena memory, Mem0, None |
+| What persistent memory provider do you use? | Memory | Mem0, None |
 | What terminal token compression wrapper do you use? | Terminal | RTK, None |
 | What isolated workspace tool do you use? | Workspaces | git worktree, None |
 | What documentation lookup tools do you use? | Doc lookup | Context7, Tavily, None |

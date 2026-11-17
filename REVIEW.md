@@ -20,7 +20,7 @@ Instructions for Devin Review on pull requests in this repository. Repository sh
 
 ## Ignore
 
-- `.serena/`, `.devin/`, `docs/` — local tool state; gitignored.
+- `.devin/` and `docs/` — local tool state; gitignored.
 - Whitespace-only churn.
 
 ## Approval
