@@ -35,12 +35,13 @@ Git host PR diff. Fallback: `gh pr diff <pr-number>` or `git diff <base-branch>.
 3. Effectively resolved threads (skip): GitHub-unresolved but have "Fixed..."/"Done..." reply + later commit implementing it — verify via commit diff. In doubt → ask.
 4. Per actionable thread record `<comment-id>`, `<file>`, `<lines>`, `<category>`, `<suggestion>`, `<reviewer-body>`, `<current-heading>`; flat items the same minus `<file>`/`<lines>`. Evaluate each suggestion against `<changes>` and `<pr-intent>` before applying. `noise`/`question` threads → `not-fixing` list with reasons (`<reviewer-body>` recorded there only, for Step 12).
 5. Premise drift — a suggestion or `<pr-intent>` assumes a bug path, invariant, or behavior the diff/code no longer has (superseding change, misdiagnosed cause) → `not-fixing` candidate; ambiguous → ask. Never fix against a dead premise.
+6. Scope creep — a suggestion is sound but outside `<pr-intent>` (pre-existing bug, adjacent refactor, broader coverage, "while you're here" work) → `not-fixing` candidate; ambiguous → ask. Belongs to a separate change, not this PR.
 
 ### 6. Plan Implementation
-Fast path: every thread is a straightforward suggestion with no conflicts → `<implementation-plan>` = `trivial`, skip to Step 7. Skip fast path when any thread is ambiguous, has cross-thread dependencies, or needs judgment. Otherwise: ordered fix list (`critical` → `important` → `style`, then file, then line); effectively-resolved/`noise`/`current-heading: yes` → `not-fixing`; `invalid` threads (misreading, would break behavior, contradicts `<pr-intent>`) → `not-fixing` with reason (reply why in Step 12). Map cross-thread dependencies as sequential thinking → `<dependencies>`.
+Fast path: every thread is a straightforward suggestion with no conflicts → `<implementation-plan>` = `trivial`, skip to Step 7. Skip fast path when any thread is ambiguous, has cross-thread dependencies, or needs judgment. Otherwise: ordered fix list (`critical` → `important` → `style`, then file, then line); effectively-resolved/`noise`/`current-heading: yes` → `not-fixing`; `invalid` threads (misreading, would break behavior, contradicts `<pr-intent>`) and `out-of-scope` threads (sound but outside it) → `not-fixing` with reason (reply why in Step 12). Map cross-thread dependencies as sequential thinking → `<dependencies>`.
 
 ### 7. Implement Fixes
-Critical first, existing patterns, `<active-branch>`, focused minimal changes → `<changes-count>` and `<fix-files>`.
+Critical first, existing patterns, `<active-branch>`, focused minimal changes — apply each thread's ask, no adjacent refactor, hardening, or cleanup → `<changes-count>` and `<fix-files>`.
 
 ### 8. Validate Changes
 Lint + tests on changed files. Confirm fixes address feedback → `<validation-results>`, `<validation-passing>` (`yes`/`no`).
