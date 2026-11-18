@@ -42,6 +42,7 @@ Ambiguous about the reply target → ask the user before drafting. Never guess `
 
 Skip when the reply is purely procedural/status/non-technical and the ticket already answers it. Otherwise:
 
+- **Sync**: fetch per `git-hosts.md`; the checked-out branch behind → flag staleness — `file:line` cites drift on stale code.
 - **Code**: distilled brief (entry points, callers, conventions, `file:line` citations) via `grep`/`find_file_by_name`/code navigation (`code-navigation.md`); pass `<reply-target>`, relevant entities, module path → `<repo-context>`.
 - **Data**: reply depends on persisted state (counts, status, samples) → live DB via database tools (`database-tools.md`) — ground truth.
 - **Docs**: framework/library/API/version questions → doc lookup (`doc-lookup.md`) → `<doc-context>`.

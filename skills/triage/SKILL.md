@@ -46,6 +46,8 @@ Ambiguous → ask the user before posting. Both apply → debug (root cause answ
 
 ### Gather Evidence
 
+**Sync first:** fetch per `git-hosts.md`; the checked-out branch behind → fast-forward a clean tree, dirty/diverged → flag staleness in findings — `file:line` citations on stale code drift.
+
 **ask:** entry points, callers, conventions via `grep`/`find_file_by_name`/code navigation (`code-navigation.md`) → `<repo-context>`; doc lookup for API/version questions (`doc-lookup.md`) → `<doc-context>`.
 
 **debug:** run context-gathering — code navigation for symbols, database tools for data (live DB is ground truth), doc lookup for framework docs. Beyond code and data: error monitoring for matching reports/stack traces (`bug-trackers.md`); monitoring/incident platforms (`observability-tools.md`) for alerts overlapping the timeframe, scope, and symptoms — a correlated incident may be the cause, not just a clue. Scan `<project-root>/docs/` for other configured tools the issue touches. Trace user action → failure; find where actual diverges from expected → `<investigation-findings>`. Work the investigation as sequential thinking — branch candidate causes, revise as evidence lands.

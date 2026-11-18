@@ -13,7 +13,7 @@ Create and switch to a categorized branch. All git/gh operations follow `git-hos
 
 | Operation | Tool | CLI fallback |
 |-----------|------|--------------|
-| Load change state | git host change scan | change-scan fallback per spec (ahead: `git log origin/<branch>..<branch> --oneline`) |
+| Load change state | git host change scan | change-scan fallback per spec (sync first per spec, then ahead) |
 | Create branch | git host branch create (`branch_name`), if it does not publish | `git checkout -b <cat>/<slug>` |
 
 ### 1. Interpret Arguments
@@ -30,7 +30,7 @@ Always runs — git changes are validated every invocation.
 
 Pre-scan forwarded → use `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<branch-category>` directly; skip to Step 3.
 
-Otherwise: (1) load change state per the table → `<current-branch>`, `<uncommitted>`; (2) `<uncommitted>` empty → check ahead via `origin/<current-branch>..<current-branch>` → `<ahead-commits>`; (3) analyze scope — primary `<uncommitted>`, fallback `<ahead-commits>` — group into logical themes, summarize what and why (not how) → `<change-summary>`.
+Otherwise: (1) load change state per the table → `<current-branch>`, `<uncommitted>`; (2) `<uncommitted>` empty → check ahead via `origin/<current-branch>..<current-branch>` (sync per `git-hosts.md` first — stale `origin/` refs lie) → `<ahead-commits>`; (3) analyze scope — primary `<uncommitted>`, fallback `<ahead-commits>` — group into logical themes, summarize what and why (not how) → `<change-summary>`.
 
 ### 3. Check Blockers
 
@@ -53,6 +53,6 @@ Slug: concise kebab-case, 2-4 descriptive words → `<branch-slug>`. Source: `de
 
 ### 5. Create and Checkout Branch
 
-`<branch-category>/<branch-slug>` via git host branch create or `git checkout -b` per the table. Branch exists → retry once with numeric suffix (`-2`) → `<new-branch>`.
+`<branch-category>/<branch-slug>` via git host branch create or `git checkout -b` per the table. Base: `<uncommitted>` or `<ahead-commits>` non-empty → current checkout; else `origin/<default>` (fresh from the Step-2 sync) — passed to the branch-create operation only when it accepts a base. Never track the base: the new branch must have no upstream, so a later publish establishes `origin/<new-branch>` — verify after creation. Branch exists → retry once with numeric suffix (`-2`) → `<new-branch>`.
 
 Output the new branch name. Pull or publish only when the user explicitly requests it.

@@ -79,7 +79,7 @@ Spec files:
 | `<project-root>/docs/bug-trackers.md` | Query errors, stack traces |
 | `<project-root>/docs/observability-tools.md` | Query alerts, incidents, uptime |
 | `<project-root>/docs/mcp-servers.md` | List tools, call tools, discovery protocol |
-| `<project-root>/docs/git-hosts.md` | PRs, reviews, issues, branches, commits |
+| `<project-root>/docs/git-hosts.md` | PRs, reviews, issues, branches, commits, sync |
 | `<project-root>/docs/database-tools.md` | Schema, queries, REPL operations |
 | `<project-root>/docs/code-navigation.md` | Find symbols, trace references, refactor |
 | `<project-root>/docs/browser-automation.md` | Snapshots, element interaction, downloads |
