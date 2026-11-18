@@ -17,7 +17,7 @@ Modes: `review` (default) or `auto` — `auto` skips the Step 10 approval gate. 
 ### 2. Load PR Context
 Verify git host auth (`git-hosts.md`). `git rev-parse --show-toplevel` → `<repo-path>` (use as `cwd`). View PR via git host view PR (includes checks) or spec CLI fallback. Extract `<pr-branch>`, `<base-branch>`, `<pr-number>`, `<pr-url>`. `git branch --show-current` → `<current-branch>`.
 
-Anchor `<pr-intent>` — why the PR exists: title, body, commit messages, and a `ticket-brief` for all issue/card references in the body, commits, or branch name, scoped to intended behavior. No usable brief → fall back to PR title/body; note the gap.
+Anchor `<pr-intent>` — why the PR exists: title, body, commit messages, and a ticket brief (see Ticket Brief) for all issue/card references in the body, commits, or branch name, scoped to intended behavior. No usable brief → fall back to PR title/body; note the gap.
 
 ### 3. Align Local Branch
 `<pr-branch>` unavailable → STOP. Inspect the worktree and index; uncommitted or untracked changes → STOP and ask the user to preserve them before continuing. Fetch the PR head and record its commit → `<pr-head-commit>`. Check out via git host checkout PR or `gh pr checkout <pr-number>` → `<active-branch>`; fails → STOP. Behind `<pr-head-commit>` → fast-forward only; diverged or unpushed local commits → STOP and report. No code edits until `<active-branch>` == `<pr-branch>` and HEAD == `<pr-head-commit>`.
@@ -52,6 +52,10 @@ Same gate as `pr-fix` Step 9 — `review`/`auto` semantics, `Go Ahead`/`Needs Re
 
 ### 11. Commit and Push (after `approved` or `auto`)
 Inspect the worktree and index again, including changes within `<fix-files>`. Unexpected changes → STOP and preserve them. Stage and commit only `<fix-files>` with explicit pathspecs (message convention per `commit-and-push`), then `git push origin <active-branch>`. Never use a generic message like "fix ci". Do not poll CI or loop back — session ends after push.
+
+## Ticket Brief
+
+When a step calls for a ticket brief, delegate to one isolated, read-only subagent: pass only the ticket references, the scope, `<project-root>`, and these rules — the main session receives only the returned brief. Worker: read `<project-root>/docs/issue-trackers.md` and use its read operations; load each in-scope ticket's body, checklists, full comment thread, and accessible attachments (inspect contents, not filenames); follow only links bearing on the scope; dedupe by tracker and ID. Return a compact cited brief — the scoped answers, confirmed decisions distinguished from proposals and superseded ones, blockers and evidence gaps; cite comment permalinks or attachment name plus location; omit raw threads and attachment contents; mark the brief partial when missing evidence could change it. Never post or modify tracker state. Worker or spec unavailable → report the gap without fetching inline.
 
 ## Output
 Summary of fixed checks, local validation, pushed state — one line per fix at the gate, e.g. "Fixed N failing checks across M files" + validation + "pushed to `<active-branch>`". Never claim CI green — unverified.

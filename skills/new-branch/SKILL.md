@@ -21,7 +21,7 @@ Create and switch to a categorized branch. All git/gh operations follow `git-hos
 Classify the argument (if any) → `<arg-mode>` (`description`|`ticket`|`none`) + `<branch-context>`:
 
 - **Description** — free-form text, not a URL/issue link → use directly as `<branch-context>`.
-- **Ticket/issue link** — invoke `ticket-brief` with the reference and ask for title, purpose, and labels/type relevant to branch naming → `<branch-context>`. No usable brief → fall back to a slug-relevant fragment (issue number, path slug); note the gap. Do not load the raw ticket inline.
+- **Ticket/issue link** — get a ticket brief (see Ticket Brief) scoped to title, purpose, and labels/type relevant to branch naming → `<branch-context>`. No usable brief → fall back to a slug-relevant fragment (issue number, path slug); note the gap. Do not load the raw ticket inline.
 - **None** — no argument; `<branch-context>` empty; name derived from git changes (Step 2).
 
 ### 2. Load Changes
@@ -56,3 +56,7 @@ Slug: concise kebab-case, 2-4 descriptive words → `<branch-slug>`. Source: `de
 `<branch-category>/<branch-slug>` via git host branch create or `git checkout -b` per the table. Base: `<uncommitted>` or `<ahead-commits>` non-empty → current checkout; else `origin/<default>` (fresh from the Step-2 sync) — passed to the branch-create operation only when it accepts a base. Never track the base: the new branch must have no upstream, so a later publish establishes `origin/<new-branch>` — verify after creation. Branch exists → retry once with numeric suffix (`-2`) → `<new-branch>`.
 
 Output the new branch name. Pull or publish only when the user explicitly requests it.
+
+## Ticket Brief
+
+When a step calls for a ticket brief, delegate to one isolated, read-only subagent: pass only the ticket references, the scope, `<project-root>`, and these rules — the main session receives only the returned brief. Worker: read `<project-root>/docs/issue-trackers.md` and use its read operations; load each in-scope ticket's body, checklists, full comment thread, and accessible attachments (inspect contents, not filenames); follow only links bearing on the scope; dedupe by tracker and ID. Return a compact cited brief — the scoped answers, confirmed decisions distinguished from proposals and superseded ones, blockers and evidence gaps; cite comment permalinks or attachment name plus location; omit raw threads and attachment contents; mark the brief partial when missing evidence could change it. Never post or modify tracker state. Worker or spec unavailable → report the gap without fetching inline.
