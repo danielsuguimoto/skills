@@ -3,6 +3,8 @@ name: subagents
 description: "Subagent spawning gates. MANDATORY before any spawn, any large context-gathering scan (codebase, DB, docs, memories), or any work splittable into parallel independent tasks."
 ---
 
+A workflow's `ticket-brief` call delegates only the read-only ticket inspection. Use that skill's isolation and blocker rules instead of the sequential, size, and inline-fallback gates below. Keep the calling workflow in the parent.
+
 ## Sequential Gate
 
 Keep sequential work in the parent. If B needs A's result, run A then B inline. This gate applies to one blocking handoff as well as a chain of subagents; waiting for a child is not parallel work.

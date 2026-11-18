@@ -5,7 +5,7 @@ description: "Activate when a pull request has failing CI checks that require co
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before fixing failing CI checks; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`; `<project-root>/docs/issue-trackers.md` (Step 2 only — when the PR references tickets)
+Shell-read before fixing failing CI checks; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`
 
 Fix failing CI checks on a PR: read logs, fix code, push, verify. Tools: git host (`<project-root>/docs/git-hosts.md`). Check source: `gh pr checks` / `gh pr view --json statusCheckRollup`.
 
@@ -17,7 +17,7 @@ Modes: `review` (default) or `auto` — `auto` skips the Step 10 approval gate. 
 ### 2. Load PR Context
 Verify git host auth (`git-hosts.md`). `git rev-parse --show-toplevel` → `<repo-path>` (use as `cwd`). View PR via git host view PR (includes checks) or spec CLI fallback. Extract `<pr-branch>`, `<base-branch>`, `<pr-number>`, `<pr-url>`. `git branch --show-current` → `<current-branch>`.
 
-Anchor `<pr-intent>` — why the PR exists: title, body, commit messages, plus every issue/card reference in body, commits, or branch name loaded via the issue tracker tool (`issue-trackers.md`) when present. Load fails → fall back to PR title/body; note the gap.
+Anchor `<pr-intent>` — why the PR exists: title, body, commit messages, and a `ticket-brief` for all issue/card references in the body, commits, or branch name, scoped to intended behavior. No usable brief → fall back to PR title/body; note the gap.
 
 ### 3. Align Local Branch
 `<pr-branch>` unavailable → STOP. Inspect the worktree and index; uncommitted or untracked changes → STOP and ask the user to preserve them before continuing. Fetch the PR head and record its commit → `<pr-head-commit>`. Check out via git host checkout PR or `gh pr checkout <pr-number>` → `<active-branch>`; fails → STOP. Behind `<pr-head-commit>` → fast-forward only; diverged or unpushed local commits → STOP and report. No code edits until `<active-branch>` == `<pr-branch>` and HEAD == `<pr-head-commit>`.

@@ -36,6 +36,7 @@ Each subdirectory under `skills/` is a self-contained skill with a `SKILL.md` ma
 | ship-changes | Ship current work end-to-end — branch, commit, push, open PR. |
 | spawn | Invoke a target skill inside a subagent so its content stays isolated to the subagent's context. |
 | subagents | Subagent spawning rules for parallel work, isolated tasks, and context offloading. |
+| ticket-brief | Give calling skills a cited summary of related tickets, including decisions from comments and attachments, without loading raw content in the main session. |
 | to-specs | Turn a request or ticket into a spec, then sync to the ticket system. Read-only. |
 | triage | Triage a ticket — load context, gather evidence, post findings. Read-only. |
 | using-code-navigation | Use code navigation tools for symbol-level code work instead of grep/read. |

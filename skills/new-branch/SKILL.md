@@ -5,7 +5,7 @@ description: "Use for 'new branch' requests or new work that needs a branch — 
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before creating or switching to the branch; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`, `<project-root>/docs/issue-trackers.md` (only when a ticket/issue link argument is provided)
+Shell-read before creating or switching to the branch; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`
 
 # Branch From Argument or Work
 
@@ -21,7 +21,7 @@ Create and switch to a categorized branch. All git/gh operations follow `git-hos
 Classify the argument (if any) → `<arg-mode>` (`description`|`ticket`|`none`) + `<branch-context>`:
 
 - **Description** — free-form text, not a URL/issue link → use directly as `<branch-context>`.
-- **Ticket/issue link** — URL or identifier referencing a ticket/issue → extract content via `issue-trackers.md` (title, summary, labels/type) → `<branch-context>`; extraction fails → fall back to a slug-relevant fragment (issue number, path slug), note the gap.
+- **Ticket/issue link** — invoke `ticket-brief` with the reference and ask for title, purpose, and labels/type relevant to branch naming → `<branch-context>`. No usable brief → fall back to a slug-relevant fragment (issue number, path slug); note the gap. Do not load the raw ticket inline.
 - **None** — no argument; `<branch-context>` empty; name derived from git changes (Step 2).
 
 ### 2. Load Changes

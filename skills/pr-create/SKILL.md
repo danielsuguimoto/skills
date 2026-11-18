@@ -46,7 +46,7 @@ Generate `<pr-title>`, `<issue-summary>`, `<pr-body>`, and (when `auto`) `<ticke
 
 `<pr-title>`: `<prefix>: <message>` — lowercase, under 50 chars. Prefixes: feat, fix, chore, docs, refactor, test, style; prefix = the dominant change type.
 
-`<issue-summary>`: 1-2 sentences — the problem the PR solves (from the ticket when reachable, else inferred from `<changes>`). Restate even with `<ticket-url>` linked — AI reviewers scope their review to it without opening the ticket.
+`<issue-summary>`: 1-2 sentences explaining the problem the PR solves. For `provided`, use the forwarded `<ticket-brief-result>` if it matches `<ticket-url>`, including a blocker as the final lookup result. Only without a matching result, invoke `ticket-brief` for that reference, scoped to the problem the PR addresses. No usable brief → note the gap outside the PR and infer from `<changes>` without fetching the ticket inline. For `auto` or `skip`, infer from `<changes>` directly. Include only details appropriate for the PR audience. Restate the problem even when linking `<ticket-url>`.
 
 `<ticket-mode>` = `auto`: reuse `<change-summary>` themes from actual commits/diff. Title ≤70 chars reflecting the delivered outcome; description = what and why; checklists = 2-4 functional sections + final `Validation` section (reviewer-facing: "Verify that...", "Confirm that..."). Create via git host create issue (title, body, assignee `@me`) or CLI fallback with temp file. No attribution lines. Issue URL → `<ticket-url>`.
 

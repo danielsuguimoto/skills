@@ -13,13 +13,13 @@ Use git host operations (`<project-root>/docs/git-hosts.md`) for branch check an
 
 2. **Load Planning Context**: When `<ticket-url>` exists, use the issue tracker tool (`issue-trackers.md`):
 1. List tracker tools → confirm a ticket-load tool exists; missing → return `BLOCKED` with `NO_MCP_ACCESS`.
-2. Load with `source: <ticket-url>`; attachments per spec → `<attachment-insights>`.
-3. Analyze requirements from name, description, comments, checklists, attachment insights.
-4. Anchor `<spec-intent>` — why the spec exists: the loaded ticket's Problem Statement/Solution/Notes, plus its linked source ticket (customer request, bug report, triage findings) when one exists. A spec ticket signals via a `refUrl`/links field or a source URL in its body; load the source and fold its title/summary into `<spec-intent>`. Source load fails → fall back to the loaded ticket's own Problem Statement/Solution/Notes and note the gap. Items are the how; intent arbitrates every later adaptation.
+2. Load the primary ticket inline in the main session. Load its source ticket (identified by `refUrl`, links, or the body) and other implementation-relevant linked tickets inline too. Read their bodies, full comment threads, checklists, and attachments per spec → `<attachment-insights>`. Limit nested traversal to links that inform the implementation.
+3. Derive requirements from the primary ticket's name, description, comments, checklists, and attachments. Use linked evidence to clarify requirements without expanding scope.
+4. Anchor `<spec-intent>` in the primary ticket's Problem Statement/Solution/Notes and the original problem and decisions in linked sources. Linked source unavailable → note the gap and use the primary ticket's intent. Items are the how; intent arbitrates every later adaptation.
 
 Returns (distilled): `<ticket-name>`, `<ticket-url>`, `<ticket-id>`, `<ticket-title>`, `<ticket-summary>`, `<ticket-board>`/`<ticket-websiteId>`, `<ticket-list>`/`<ticket-state>`, `<feature-area>`, `<spec-intent>`, `<acceptance-criteria>`, `<related-entities>`, `<blockers>`, `<gaps>`, `<requirement-items>` (parsed, not yet a todo list).
 
-Ticket load fails or `BLOCKED` → report and stop. Without a ticket, derive the applicable fields from the approved plan, leaving ticket-only fields empty. Set `<work-title>`/`<work-summary>` from the ticket title/summary or, without a ticket, the approved plan's title/scope. An approved plan or planning-phase ticket needs no further plan approval.
+Primary ticket load fails or `BLOCKED` → report and stop. Without a ticket, derive the applicable fields from the approved plan, leaving ticket-only fields empty. Set `<work-title>`/`<work-summary>` from the ticket title/summary or, without a ticket, the approved plan's title/scope. An approved plan or planning-phase ticket needs no further plan approval.
 
 3. **Detect & Use Working Branch**: Load branch + status → `<current-branch>`; check whether the current feature/fix branch relates to `<work-title>`/`<work-summary>`. Relevance uses the work title/summary slug, not the ticket id — same derivation as `new-branch`.
 

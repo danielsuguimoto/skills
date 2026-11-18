@@ -5,7 +5,7 @@ description: "Use when merging the latest master or main branch into a pull requ
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before loading PR metadata: `<project-root>/docs/git-hosts.md`; `<project-root>/docs/issue-trackers.md` (Step 1 only — when the PR references tickets). If missing or incomplete, note the gap; use a supported git host or CLI fallback.
+Shell-read before loading PR metadata: `<project-root>/docs/git-hosts.md`. If missing or incomplete, note the gap; use a supported git host or CLI fallback.
 
 ## 1. Identify the PR and branches
 
@@ -13,7 +13,7 @@ Require a PR number or URL argument; if absent, ask for it. Use that PR as the s
 
 Choose the source branch from the base repository: the PR base if it is `master` or `main`; otherwise the repository's default branch if it is `master` or `main`. If neither identifies the source, ask the user which `master` or `main` branch to use. Match Git remotes to the base and head repositories, including forks; if either cannot be identified or fetched, stop rather than guessing `origin`.
 
-Anchor `<pr-intent>` — why the PR exists: title and body, plus issue/card references loaded via the issue tracker tool (`issue-trackers.md`) when present; load fails → fall back to title/body and note the gap. Step 3 resolves conflicts against it.
+Anchor `<pr-intent>` — why the PR exists: title, body, and, when the PR references issues or cards, a `ticket-brief` scoped to intended behavior and constraints. No usable brief → fall back to title/body and note the gap. Step 3 resolves conflicts against it.
 
 ## 2. Prepare the PR branch
 
