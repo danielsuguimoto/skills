@@ -42,15 +42,17 @@ Check the repo for a GitHub PR template → `<pr-template>` verbatim (headings, 
 
 ### 7. Generate Metadata + Prepare Ticket Reference
 
-Generate `<pr-title>`, `<pr-body>`, and (when `auto`) `<ticket-title>`/`<ticket-body>` from `<resolved-base>`, `<ticket-mode>`, `<ticket-url>` (when `provided`), `<additional-context>`, `<pr-template>`.
+Generate `<pr-title>`, `<issue-summary>`, `<pr-body>`, and (when `auto`) `<ticket-title>`/`<ticket-body>` from `<resolved-base>`, `<ticket-mode>`, `<ticket-url>` (when `provided`), `<additional-context>`, `<pr-template>`.
 
 `<pr-title>`: `<prefix>: <message>` — lowercase, under 50 chars. Prefixes: feat, fix, chore, docs, refactor, test, style; prefix = the dominant change type.
+
+`<issue-summary>`: 1-2 sentences — the problem the PR solves (from the ticket when reachable, else inferred from `<changes>`). Restate even with `<ticket-url>` linked — AI reviewers scope their review to it without opening the ticket.
 
 `<ticket-mode>` = `auto`: reuse `<change-summary>` themes from actual commits/diff. Title ≤70 chars reflecting the delivered outcome; description = what and why; checklists = 2-4 functional sections + final `Validation` section (reviewer-facing: "Verify that...", "Confirm that..."). Create via git host create issue (title, body, assignee `@me`) or CLI fallback with temp file. No attribution lines. Issue URL → `<ticket-url>`.
 
 Otherwise: `provided` → use it; `skip` → `SKIPPED`.
 
-**Compose `<pr-body>` from `<pr-template>`:** ≠ `none` → template verbatim as skeleton; fill placeholders/sections (`## Ticket`, `## Description`, `## Checklist`) from `<changes>` + `<ticket-url>`; preserve structure, headings, reviewer checkboxes — fill only, don't restructure; do NOT use the Step-9 hardcoded body. `none` → the Step-9 default structure.
+**Compose `<pr-body>` from `<pr-template>`:** ≠ `none` → template verbatim as skeleton; fill placeholders/sections (`## Ticket`, `## Description`, `## Checklist`) from `<changes>` + `<ticket-url>` + `<issue-summary>`; preserve structure, headings, reviewer checkboxes — fill only, don't restructure; do NOT use the Step-9 hardcoded body. `none` → the Step-9 default structure.
 
 ### 8. Push Branch
 
@@ -62,6 +64,9 @@ Use `<pr-title>` + `<pr-body>` (already reflects `<pr-template>`). Body when `<p
 ```markdown
 ## Ticket
 <ticket-url>
+
+## Issue
+<issue-summary>
 
 ## Description
 <short-description>
