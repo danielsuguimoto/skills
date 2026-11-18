@@ -19,7 +19,7 @@ Clarify an unclear symptom before exploring; otherwise proceed.
 
 **1.1 Clarify the Symptom** — capture the symptom, expected and actual behavior, reproduction, and relevant environment from the request and available evidence. Quote errors verbatim; ask only for missing details needed to investigate → `<issue-context>`.
 
-**1.2 Gather Evidence** — reproduce the exact symptom when feasible and trace the relevant code path. Inspect persisted state, logs, runtime, memory, or framework docs only when the evidence calls for them. Record failed reproduction attempts and findings with `file:line` citations → `<investigation-findings>`.
+**1.2 Gather Evidence** — sync per `git-hosts.md` first: the checked-out branch behind → fast-forward a clean tree before reproducing (the report may already be fixed upstream); diverged/dirty → flag staleness in findings. Reproduce the exact symptom when feasible and trace the relevant code path. Inspect persisted state, logs, runtime, memory, or framework docs only when the evidence calls for them. Record failed reproduction attempts and findings with `file:line` citations → `<investigation-findings>`.
 
 **Done when:** reproduction was attempted or its blocker recorded, the relevant path was traced, and the evidence and gaps are recorded.
 
