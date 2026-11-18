@@ -5,7 +5,7 @@ description: "Activate when a pull request has review feedback that requires cod
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before fixing PR review feedback; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`; `<project-root>/docs/issue-trackers.md` (Step 2 only — when the PR references tickets)
+Shell-read before fixing PR review feedback; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`
 
 Fix PR feedback and reply in review threads. Tools: git host (`git-hosts.md`).
 
@@ -21,7 +21,7 @@ Non-thread feedback (collect every run — threads alone miss it): git host list
 
 PR metadata: git host view PR + list reviews (CLI fallback per spec). Extract `<pr-branch>`, `<base-branch>`, `<pr-number>`, `<pr-url>`. `git branch --show-current` → `<current-branch>`. Review attachments when relevant. No threads and no `<flat-feedback>` → output "No changes".
 
-Anchor `<pr-intent>` — why the PR exists: title, body, commit messages, plus every issue/card reference in body, commits, or branch name loaded via the issue tracker tool (`issue-trackers.md`), nested links traversed per spec. Tracker load fails → fall back to PR title/body; note the gap. Threads supply the what; intent arbitrates scope.
+Anchor `<pr-intent>` — why the PR exists: title, body, commit messages, and a ticket brief (see Ticket Brief) for all issue/card references in the body, commits, or branch name, scoped to intended behavior and constraints. No usable brief → fall back to PR title/body; note the gap. Threads supply the what; intent arbitrates scope.
 
 ### 3. Align Local Branch
 `<pr-branch>` unavailable → STOP. Inspect the worktree and index; uncommitted or untracked changes → STOP and ask the user to preserve them before continuing. Fetch the PR head and record its commit → `<pr-head-commit>`. Check out via git host checkout PR or `gh pr checkout <pr-number>` → `<active-branch>`. Fails → STOP. Behind `<pr-head-commit>` → fast-forward only; diverged or unpushed local commits → STOP and report. No code edits until `<active-branch>` == `<pr-branch>` and HEAD == `<pr-head-commit>`. Never skip checkout — `<pr-ref>` is authoritative.
@@ -67,6 +67,10 @@ Git host reply to review thread (`pr_number`, `comment_id`, `body`; fallback per
 
 ### 13. Resolve Addressed Threads
 After replying, resolve fully addressed threads via GraphQL `resolveReviewThread` (GraphQL-only; no REST). Map comment IDs to thread node IDs (`PRRT_...`) by first-comment `databaseId` via git host list review threads (fallback per spec), then git host resolve review thread. Only fully addressed threads — never intentionally skipped or reviewer-reopened ones. Flat comments have no resolution — reply only (Step 12) → `<threads-resolved>`.
+
+## Ticket Brief
+
+When a step calls for a ticket brief, delegate to one isolated, read-only subagent: pass only the ticket references, the scope, `<project-root>`, and these rules — the main session receives only the returned brief. Worker: read `<project-root>/docs/issue-trackers.md` and use its read operations; load each in-scope ticket's body, checklists, full comment thread, and accessible attachments (inspect contents, not filenames); follow only links bearing on the scope; dedupe by tracker and ID. Return a compact cited brief — the scoped answers, confirmed decisions distinguished from proposals and superseded ones, blockers and evidence gaps; cite comment permalinks or attachment name plus location; omit raw threads and attachment contents; mark the brief partial when missing evidence could change it. Never post or modify tracker state. Worker or spec unavailable → report the gap without fetching inline.
 
 ## Output
 Summary of changes and validation results. At the approval gate: one line per fix, not full diffs — e.g. "Fixed N threads across M files" + validation status.

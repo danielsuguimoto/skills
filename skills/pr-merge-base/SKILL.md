@@ -5,7 +5,7 @@ description: "Use when merging the latest master or main branch into a pull requ
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before loading PR metadata: `<project-root>/docs/git-hosts.md`; `<project-root>/docs/issue-trackers.md` (Step 1 only — when the PR references tickets). If missing or incomplete, note the gap; use a supported git host or CLI fallback.
+Shell-read before loading PR metadata: `<project-root>/docs/git-hosts.md`. If missing or incomplete, note the gap; use a supported git host or CLI fallback.
 
 ## 1. Identify the PR and branches
 
@@ -13,7 +13,7 @@ Require a PR number or URL argument; if absent, ask for it. Use that PR as the s
 
 Choose the source branch from the base repository: the PR base if it is `master` or `main`; otherwise the repository's default branch if it is `master` or `main`. If neither identifies the source, ask the user which `master` or `main` branch to use. Match Git remotes to the base and head repositories, including forks; if either cannot be identified or fetched, stop rather than guessing `origin`.
 
-Anchor `<pr-intent>` — why the PR exists: title and body, plus issue/card references loaded via the issue tracker tool (`issue-trackers.md`) when present; load fails → fall back to title/body and note the gap. Step 3 resolves conflicts against it.
+Anchor `<pr-intent>` — why the PR exists: title, body, and, when the PR references issues or cards, a ticket brief (see Ticket Brief) scoped to intended behavior and constraints. No usable brief → fall back to title/body and note the gap. Step 3 resolves conflicts against it.
 
 ## 2. Prepare the PR branch
 
@@ -38,3 +38,7 @@ Present the source and PR branches, the verified push destination `<head-reposit
 ## 5. Commit and push
 
 On `approved`, complete the merge with the repository's commit convention and verify that the resulting commit has both the recorded PR head and source commit as parents. Re-fetch the PR head first; if it changed since preparation, stop and report rather than overwriting it. Push normally to the verified head repository and PR branch, never force-push. Report the merge commit and the pushed ref.
+
+## Ticket Brief
+
+When a step calls for a ticket brief, delegate to one isolated, read-only subagent: pass only the ticket references, the scope, `<project-root>`, and these rules — the main session receives only the returned brief. Worker: read `<project-root>/docs/issue-trackers.md` and use its read operations; load each in-scope ticket's body, checklists, full comment thread, and accessible attachments (inspect contents, not filenames); follow only links bearing on the scope; dedupe by tracker and ID. Return a compact cited brief — the scoped answers, confirmed decisions distinguished from proposals and superseded ones, blockers and evidence gaps; cite comment permalinks or attachment name plus location; omit raw threads and attachment contents; mark the brief partial when missing evidence could change it. Never post or modify tracker state. Worker or spec unavailable → report the gap without fetching inline.
