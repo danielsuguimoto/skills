@@ -37,7 +37,7 @@ Honor a declared preference without asking; declined → work in place, skip to 
 
 ## Step 1: Create Isolated Workspace
 
-Resolve the base first: fetch per `git-hosts.md`; pass `origin/<default>` to the mechanism wherever it accepts a base — a mechanism fixed to the current checkout may snapshot a stale or feature branch; flag that to the user rather than silently accepting it.
+Resolve the base first: a base forwarded by the caller (e.g. `new-workspace` synced already) → use it; otherwise fetch per `git-hosts.md` and use `origin/<default>`. Pass the base to the mechanism wherever it accepts one — a mechanism fixed to the current checkout may snapshot a stale or feature branch; flag that to the user rather than silently accepting it.
 
 ### 1a. Configured mechanism (preferred)
 
