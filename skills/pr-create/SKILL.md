@@ -52,7 +52,7 @@ Generate `<pr-title>`, `<issue-summary>`, `<pr-body>`, and (when `auto`) `<ticke
 
 Otherwise: `provided` → use it; `skip` → `SKIPPED`.
 
-**Compose `<pr-body>` from `<pr-template>`:** ≠ `none` → template verbatim as skeleton; fill placeholders/sections (`## Ticket`, `## Description`, `## Checklist`) from `<changes>` + `<ticket-url>` + `<issue-summary>`; preserve structure, headings, reviewer checkboxes — fill only, don't restructure; do NOT use the Step-9 hardcoded body. `none` → the Step-9 default structure.
+**Compose `<pr-body>` from `<pr-template>`:** ≠ `none` → template verbatim as skeleton; fill placeholders/sections (`## Ticket`, `## Description`, `## Checklist`) from `<changes>` + `<ticket-url>` + `<issue-summary>`; preserve structure, headings, reviewer checkboxes — fill only, don't restructure; do NOT use the Step-9 hardcoded body. `<issue-summary>` must appear in the body: merge into the template's description section, else append a `## Issue` section — the sole permitted structure change. `none` → the Step-9 default structure.
 
 ### 8. Push Branch
 
