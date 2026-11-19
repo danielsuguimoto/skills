@@ -56,7 +56,7 @@ Only when neither applies — the fallback in the spec's Tool Details. Around wh
 
 Spec documents no fallback either → ask which mechanism to use; offer to write it into `workspace-isolation.md`.
 
-After creation, verify `HEAD` inside the workspace equals the resolved base commit. A detached `HEAD` satisfies readiness — never switch to `master`/`main` or drop a mechanism-installed worktree link to get a checkout (a shared-git worktree may be unable to take one). Mismatch → flag it to the user. A task branch is created only at ship time (`new-branch`/`ship-changes`).
+After creation, verify the workspace `HEAD` points at the resolved base commit via git host operations (`git-hosts.md`). A detached `HEAD` satisfies readiness — never switch to `master`/`main` or drop a mechanism-installed worktree link to get a checkout (a shared-git worktree may be unable to take one). Mismatch → flag it to the user. A task branch is created only at ship time (`new-branch`/`ship-changes`).
 
 ## Step 2: Project Setup
 
