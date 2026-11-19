@@ -34,6 +34,8 @@ BASE=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null || echo ori
 
 Then invoke `using-workspaces` and follow it fully — consent is implied; skip its consent question. Pass `origin/<default>` as the creation base and `<workspace-name>` as the name wherever the mechanism accepts them; a mechanism that fixes the base to the current checkout → flag it to the user, don't silently base on it.
 
+A workspace is ready when its `HEAD` points at the resolved base commit — compare via git host operations (`git-hosts.md`). A detached `HEAD` satisfies this; never require a `master`/`main` checkout or drop a mechanism-installed worktree link to get one. A task branch is created only when the work ships (`new-branch`/`ship-changes`).
+
 ## 3. Hand Off
 
 All downstream work happens inside the workspace:

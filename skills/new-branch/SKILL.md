@@ -30,7 +30,7 @@ Always runs — git changes are validated every invocation.
 
 Pre-scan forwarded → use `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<branch-category>` directly; skip to Step 3.
 
-Otherwise: (1) load change state per the table → `<current-branch>`, `<uncommitted>`; (2) `<uncommitted>` empty → check ahead via `origin/<current-branch>..<current-branch>` (sync per `git-hosts.md` first — stale `origin/` refs lie) → `<ahead-commits>`; (3) analyze scope — primary `<uncommitted>`, fallback `<ahead-commits>` — group into logical themes, summarize what and why (not how) → `<change-summary>`.
+Otherwise: (1) load change state per the table → `<current-branch>`, `<uncommitted>`; (2) `<uncommitted>` empty → check ahead — `origin/<current-branch>..<current-branch>`, or `origin/<default>..HEAD` on a detached `HEAD` (sync per `git-hosts.md` first — stale `origin/` refs lie) → `<ahead-commits>`; (3) analyze scope — primary `<uncommitted>`, fallback `<ahead-commits>` — group into logical themes, summarize what and why (not how) → `<change-summary>`.
 
 ### 3. Check Blockers
 

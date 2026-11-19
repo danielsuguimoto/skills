@@ -31,6 +31,7 @@ Primary ticket load fails or `BLOCKED` → report and stop. Without a ticket, de
 **Resolution:**
 - Relevant: current branch slug matches a slug from `<work-title>`/`<work-summary>`, or falls under `feature/*`|`fix/*`|`feat/*` with a work-derived slug → stay. If an upstream is configured, fetch it — behind → fast-forward only, diverged → STOP and report. Without an upstream, skip upstream sync without creating or publishing a remote branch. In either case, pull/rebase onto its base only if behind.
 - Current is `master`/`main` → stay.
+- Detached `HEAD` — fetch per `git-hosts.md`, then: `HEAD` == `origin/<default>` → stay, it counts as on the base · clean and behind → advance to the tip with a detached checkout · otherwise → stay, the commits belong to the workspace and ship via `new-branch`/`ship-changes`. Never switch a detached `HEAD` to `master`/`main` — a linked shared-git worktree may be unable to, and switching orphans workspace commits.
 - Unrelated → switch to `master`/`main`.
 - Uncommitted changes → STOP; ask user to stash/commit first — never discard.
 - Working branch is `master`/`main` only → `git pull origin master`.
