@@ -13,9 +13,11 @@ MCP tools take business-level inputs (title, body, base, head) — no CLI flags,
 
 As a subskill, the invoking skill owns Steps 1-10; on "Nothing to ship.", proceed to Step 3 blockers.
 
+An explicit PR or shipping request authorizes pushing the branch and creating the PR. Proceed without asking again solely to confirm either action; honor mandatory safety gates.
+
 ### 1. Interpret Arguments
 
-Base branch → `<base>`; auto-create ticket → `<ticket-mode>` = `auto`; ticket URL/reference → `<ticket-url>` + `<ticket-mode>` = `provided`; skip ticket → `skip`; guidance/focus areas → `<additional-context>`; files deliberately left uncommitted → `<excluded>`; no base → detect default in Step 2.
+Base branch → `<base>`; auto-create ticket → `<ticket-mode>` = `auto`; ticket URL/reference → `<ticket-url>` + `<ticket-mode>` = `provided`; skip or no ticket → `<ticket-mode>` = `skip`; guidance/focus areas → `<additional-context>`; files deliberately left uncommitted → `<excluded>`; no base → detect default in Step 2.
 
 ### 2. Load & Analyze Changes
 

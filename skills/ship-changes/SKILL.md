@@ -5,6 +5,8 @@ description: "Ship current work end-to-end: branch, commit, push, and open a PR.
 
 Run the change scan, branch, commit, push, PR creation, and ticket linking in the current session, in order. Invoke subskills inline: load their instructions and execute them here. Delegate only the read-only Ticket Brief unless the user explicitly asks to delegate another step.
 
+An explicit shipping request authorizes branch creation, commit, push, and PR creation. Execute them without asking for separate confirmation; honor mandatory safety gates.
+
 ## Required `<project-root>/docs` reads
 
 Shell-read before shipping end-to-end; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`
@@ -19,7 +21,7 @@ All git/gh operations follow `git-hosts.md`. Forward git host tool availability 
 
 ### 1. Interpret Arguments
 
-Ticket URL/reference → `<ticket-url>` · wording influencing branch name/commit → `<additional-context>` · base branch → `<base>`.
+Ticket URL/reference → `<ticket-url>` · skip or no ticket → `<ticket-mode>` = `skip` · wording influencing branch name/commit → `<additional-context>` · base branch → `<base>`.
 
 ### 2. Pre-Scan Changes (Shared Context)
 
@@ -40,7 +42,7 @@ Derive `<branch-category>` from `<change-summary>` per `new-branch` categories.
 Forward to subskills:
 - `new-branch`: `<additional-context>`, `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<branch-category>`.
 - `commit-and-push`: `<additional-context>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<excluded>`.
-- `pr-create`: `<change-summary>`, `<excluded>`, `<ticket-url>`, `<ticket-brief-result>`, and `<base>` when defined.
+- `pr-create`: `<change-summary>`, `<excluded>`, `<ticket-url>`, `<ticket-mode>`, `<ticket-brief-result>`, and `<base>` when defined.
 
 ### 3. Create Work Branch
 
