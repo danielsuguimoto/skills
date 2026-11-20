@@ -1,9 +1,11 @@
 ---
 name: subagents
-description: "Subagent spawning gates. MANDATORY before any spawn, any large context-gathering scan (codebase, DB, docs, memories), or any work splittable into parallel independent tasks."
+description: "Subagent delegation gates. MANDATORY before any spawn, any large context-gathering scan (codebase, DB, docs, memories), or any work splittable into parallel independent tasks."
 ---
 
-A skill's `Ticket Brief` procedure delegates only the read-only ticket inspection. That procedure's isolation and blocker rules replace the sequential, size, and inline-fallback gates below — the parent never probes raw ticket content to qualify. Keep the calling workflow in the parent.
+Default to execution in the current session. Invoking a skill means loading its instructions and executing them here. Delegate a workflow or its steps only if the user explicitly asks to delegate that work.
+
+**Ticket Brief exception.** When a workflow calls for a `Ticket Brief`, delegate only that isolated, read-only ticket inspection. Follow its isolation and blocker rules instead of the sequential, size, and inline-fallback gates below. The parent runs the workflow and never probes raw ticket content to qualify.
 
 ## Sequential Gate
 
@@ -49,7 +51,6 @@ Can't fill all five → do the work inline.
 - A single file edit, symbol lookup, or known path + line range.
 - A bounded next step where the parent holds all inputs.
 - Avoiding a thinking step.
-- **Invoking a skill workflow** (commit, push, PR-create, ship-changes, branch creation). Skills run inline unless a dispatch rationale fires independently — spawning a subagent *to invoke a skill* is the most common anti-pattern.
 
 ## Foreground Preference
 
