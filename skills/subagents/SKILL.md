@@ -1,6 +1,6 @@
 ---
 name: subagents
-description: "Decide whether to delegate to a subagent before any dispatch. Use for proposed parallel work or read-only context offloading."
+description: "Subagent delegation gates. MANDATORY before any spawn, any large context-gathering scan (codebase, DB, docs, memories), or any work splittable into parallel independent tasks."
 ---
 
 Default to execution in the current session. Invoking a skill means loading its instructions and executing them here. Delegate a workflow or its steps only if the user explicitly asks to delegate that work.
