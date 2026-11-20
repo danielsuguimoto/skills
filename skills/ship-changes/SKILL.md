@@ -3,6 +3,8 @@ name: ship-changes
 description: "Ship current work end-to-end: branch, commit, push, and open a PR. Use for explicit shipping requests, not a PR-only request."
 ---
 
+Run the change scan, branch, commit, push, PR creation, and ticket linking in the current session, in order. Invoke subskills inline: load their instructions and execute them here. Delegate only the read-only Ticket Brief unless the user explicitly asks to delegate another step.
+
 ## Required `<project-root>/docs` reads
 
 Shell-read before shipping end-to-end; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`
