@@ -5,7 +5,7 @@ description: "Use after a pull request is merged and deployed — verify shipped
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before post-merge cleanup; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`, `<project-root>/docs/issue-trackers.md`, `<project-root>/docs/workspace-isolation.md`; only when the PR ships data artifacts — `<project-root>/docs/database-tools.md`, `<project-root>/docs/observability-tools.md`
+Shell-read before post-merge cleanup; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`, `<project-root>/docs/issue-trackers.md`, `<project-root>/docs/workspace-isolation.md`; only when the PR ships data artifacts — `<project-root>/docs/database-tools.md`
 
 Drafts go to a human for review.
 
@@ -15,19 +15,19 @@ PR number/URL → `<pr-ref>`; none → derive from conversation or the most rece
 
 ### 2. Load PR Context
 
-View PR via git host (`git-hosts.md`). Extract `<pr-branch>`, `<pr-number>`, `<pr-url>`, `<pr-summary>` (what shipped and why — title, body, commits), `<ticket-refs>` (every issue/card reference in body, commits, branch name — git host or external tracker), `<data-artifacts>` (shipped migrations, seeders, operations, and scripts the deployment executes — from the PR file list, body, and deploy notes).
+View PR via git host (`git-hosts.md`). Extract `<pr-branch>`, `<pr-number>`, `<pr-url>`, `<pr-summary>` (what shipped and why — title, body, commits), and `<ticket-refs>` (every issue/card reference in body, commits, branch name — git host or external tracker). Inspect the PR file list and diff, deployment configuration, and deploy notes for `<data-artifacts>`: every shipped migration, seeder, operation, or script that changes production schema or data, including changes to existing artifacts. Determine each artifact's deployment targets, intended effects, and whether it is expected to run in this deploy from its code and configuration; record unknowns rather than treating them as absent.
 
 **Gate:** PR must be merged. Open or closed-unmerged → STOP, report its actual state — this flow only applies to shipped work.
 
 ### 3. Validate Deployed Artifacts
 
-Skip when `<data-artifacts>` is empty. Per artifact, derive its intended effect from the shipped code, then verify in production that it ran in this deploy and took effect — keep production read-only:
+Skip only when the PR ships no data artifacts. If artifact discovery is incomplete, record `unverifiable` with the gap instead of `none shipped`. Per artifact and production target, record `not scheduled` for confirmed manual or deferred work not expected in this deploy. For every other pair, query the live production database per `database-tools.md`; keep production read-only. Check execution evidence and the intended effect:
 
-- Migration → its run recorded for this deploy and its schema/data change present.
-- Seeder → run evidence tied to this deploy and expected records or updated values present.
-- Operation/script → run evidence tied to this deploy and its stated effect observable (rows written, values changed, flags set).
+- Migration → migration history records its run; inspect the resulting schema and data.
+- Seeder → inspect execution records or durable run markers and the expected records or updated values.
+- Operation/script → inspect execution records or durable run markers and the stated effect (rows written, values changed, flags set).
 
-Evidence: deploy and job logs per `observability-tools.md` tie the run to this deploy; live-DB queries per `database-tools.md` prove the outcome. Matching state with no run evidence → `unverifiable`, never `verified` — pre-existing data masks a skipped run. Status each `verified` / `failed` / `unverifiable` → `<artifact-results>`.
+Status each pair as `verified` only when database evidence establishes execution for this deploy and the intended effect, and the run's final outcome is successful; `failed` when a run reaches a final outcome but its effect is incomplete, or when an expected run was definitively skipped. Otherwise `unverifiable`, including an unknown schedule without evidence of execution. Matching state alone does not prove execution: pre-existing data can mask a skipped run. After attempting database checks, if execution or completion remains unclear, shell-read `observability-tools.md` and inspect available deploy or job records; a confirmed terminal failure for the same artifact, deploy, and target → `failed`. After a run completes, if the data was read before completion or its timing is unknown, re-query a fresh production database snapshot before assessing the effect. Consider retries: a failed attempt superseded by a successful retry is not a terminal failure; a running job or unknown final outcome remains `unverifiable`. Logs do not replace production database checks. If missing access, unknown targets, or insufficient execution evidence prevent a determination, record `unverifiable` and the gap. Record findings and evidence as `<artifact-results>`.
 
 **Gate:** any `failed` → STOP, report — the shipped work is unproven until the artifact re-runs. `unverifiable` → proceed; flag per artifact in Step 8.
 
@@ -49,7 +49,7 @@ Per `<customer-tickets>` entry, invoke `draft-reply` with the ticket URL and `<a
 
 - The fix shipped: merged in `<pr-url>`, now deployed — the reported issue should be resolved.
 - What the issue was: plain-language explanation from `<pr-summary>` + the thread — include **only when nobody explained it to the customer before** (check comments first); describe symptom → cause → fix at their level, no root-cause jargon.
-- Caveats: each `unverifiable` entry in `<artifact-results>` → `[NEEDS-REVIEW: <what couldn't be confirmed>]` — a reviewer flag in the draft, never customer-facing copy.
+- Caveats: each `unverifiable` or `not scheduled` entry in `<artifact-results>` → `[NEEDS-REVIEW: <what couldn't be confirmed or isn't scheduled>]` — a reviewer flag in the draft, never customer-facing copy.
 
 One draft per ticket — `draft-reply` posts a private note; nothing reaches the customer.
 
@@ -59,7 +59,7 @@ List isolated workspaces per `workspace-isolation.md`; find the one created for 
 
 ### 8. Report
 
-Chat only: `<pr-url>` merge state · `<artifact-results>` per artifact — status + evidence, or `none shipped` · classification counts · draft note URL per customer ticket · `<drifted-tickets>` per entry: ticket URL, reported problem, why `<pr-summary>` doesn't cover it · workspace removed or `none found`.
+Chat only: `<pr-url>` merge state · `<artifact-results>` per artifact and target — status + evidence, plus any inventory-wide discovery gap, or `none shipped` · classification counts · draft note URL per customer ticket · `<drifted-tickets>` per entry: ticket URL, reported problem, why `<pr-summary>` doesn't cover it · workspace removed or `none found`.
 
 ## Notes
 
