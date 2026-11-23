@@ -52,7 +52,7 @@ Record `<previous-branch>`. Uncommitted changes → STOP, ask the user to stash/
 
 Read [reporting.md](reporting.md) and check destination safety before inspecting any previous report. Reuse useful scenarios that fit the current PR, depth, and budget; check the PR for new scenarios. Rerun selected scenarios and collect fresh evidence; previous results do not prove the current run.
 
-Write a small `<test-plan>` around natural user journeys. A journey may span pages, actors, and lifecycle steps. Admit a new scenario only when it proves a distinct in-scope behavior or critical risk that selected execution evidence does not already prove. Put related assertions into the same journey; scenario labels do not require separate executions.
+Write a small `<test-plan>` around natural user journeys. A journey may span pages, actors, and lifecycle steps. Each selected journey runs the flow containing the change end to end — entry, the changed point, and the steps after it. Where the change guards one path through that flow (validation, gate, constraint), selected journeys exercise both branches: the pass-through that still completes the flow, and the guarded outcome, which ends at the rejection with its blocked downstream effects verified absent. Admit a new scenario only when it proves a distinct in-scope behavior or critical risk that selected execution evidence does not already prove. Put related assertions into the same journey; scenario labels do not require separate executions.
 
 - **Purpose** — exercise the PR's promised behavior, including the reported customer failure where applicable. Reuse that execution for the requirements it proves.
 - **Data-artifact** — in `full`, execute every `<data-artifacts>` entry against representative populated local data and verify its schema/row effects. Fold this into a purpose scenario when the same execution proves both; otherwise add a dedicated artifact scenario. Re-run only where idempotency is claimed.
@@ -65,7 +65,7 @@ Prioritize the purpose, then clear critical risks and admitted reviewer findings
 
 Give each scenario an ID, source outcome, entry point, prerequisites, and observable assertions; add the risk for an edge or reviewer-finding scenario. Assign reporting.md's scenario/assertion IDs and intended proof checkpoints without adding scenarios. Deferred IDs need only their source and reason. Out-of-scope permutations need no scenario rows; summarize that boundary once. Every non-drifted promised outcome and each behavioral `<review-findings>` entry maps to a selected assertion or a deferred ID; findings without observable behavior need no rows, and implementation and automated-test checklists do not inflate this ledger.
 
-**Done when:** the plan proves the purpose, accounts for required artifacts and clear critical risks, has executable dependency chains, and adds no scenario whose evidence another selected execution already supplies. Initialize its in-progress report under reporting.md before Step 6; unresolved storage safety pauses testing.
+**Done when:** the plan accounts for the purpose, required artifacts, and clear critical risks through selected or explicitly deferred work; each selected journey runs its changed flow to completion — both branches where the change guards one — with executable dependency chains; and no scenario repeats evidence another selected execution already supplies. Initialize its in-progress report under reporting.md before Step 6; unresolved storage safety pauses testing.
 
 ### 6. Prepare Minimal Local Data
 
