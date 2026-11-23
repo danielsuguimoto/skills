@@ -25,7 +25,7 @@ Per `<ticket-refs>` entry, load fresh via the issue tracker tool (`issue-tracker
 
 ### 4. Validate Deployed Artifacts
 
-Use linked ticket context where relevant to identify deployment targets, intended effects, schedules, and verification evidence. Skip only when the PR ships no data artifacts. If artifact discovery is incomplete, record `unverifiable` with the gap instead of `none shipped`. Per artifact and production target, record `not scheduled` for confirmed manual or deferred work not expected in this deploy. For every other pair, query the live production database per `database-tools.md`; keep production read-only. Check execution evidence and the intended effect:
+Use linked ticket context where relevant to identify deployment targets, intended effects, schedules, and verification evidence. Skip only when the PR ships no data artifacts. If artifact discovery is incomplete, record `unverifiable` with the gap instead of `none shipped`. Per artifact and production target, record `not scheduled` for confirmed manual or deferred work not expected in this deploy. If ticket schedules conflict with code or deployment configuration, resolve the conflict before recording `not scheduled`; until resolved, treat the schedule as unknown and query production. For every other pair, query the live production database per `database-tools.md`; keep production read-only. Check execution evidence and the intended effect:
 
 - Migration → migration history records its run; inspect the resulting schema and data.
 - Seeder → inspect execution records or durable run markers and the expected records or updated values.
