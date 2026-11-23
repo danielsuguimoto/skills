@@ -1,6 +1,6 @@
 ---
 name: pr-fix
-description: "Activate when a pull request has review feedback that requires code fixes and direct thread responses."
+description: "Activate when a pull request has review feedback requiring code fixes and replies — inline threads, review bodies, or flat comments."
 ---
 
 ## Required `<project-root>/docs` reads
@@ -17,7 +17,7 @@ Modes: `review` (default) or `auto` — `auto` skips the Step 9 approval gate.
 ### 2. Load PR Context
 `git rev-parse --show-toplevel` → `<repo-path>` (use as `cwd` for MCP calls). Primary thread source: git host list unresolved review comments (`isResolved=false` server-side). CLI fallback: GraphQL `reviewThreads` with `isResolved`. REST `pulls/{n}/comments` only as `databaseId` cross-reference — never primary (returns resolved too).
 
-Non-thread feedback (collect every run — threads alone miss it): git host list reviews → non-empty review bodies; git host list flat comments. Store both as `<flat-feedback>` (author, body, comment id). Review bodies are reviewer feedback regardless of author — review bots report findings there; keep only the latest non-empty body per reviewer (earlier bodies are superseded). Skip own-agent items and automation notices (CI, coverage, deploys).
+Non-thread feedback (collect every run — threads alone miss it): git host list reviews → non-empty review bodies; git host list flat comments. Store both as `<flat-feedback>` (author, body, comment id). Review bodies are reviewer feedback regardless of author — review bots report findings there. Skip own-agent items and automation notices (CI, coverage, deploys).
 
 PR metadata: git host view PR + list reviews (CLI fallback per spec). Extract `<pr-branch>`, `<base-branch>`, `<pr-number>`, `<pr-url>`. `git branch --show-current` → `<current-branch>`. Review attachments when relevant. No threads and no `<flat-feedback>` → output "No changes".
 
@@ -32,7 +32,7 @@ Git host PR diff. Fallback: `gh pr diff <pr-number>` or `git diff <base-branch>.
 ### 5. Analyze Feedback
 1. Review unresolved threads; check review states (`CHANGES_REQUESTED`, `APPROVED`, etc.). Every `<flat-feedback>` item is reviewer feedback, not metadata.
 2. Use `<changes>` to understand the diff. Prioritize critical issues (bugs, security, broken contracts).
-3. Effectively resolved (skip): GitHub-unresolved threads with a "Fixed..."/"Done..." reply or flat items a later commit already addresses — verify via commit diff. In doubt → ask.
+3. Effectively resolved (skip): threads with a "Fixed..."/"Done..." reply plus a later commit implementing it, or flat items addressed by a later commit or confirmed fixed in a later reviewer body — verify via commit diff. In doubt → ask.
 4. Per actionable thread record `<comment-id>`, `<file>`, `<lines>`, `<category>`, `<suggestion>`, `<reviewer-body>`, `<current-heading>`; flat items the same minus `<file>`/`<lines>`. Evaluate each suggestion against `<changes>` and `<pr-intent>` before applying. `noise`/`question` items → `not-fixing` list with reasons (`<reviewer-body>` recorded there only, for Step 12).
 5. Premise drift — a suggestion or `<pr-intent>` assumes a bug path, invariant, or behavior the diff/code no longer has (superseding change, misdiagnosed cause) → `not-fixing` candidate; ambiguous → ask. Never fix against a dead premise.
 6. Scope creep — a suggestion is sound but outside `<pr-intent>` (pre-existing bug, adjacent refactor, broader coverage, "while you're here" work) → `not-fixing` candidate; ambiguous → ask. Belongs to a separate change, not this PR.
@@ -61,7 +61,7 @@ Use `<review-feedback>` to refine without widening scope → Step 7. No commit/p
 Inspect the worktree and index again, including changes within `<fix-files>`. Unexpected changes → STOP and preserve them. Stage and commit only `<fix-files>` with explicit pathspecs, then `git push origin <active-branch>`. Never use a generic message like "address review feedback" → `<pushed>` (`yes`/`no`).
 
 ### 12. Respond to Threads
-Reply only after commit + push succeed. ALWAYS reply via thread reply API — NEVER standalone PR comments (`gh pr review -c`, `gh pr comment`). Sole exception: flat items (flat comments, review bodies — no line anchor) → one flat comment per item quote-replying (blockquote original + author handle, then response).
+Reply after commit + push succeed — with nothing pushed (`<changes-count>` = 0), reply after gate approval instead; reviewers are still owed the `not-fixing` reasons. ALWAYS reply via thread reply API — NEVER standalone PR comments (`gh pr review -c`, `gh pr comment`). Sole exception: flat items (flat comments, review bodies — no line anchor) → one flat comment per item quote-replying (blockquote original + author handle, then response).
 
 Git host reply to review thread (`pr_number`, `comment_id`, `body`; fallback per spec — `--input -` for special chars). Replies short and factual.
 
