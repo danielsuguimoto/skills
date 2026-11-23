@@ -1,6 +1,6 @@
 # User-driven PR testing
 
-The user performs all test actions, including UI-based setup, API requests, worker/job or CLI invocations, and shipped migrations, seeders, operations, and scripts, even when they are prerequisites. The agent prepares minimal non-UI prerequisites with existing generic tooling. Never run shipped artifacts or take over UI actions as hidden setup.
+The user performs all test actions, including UI-based setup, API requests, worker/job or CLI invocations, and shipped migrations, seeders, operations, and scripts, even when they are prerequisites. The agent provisions missing data through non-UI tooling — baseline seeds/factories and targeted application or database commands — requesting required approval and executing it itself; only UI-created or human-only setup stays with the user. Never run shipped artifacts or take over UI actions as hidden setup.
 
 For each scenario, record exact navigation, field values, clicks or command, expected observation, and any persisted effect to verify. Show a short overview first; give details when the user reaches the scenario. Artifact instructions include the pre-check, command, and post-check. Inspect each artifact's target and pre-state and leave it pending for the user.
 
