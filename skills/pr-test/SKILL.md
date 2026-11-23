@@ -36,7 +36,7 @@ Identify `<data-artifacts>` — shipped migrations, seeders, operations, and scr
 
 ### 3. Load Linked Context
 
-Load each `<ticket-refs>` entry's body and checklists (`issue-trackers.md`). Read comments, attachments, or nested links only to resolve a missing requirement or reproduction detail; this scope also governs generic tracker loading instructions. Tool failure → try a configured alternative. If user access or missing content is necessary, ask once; unavailable → record the gap and continue with supported requirements.
+Load each `<ticket-refs>` entry's body and checklists (`issue-trackers.md`), reusing entries already loaded in session. Read comments, attachments, or nested links only to resolve a missing requirement or reproduction detail; this scope also governs generic tracker loading instructions. Tool failure → try a configured alternative. If user access or missing content is necessary, ask once; unavailable → record the gap and continue with supported requirements.
 
 Extract `<expected-outcomes>` as the observable behavior the PR promises. Implementation steps, helper methods, test-writing tasks, and validation commands are not separate user journeys; use them to locate behavior or existing checks. Record `<client-cases>` when the source contains a customer report, keeping the reported steps and data conditions that matter to the failure. Historical context does not expand the PR's purpose.
 

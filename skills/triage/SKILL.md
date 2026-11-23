@@ -31,7 +31,7 @@ Ticket reference/URL → `<ticket-url>`; extra focus/constraints → `<additiona
 
 ### Load Ticket Context
 
-- `<ticket-url>` → load via issue tracker (`issue-trackers.md`) with `source: <ticket-url>`, `comments: true` → `<ticket-context>`; attachments per spec → `<attachment-insights>`.
+- `<ticket-url>` → already loaded in session → reuse; otherwise load via issue tracker (`issue-trackers.md`) with `source: <ticket-url>`, `comments: true` → `<ticket-context>`; attachments per spec → `<attachment-insights>`.
 - Otherwise → the request/conversation is `<ticket-context>`.
 - Missing/unloadable → ask the user for content or an alternative source; STOP only if they cannot provide it.
 

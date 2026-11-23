@@ -13,7 +13,7 @@ Use git host operations (`<project-root>/docs/git-hosts.md`) for branch check an
 
 2. **Load Planning Context**: When `<ticket-url>` exists, use the issue tracker tool (`issue-trackers.md`):
 1. List tracker tools → confirm a ticket-load tool exists; missing → return `BLOCKED` with `NO_MCP_ACCESS`.
-2. Load the primary ticket inline in the main session. Load its source ticket (identified by `refUrl`, links, or the body) and other implementation-relevant linked tickets inline too. Read their bodies, full comment threads, checklists, and attachments per spec → `<attachment-insights>`. Limit nested traversal to links that inform the implementation.
+2. Load the primary ticket inline in the main session — reuse it when already loaded in session. Load its source ticket (identified by `refUrl`, links, or the body) and other implementation-relevant linked tickets inline too. Read their bodies, full comment threads, checklists, and attachments per spec → `<attachment-insights>`. Limit nested traversal to links that inform the implementation.
 3. Derive requirements from the primary ticket's name, description, comments, checklists, and attachments. Use linked evidence to clarify requirements without expanding scope.
 4. Anchor `<spec-intent>` in the primary ticket's Problem Statement/Solution/Notes and the original problem and decisions in linked sources. Linked source unavailable → note the gap and use the primary ticket's intent. Items are the how; intent arbitrates every later adaptation.
 
