@@ -25,6 +25,7 @@ Ask about each tool category via the native user-prompting mechanism — three s
 | What issue/ticket tracker do you use? | Issue tracker | Trello, Linear, Jira, None |
 | What bug/error monitoring tool do you use? | Bug tracker | Sentry, Bugsnag, Rollbar, None |
 | What monitoring/incident platform do you use? | Observability | Datadog, Flare, Grafana, None |
+| Where do production deploy/job logs live? | Deploy logs | Same as observability, Git host CI, None |
 | What git hosting platform do you use? | Git host | GitHub, GitLab, Bitbucket, None |
 | What database inspection tools do you use? | Database | Laravel Boost MCP, Direct SQL client, None |
 
@@ -77,7 +78,7 @@ Spec files:
 |------|--------|
 | `<project-root>/docs/issue-trackers.md` | Load, sync, list tickets |
 | `<project-root>/docs/bug-trackers.md` | Query errors, stack traces |
-| `<project-root>/docs/observability-tools.md` | Query alerts, incidents, uptime |
+| `<project-root>/docs/observability-tools.md` | Query alerts, incidents, uptime, deploy and job logs |
 | `<project-root>/docs/mcp-servers.md` | List tools, call tools, discovery protocol |
 | `<project-root>/docs/git-hosts.md` | PRs, reviews, issues, branches, commits, sync |
 | `<project-root>/docs/database-tools.md` | Schema, queries, REPL operations |
@@ -92,6 +93,8 @@ Spec files:
 | `<project-root>/docs/doc-lookup.md` | Framework/library/SDK docs, search fallbacks |
 
 `mcp-servers.md`: populate a server inventory section from `<mcp-inventory>` if the user chose to document detected servers.
+
+`observability-tools.md`: when the deploy/job-log source differs from the monitoring tool, document that source's lookup operations and details alongside the monitoring tool's.
 
 ## Verify and Output
 
