@@ -15,19 +15,19 @@ PR number/URL → `<pr-ref>`; none → derive from conversation or the most rece
 
 ### 2. Load PR Context
 
-View PR via git host (`git-hosts.md`). Extract `<pr-branch>`, `<pr-number>`, `<pr-url>`, `<pr-summary>` (what shipped and why — title, body, commits), and `<ticket-refs>` (every issue/card reference in body, commits, branch name — git host or external tracker). Inspect the PR file list and diff, deployment configuration, and deploy notes for `<data-artifacts>`: every shipped migration, seeder, operation, or script that changes production schema or data, including changes to existing artifacts. Determine each artifact's deployment targets and intended effects from its code and configuration; record unknowns rather than treating them as absent.
+View PR via git host (`git-hosts.md`). Extract `<pr-branch>`, `<pr-number>`, `<pr-url>`, `<pr-summary>` (what shipped and why — title, body, commits), and `<ticket-refs>` (every issue/card reference in body, commits, branch name — git host or external tracker). Inspect the PR file list and diff, deployment configuration, and deploy notes for `<data-artifacts>`: every shipped migration, seeder, operation, or script that changes production schema or data, including changes to existing artifacts. Determine each artifact's deployment targets, intended effects, and whether it is expected to run in this deploy from its code and configuration; record unknowns rather than treating them as absent.
 
 **Gate:** PR must be merged. Open or closed-unmerged → STOP, report its actual state — this flow only applies to shipped work.
 
 ### 3. Validate Deployed Artifacts
 
-Skip only when the PR ships no data artifacts. If artifact discovery is incomplete, record `unverifiable` with the gap instead of `none shipped`. For every artifact and affected production deployment/database, query the live production database per `database-tools.md`; keep production read-only. Check execution evidence and the intended effect:
+Skip only when the PR ships no data artifacts. If artifact discovery is incomplete, record `unverifiable` with the gap instead of `none shipped`. Per artifact and production target, record `not scheduled` for confirmed manual or deferred work not expected in this deploy. For every other pair, query the live production database per `database-tools.md`; keep production read-only. Check execution evidence and the intended effect:
 
 - Migration → migration history records its run; inspect the resulting schema and data.
 - Seeder → inspect execution records or durable run markers and the expected records or updated values.
 - Operation/script → inspect execution records or durable run markers and the stated effect (rows written, values changed, flags set).
 
-Status each artifact per target as `verified` only when database evidence establishes execution for this deploy and the intended effect; `failed` when evidence shows it did not run or its effect is incomplete; otherwise `unverifiable`. Matching state alone does not prove execution: pre-existing data can mask a skipped run. Missing access, unknown targets, or insufficient execution evidence → `unverifiable`, with the gap recorded. Deployment logs do not replace production database checks. Record findings and evidence as `<artifact-results>`.
+Status each pair as `verified` only when database evidence establishes execution for this deploy and the intended effect; an expected pair is `failed` when evidence shows it did not run or its effect is incomplete. Otherwise `unverifiable`, including an unknown schedule without evidence of execution. Matching state alone does not prove execution: pre-existing data can mask a skipped run. After attempting database checks, if execution remains unclear, shell-read `observability-tools.md` and inspect available deploy or job failure records; a confirmed failure → `failed`. Logs do not replace production database checks. Missing access, unknown targets, or insufficient execution evidence → `unverifiable`, with the gap recorded. Record findings and evidence as `<artifact-results>`.
 
 **Gate:** any `failed` → STOP, report — the shipped work is unproven until the artifact re-runs. `unverifiable` → proceed; flag per artifact in Step 8.
 
@@ -49,7 +49,7 @@ Per `<customer-tickets>` entry, invoke `draft-reply` with the ticket URL and `<a
 
 - The fix shipped: merged in `<pr-url>`, now deployed — the reported issue should be resolved.
 - What the issue was: plain-language explanation from `<pr-summary>` + the thread — include **only when nobody explained it to the customer before** (check comments first); describe symptom → cause → fix at their level, no root-cause jargon.
-- Caveats: each `unverifiable` entry in `<artifact-results>` → `[NEEDS-REVIEW: <what couldn't be confirmed>]` — a reviewer flag in the draft, never customer-facing copy.
+- Caveats: each `unverifiable` or `not scheduled` entry in `<artifact-results>` → `[NEEDS-REVIEW: <what couldn't be confirmed or isn't scheduled>]` — a reviewer flag in the draft, never customer-facing copy.
 
 One draft per ticket — `draft-reply` posts a private note; nothing reaches the customer.
 
@@ -59,7 +59,7 @@ List isolated workspaces per `workspace-isolation.md`; find the one created for 
 
 ### 8. Report
 
-Chat only: `<pr-url>` merge state · `<artifact-results>` per artifact and target — status + evidence, or `none shipped` · classification counts · draft note URL per customer ticket · `<drifted-tickets>` per entry: ticket URL, reported problem, why `<pr-summary>` doesn't cover it · workspace removed or `none found`.
+Chat only: `<pr-url>` merge state · `<artifact-results>` per artifact and target — status + evidence, plus any inventory-wide discovery gap, or `none shipped` · classification counts · draft note URL per customer ticket · `<drifted-tickets>` per entry: ticket URL, reported problem, why `<pr-summary>` doesn't cover it · workspace removed or `none found`.
 
 ## Notes
 
