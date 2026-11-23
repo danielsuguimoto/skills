@@ -39,8 +39,9 @@ A workspace is ready when its `HEAD` points at the resolved base commit — comp
 
 Invocation references a `<pr-ref>` → point the workspace at the PR branch between creation and project setup:
 
-- A mechanism sharing local branch refs (linked worktree) can't attach the PR head branch while another worktree holds it — check that against the `View PR` payload and the source checkout first; held → prefer a mechanism with independent refs, or report the blocker and stop before readiness or handoff.
+- A mechanism sharing local branch refs (linked worktree) can't attach the PR head branch while another worktree holds it — check that against the `View PR` payload and the source checkout first; held → report the blocker and stop before readiness or handoff. The configured mechanism still owns the choice (`using-workspaces`) — don't silently switch to an independent-refs one.
 - After creation, run the `Checkout PR` git host operation (`git-hosts.md`) inside the workspace — it attaches the existing PR head branch, not a new task branch. The readiness target becomes `HEAD` on that branch at the PR head commit; verify it before `using-workspaces`' project-setup step so dependencies install from the PR.
+- An untrusted `<pr-ref>` (fork, outside author) → project setup can run PR-authored install hooks as the local user; flag that and confirm with the user before `using-workspaces`' project-setup step runs.
 
 ## 3. Hand Off
 
@@ -53,7 +54,7 @@ All downstream work happens inside the workspace:
 
 | Situation | Action |
 |-----------|--------|
-| Already inside an isolated workspace | Skip creation; run `<downstream>` in place and say so — a `<pr-ref>` still triggers `Checkout PR`, but only on a clean worktree and index; dirty → leave the checkout alone, ask the user to preserve the changes |
+| Already inside an isolated workspace | Skip creation and say so. With a `<pr-ref>`, check the worktree and index first — dirty → leave the checkout alone, ask the user to preserve changes, and stop before setup or handoff; clean → run `Checkout PR` and verify readiness. Run `<downstream>` in place only after any required PR checkout succeeds |
 | PR fails to load (missing, auth) | Tell the user; ask whether to proceed on the default branch or stop — a PR-targeting `<downstream>` will retry the PR on its own |
 | No downstream request, or context-only input | Standalone mode: set up, report path, stop — subsequent instructions run inside the workspace |
 | Workspace creation fails (sandbox/permissions) | Tell the user; ask whether to run `<downstream>` in place — don't silently proceed |
