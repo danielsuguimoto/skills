@@ -1,6 +1,6 @@
 ---
 name: post-merge
-description: "Use after a pull request is merged and deployed — verify deployment-run artifacts (migrations, seeders, operations, scripts) took effect in prod, find customer-success tickets linked to the PR and draft resolution replies for them, then clear the isolated workspace used for the work. No code changes."
+description: "Use after a pull request is merged and deployed — verify shipped artifacts took effect, find customer-success tickets linked to the PR and draft resolution replies for them, then clear the isolated workspace used for the work. No code changes."
 ---
 
 ## Required `<project-root>/docs` reads
@@ -21,13 +21,13 @@ View PR via git host (`git-hosts.md`). Extract `<pr-branch>`, `<pr-number>`, `<p
 
 ### 3. Validate Deployed Artifacts
 
-Skip when `<data-artifacts>` is empty. Per artifact, derive its intended effect from the shipped code, then verify that outcome in production — a run log proves execution, not intent; keep production read-only:
+Skip when `<data-artifacts>` is empty. Per artifact, derive its intended effect from the shipped code, then verify in production that it ran in this deploy and took effect — keep production read-only:
 
-- Migration → recorded as run and its schema/data change present.
-- Seeder → expected records or updated values present.
-- Operation/script → its stated effect observable in prod state (rows written, values changed, flags set).
+- Migration → its run recorded for this deploy and its schema/data change present.
+- Seeder → run evidence tied to this deploy and expected records or updated values present.
+- Operation/script → run evidence tied to this deploy and its stated effect observable (rows written, values changed, flags set).
 
-Evidence: live-DB queries per `database-tools.md` prove the outcome; deploy, job, and error logs per `observability-tools.md` supply the run trail and failure signals — never the pass condition on their own. Status each `verified` / `failed` / `unverifiable` → `<artifact-results>`.
+Evidence: deploy and job logs per `observability-tools.md` tie the run to this deploy; live-DB queries per `database-tools.md` prove the outcome. Matching state with no run evidence → `unverifiable`, never `verified` — pre-existing data masks a skipped run. Status each `verified` / `failed` / `unverifiable` → `<artifact-results>`.
 
 **Gate:** any `failed` → STOP, report — the shipped work is unproven until the artifact re-runs. `unverifiable` → proceed; flag per artifact in Step 8.
 
@@ -49,6 +49,7 @@ Per `<customer-tickets>` entry, invoke `draft-reply` with the ticket URL and `<a
 
 - The fix shipped: merged in `<pr-url>`, now deployed — the reported issue should be resolved.
 - What the issue was: plain-language explanation from `<pr-summary>` + the thread — include **only when nobody explained it to the customer before** (check comments first); describe symptom → cause → fix at their level, no root-cause jargon.
+- Caveats: each `unverifiable` entry in `<artifact-results>` — name what couldn't be confirmed, so the reviewer sees the gap beside the resolution claim.
 
 One draft per ticket — `draft-reply` posts a private note; nothing reaches the customer.
 

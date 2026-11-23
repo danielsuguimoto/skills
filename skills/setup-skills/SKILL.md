@@ -77,7 +77,7 @@ Spec files:
 |------|--------|
 | `<project-root>/docs/issue-trackers.md` | Load, sync, list tickets |
 | `<project-root>/docs/bug-trackers.md` | Query errors, stack traces |
-| `<project-root>/docs/observability-tools.md` | Query alerts, incidents, uptime |
+| `<project-root>/docs/observability-tools.md` | Query alerts, incidents, uptime, deploy and job logs |
 | `<project-root>/docs/mcp-servers.md` | List tools, call tools, discovery protocol |
 | `<project-root>/docs/git-hosts.md` | PRs, reviews, issues, branches, commits, sync |
 | `<project-root>/docs/database-tools.md` | Schema, queries, REPL operations |
