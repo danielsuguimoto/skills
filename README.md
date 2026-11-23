@@ -29,7 +29,7 @@ Each subdirectory under `skills/` is a self-contained skill with a `SKILL.md` ma
 | pr-fix-ci | Fix failing CI checks on a PR — read logs, fix the code, push, verify green. |
 | pr-stack | Assess an existing PR for stacking using its purpose, linked context, project memories, conventions, and deployment; convert only after explicit agreement. |
 | pr-test | Test a PR's purpose with the user or agent driving, chosen before setup. Exercise realistic flows and critical edge cases with minimal local data; verify persisted effects and shipped artifacts. Production stays read-only; PR and repo files/history stay untouched. |
-| post-merge | After a PR is merged and deployed — draft resolution replies for linked customer-success tickets via draft-reply, then clear the work's isolated workspace. |
+| post-merge | After a PR is merged and deployed — verify deployment-run artifacts took effect in prod, draft resolution replies for linked customer-success tickets via draft-reply, then clear the work's isolated workspace. |
 | session-to-memory | Extract retention-worthy knowledge from a session and persist it to the active memory provider. |
 | sequential-thinking | Sequential thinking method for non-trivial tasks — thought chains that revise, branch, and verify before concluding. |
 | setup-skills | Guide users through initial configuration — creates `<project-root>/docs` folder and generates all spec files needed by other skills. |
