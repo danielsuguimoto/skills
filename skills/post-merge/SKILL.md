@@ -21,7 +21,7 @@ View PR via git host (`git-hosts.md`). Extract `<pr-branch>`, `<pr-number>`, `<p
 
 ### 3. Load Linked Tickets
 
-Per `<ticket-refs>` entry, load via the issue tracker tool (`issue-trackers.md`): body, every comment, attachments. **Nested links:** traverse per the spec — the customer thread may live on an inner card; add each ref found to `<ticket-refs>`.
+Per `<ticket-refs>` entry, load fresh via the issue tracker tool (`issue-trackers.md`): body, every comment, attachments — an earlier in-session copy does not qualify; resolution drafts must reflect the latest customer comments. This fresh snapshot is what `draft-reply` reuses. **Nested links:** traverse per the spec — the customer thread may live on an inner card; add each ref found to `<ticket-refs>`.
 
 ### 4. Classify Tickets
 

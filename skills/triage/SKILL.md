@@ -31,7 +31,7 @@ Ticket reference/URL → `<ticket-url>`; extra focus/constraints → `<additiona
 
 ### Load Ticket Context
 
-- `<ticket-url>` → load via issue tracker (`issue-trackers.md`) with `source: <ticket-url>`, `comments: true` → `<ticket-context>`; attachments per spec → `<attachment-insights>`.
+- `<ticket-url>` → reuse a complete, current in-session copy — body, every comment including notes this session posted, attachments per spec; otherwise load via issue tracker (`issue-trackers.md`) with `source: <ticket-url>`, `comments: true` → `<ticket-context>`; attachments per spec → `<attachment-insights>`.
 - Otherwise → the request/conversation is `<ticket-context>`.
 - Missing/unloadable → ask the user for content or an alternative source; STOP only if they cannot provide it.
 
@@ -81,7 +81,7 @@ The last output line names the follow-up skill — always exactly one:
 
 ### Sync
 
-Always sync findings back — the spec phase reads prior comments; skipping breaks the pipeline. Via issue tracker sync — convention per `issue-trackers.md` (`refUrl` = `<ticket-url>`). Write the note per `writing-for-agents`: compact, `file:line` citations, no code blocks, no client-facing tone. Sync fails → report error, provide findings in chat.
+Always sync findings back — the spec phase reads prior comments; skipping breaks the pipeline. Via issue tracker sync — convention per `issue-trackers.md` (`refUrl` = `<ticket-url>`). Write the note per `writing-for-agents`: compact, `file:line` citations, no code blocks, no client-facing tone; the posted note joins `<ticket-context>` for downstream reuse. Sync fails → report error, provide findings in chat.
 
 ## Notes
 

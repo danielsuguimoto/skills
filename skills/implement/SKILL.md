@@ -11,9 +11,9 @@ Use git host operations (`<project-root>/docs/git-hosts.md`) for branch check an
 
 1. **Capture Input**: Extract `<ticket-url>` when supplied (mention without URL → ask for link). Otherwise use the approved plan in the request or conversation; no plan → ask for it.
 
-2. **Load Planning Context**: When `<ticket-url>` exists, use the issue tracker tool (`issue-trackers.md`):
-1. List tracker tools → confirm a ticket-load tool exists; missing → return `BLOCKED` with `NO_MCP_ACCESS`.
-2. Load the primary ticket inline in the main session. Load its source ticket (identified by `refUrl`, links, or the body) and other implementation-relevant linked tickets inline too. Read their bodies, full comment threads, checklists, and attachments per spec → `<attachment-insights>`. Limit nested traversal to links that inform the implementation.
+2. **Load Planning Context**: When `<ticket-url>` exists:
+1. Reuse complete, current in-session copies — the primary ticket plus its source ticket and other implementation-relevant linked tickets — when they cover bodies, full comment threads, checklists, attachments, and notes this session posted.
+2. Load uncovered tickets inline in the main session via the issue tracker tool (`issue-trackers.md`): list tracker tools → confirm a ticket-load tool exists; missing → `BLOCKED` with `NO_MCP_ACCESS` only while coverage gaps remain. Load the primary ticket, its source ticket (identified by `refUrl`, links, or the body), and other implementation-relevant linked tickets. Read their bodies, full comment threads, checklists, and attachments per spec → `<attachment-insights>`. Limit nested traversal to links that inform the implementation.
 3. Derive requirements from the primary ticket's name, description, comments, checklists, and attachments. Use linked evidence to clarify requirements without expanding scope.
 4. Anchor `<spec-intent>` in the primary ticket's Problem Statement/Solution/Notes and the original problem and decisions in linked sources. Linked source unavailable → note the gap and use the primary ticket's intent. Items are the how; intent arbitrates every later adaptation.
 
