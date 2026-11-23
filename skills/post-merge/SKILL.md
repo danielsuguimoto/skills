@@ -19,9 +19,13 @@ View PR via git host (`git-hosts.md`). Extract `<pr-branch>`, `<pr-number>`, `<p
 
 **Gate:** PR must be merged. Open or closed-unmerged → STOP, report its actual state — this flow only applies to shipped work.
 
-### 3. Validate Deployed Artifacts
+### 3. Load Linked Tickets
 
-Skip only when the PR ships no data artifacts. If artifact discovery is incomplete, record `unverifiable` with the gap instead of `none shipped`. Per artifact and production target, record `not scheduled` for confirmed manual or deferred work not expected in this deploy. For every other pair, query the live production database per `database-tools.md`; keep production read-only. Check execution evidence and the intended effect:
+Per `<ticket-refs>` entry, load fresh via the issue tracker tool (`issue-trackers.md`): body, every comment, attachments — an earlier in-session copy does not qualify; resolution drafts must reflect the latest customer comments. This fresh snapshot is what `draft-reply` reuses. **Nested links:** traverse per the spec — the customer thread may live on an inner card; add each ref found to `<ticket-refs>`.
+
+### 4. Validate Deployed Artifacts
+
+Use linked ticket context where relevant to identify deployment targets, intended effects, schedules, and verification evidence. Skip only when the PR ships no data artifacts. If artifact discovery is incomplete, record `unverifiable` with the gap instead of `none shipped`. Per artifact and production target, record `not scheduled` for confirmed manual or deferred work not expected in this deploy. If ticket schedules conflict with code or deployment configuration, resolve the conflict before recording `not scheduled`; until resolved, treat the schedule as unknown and query production. For every other pair, query the live production database per `database-tools.md`; keep production read-only. Check execution evidence and the intended effect:
 
 - Migration → migration history records its run; inspect the resulting schema and data.
 - Seeder → inspect execution records or durable run markers and the expected records or updated values.
@@ -30,10 +34,6 @@ Skip only when the PR ships no data artifacts. If artifact discovery is incomple
 Status each pair as `verified` only when database evidence establishes execution for this deploy and the intended effect, and the run's final outcome is successful; `failed` when a run reaches a final outcome but its effect is incomplete, or when an expected run was definitively skipped. Otherwise `unverifiable`, including an unknown schedule without evidence of execution. Matching state alone does not prove execution: pre-existing data can mask a skipped run. After attempting database checks, if execution or completion remains unclear, shell-read `observability-tools.md` and inspect available deploy or job records; a confirmed terminal failure for the same artifact, deploy, and target → `failed`. After a run completes, if the data was read before completion or its timing is unknown, re-query a fresh production database snapshot before assessing the effect. Consider retries: a failed attempt superseded by a successful retry is not a terminal failure; a running job or unknown final outcome remains `unverifiable`. Logs do not replace production database checks. If missing access, unknown targets, or insufficient execution evidence prevent a determination, record `unverifiable` and the gap. Record findings and evidence as `<artifact-results>`.
 
 **Gate:** any `failed` → STOP, report — the shipped work is unproven until the artifact re-runs. `unverifiable` → proceed; flag per artifact in Step 8.
-
-### 4. Load Linked Tickets
-
-Per `<ticket-refs>` entry, load fresh via the issue tracker tool (`issue-trackers.md`): body, every comment, attachments — an earlier in-session copy does not qualify; resolution drafts must reflect the latest customer comments. This fresh snapshot is what `draft-reply` reuses. **Nested links:** traverse per the spec — the customer thread may live on an inner card; add each ref found to `<ticket-refs>`.
 
 ### 5. Classify Tickets
 
@@ -63,4 +63,4 @@ Chat only: `<pr-url>` merge state · `<artifact-results>` per artifact and targe
 
 ## Notes
 
-- Deployed state comes from the trigger — the user says it's deployed; Step 2 verifies merged state, Step 3 what the deploy executed.
+- Deployed state comes from the trigger — the user says it's deployed; Step 2 verifies merged state, Step 4 what the deploy executed.
