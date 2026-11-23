@@ -1,6 +1,6 @@
 ---
 name: new-workspace
-description: "Use when a request or skill invocation is prefixed with 'new-workspace' (e.g. '/new-workspace /implement <card>', '/new-workspace /pr-fix <pr>') or should run in a separate/isolated workspace — including work based on an existing PR. Sets up isolation via the using-workspaces skill, then runs the requested work inside it."
+description: "Use when a request or skill invocation is prefixed with 'new-workspace' (e.g. '/new-workspace /implement <card>', '/new-workspace /pr-fix <pr>') or should run in a separate/isolated workspace — including work based on an existing PR."
 ---
 
 ## Required `<project-root>/docs` reads
@@ -20,7 +20,7 @@ Everything after `new-workspace` is downstream input:
 Then derive `<workspace-name>` — a concise kebab-case slug naming the work:
 
 - Input references a ticket/card (URL or ID) → load it via `issue-trackers.md` and slug from `<ticket-title>` (an ID alone is not a friendly name); keep the payload in context for `<downstream>` to reuse instead of loading it again. Load fails → fall back to the ID, note the gap.
-- Input references an existing PR (URL or number) → load it via `git-hosts.md` (`View PR`) and slug from `<pr-title>`; keep the payload in context for `<downstream>` to reuse instead of loading it again. Load fails → fall back to the PR number, note the gap.
+- Input references an existing PR (URL or number) → `<pr-ref>`; several PRs → `<pr-ref>` is the one `<downstream>` targets, the rest stay context. Load `<pr-ref>` via `git-hosts.md` (`View PR`), slug from `<pr-title>`, and keep the payload in context for `<downstream>` to reuse instead of loading it again. Load fails → fall back to the PR number, note the gap.
 - Free-text task or description → slug from that text.
 
 ## 2. Set Up the Workspace
@@ -37,7 +37,10 @@ Then invoke `using-workspaces` and follow it fully — consent is implied; skip 
 
 A workspace is ready when its `HEAD` points at the resolved base commit — compare via git host operations (`git-hosts.md`). A detached `HEAD` satisfies this; never require a `master`/`main` checkout or drop a mechanism-installed worktree link to get one. A task branch is created only when the work ships (`new-branch`/`ship-changes`).
 
-Invocation references an existing PR → point the workspace at the PR branch after creation: run the `Checkout PR` git host operation (`git-hosts.md`) inside the workspace. This attaches the existing PR head branch — not a new task branch — and the readiness target becomes `HEAD` on that branch at the PR head commit.
+Invocation references a `<pr-ref>` → point the workspace at the PR branch between creation and project setup:
+
+- A mechanism sharing local branch refs (linked worktree) can't attach the PR head branch while another worktree holds it — check that against the `View PR` payload and the source checkout first; held → prefer a mechanism with independent refs, or report the blocker and stop before readiness or handoff.
+- After creation, run the `Checkout PR` git host operation (`git-hosts.md`) inside the workspace — it attaches the existing PR head branch, not a new task branch. The readiness target becomes `HEAD` on that branch at the PR head commit; verify it before `using-workspaces`' project-setup step so dependencies install from the PR.
 
 ## 3. Hand Off
 
@@ -50,8 +53,8 @@ All downstream work happens inside the workspace:
 
 | Situation | Action |
 |-----------|--------|
-| Already inside an isolated workspace | Skip creation; run `<downstream>` in place and say so — a PR reference still triggers the `Checkout PR` step |
-| PR fails to load (missing, auth) | Tell the user; ask whether to base on the default branch or stop |
+| Already inside an isolated workspace | Skip creation; run `<downstream>` in place and say so — a `<pr-ref>` still triggers `Checkout PR`, but only on a clean worktree and index; dirty → leave the checkout alone, ask the user to preserve the changes |
+| PR fails to load (missing, auth) | Tell the user; ask whether to proceed on the default branch or stop — a PR-targeting `<downstream>` will retry the PR on its own |
 | No downstream request, or context-only input | Standalone mode: set up, report path, stop — subsequent instructions run inside the workspace |
 | Workspace creation fails (sandbox/permissions) | Tell the user; ask whether to run `<downstream>` in place — don't silently proceed |
 | `<downstream>` names an unknown skill | Set up, report, treat the text as a plain task |
