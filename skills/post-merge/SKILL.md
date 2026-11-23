@@ -49,7 +49,7 @@ Per `<customer-tickets>` entry, invoke `draft-reply` with the ticket URL and `<a
 
 - The fix shipped: merged in `<pr-url>`, now deployed — the reported issue should be resolved.
 - What the issue was: plain-language explanation from `<pr-summary>` + the thread — include **only when nobody explained it to the customer before** (check comments first); describe symptom → cause → fix at their level, no root-cause jargon.
-- Caveats: each `unverifiable` entry in `<artifact-results>` — name what couldn't be confirmed, so the reviewer sees the gap beside the resolution claim.
+- Caveats: each `unverifiable` entry in `<artifact-results>` → `[NEEDS-REVIEW: <what couldn't be confirmed>]` — a reviewer flag in the draft, never customer-facing copy.
 
 One draft per ticket — `draft-reply` posts a private note; nothing reaches the customer.
 
