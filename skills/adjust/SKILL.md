@@ -32,7 +32,7 @@ Resolve these from the request and code. Ask only about material unknowns:
 - **Scope** — explicitly out of scope; existing behavior that must not change.
 - **Priority** — multi-point → which matters most; recommend ordering.
 - **Conflict check** — request contradicting an invariant/pattern/design decision → surface with the decisive snippet first.
-- **Spec check** — a spec card reachable (ticket ref in `$ARGUMENTS`/conversation, or linked from the loaded ticket) → load it unless already in session (shell-read `<project-root>/docs/issue-trackers.md`; take body, Implementation/Validation checklists, patches comment). A request point contradicting a spec item or a locked `Solution` decision → **divergence**: show the spec line vs. the request, ask whether the spec should change. Record each as `<spec-divergence>` (`confirmed`/`declined`); additions the spec simply doesn't cover aren't divergences.
+- **Spec check** — a spec card reachable (ticket ref in `$ARGUMENTS`/conversation, or linked from the loaded ticket) → load it unless the session already holds its body, Implementation/Validation checklists, and patches comment (shell-read `<project-root>/docs/issue-trackers.md` for the load). A request point contradicting a spec item or a locked `Solution` decision → **divergence**: show the spec line vs. the request, ask whether the spec should change. Record each as `<spec-divergence>` (`confirmed`/`declined`); additions the spec simply doesn't cover aren't divergences.
 
 Store as `<request-context>`. Intent still undefined after one round → **stop, list unknowns** — don't act speculatively.
 

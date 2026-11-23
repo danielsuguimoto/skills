@@ -23,7 +23,7 @@ Ticket reference/URL → `<ticket-url>`; extra focus/constraints/audience hints 
 
 ### Load Ticket Context
 
-- `<ticket-url>` → already loaded in session → reuse; otherwise issue tracker tool (`issue-trackers.md`) with `source: <ticket-url>`, `comments: true` → `<ticket-context>`; attachments per spec → `<attachment-insights>`.
+- `<ticket-url>` → reuse a complete, current in-session copy — body and every comment including notes this session posted (the reply target is the newest unanswered item); otherwise issue tracker tool (`issue-trackers.md`) with `source: <ticket-url>`, `comments: true` → `<ticket-context>`; attachments per spec → `<attachment-insights>`.
 - Otherwise → the request/conversation is `<ticket-context>`.
 - Missing or unloadable → STOP.
 

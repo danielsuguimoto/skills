@@ -30,7 +30,7 @@ Treat ticket systems generically.
 
 1. **Interpret Arguments**: Ticket reference/URL → `<ticket-url>`; any other input → `<request>`; extra focus areas or constraints → `<additional-context>`. No arguments → use the ticket list tool to discover unresolved assigned tickets first; else derive `<request>` from the conversation.
 
-2. **Load Planning Context**: `<ticket-url>` exists → reuse in-session ticket context or load it via the issue tracker tool (`issue-trackers.md`), store as `<planning-context>`; attachments per spec → `<attachment-insights>`. No `<ticket-url>` → the request/conversation is `<planning-context>`. Empty or missing → stop.
+2. **Load Planning Context**: `<ticket-url>` exists → reuse a complete, current in-session copy — full comment thread, this session's synced notes appended — or load it via the issue tracker tool (`issue-trackers.md`), store as `<planning-context>`; attachments per spec → `<attachment-insights>`. No `<ticket-url>` → the request/conversation is `<planning-context>`. Empty or missing → stop.
 
 3. **Interpret Planning Context**: Derive from the full ticket (raw text + comments): `<planning-objective>`, `<operative-constraints>`, `<proposed-technical-direction>`, `<open-questions>` (unresolved only), `<spec-ticket-url>` (a linked spec-destination ticket URL in the source ticket's body/comments/links; empty when none). Keep earlier comments defining constraints, business rules, implementation decisions, migration rules, naming, sequencing, scoping. Anchor `<source-request>` — the requester's own statement (ticket body + requester comments), distinct from internal discussion and triage findings: those inform the spec as evidence but never replace what the requester asked. Multiple independent subsystems → flag immediately; help the user identify pieces, relationships, build order; plan the first subsystem through the normal flow. Big problems: name the destination first, keep output on one ticket; split only when the user asks.
 
@@ -75,7 +75,7 @@ Rules: one item = one single-purpose patch — split compound changes; broader c
 
 Only two outcomes: sync or revise — never offer to apply/implement/execute; user asks to implement → decline, point to the implementation workflow. `Revise Spec` → grill the revision points (step 5), reshape, re-enter this gate; `Sync to Ticket` → step 10. Sync only on that answer.
 
-10. **Sync Ticket**: sync via the issue tracker sync tool (`issue-trackers.md`). Final output: the ticket URL.
+10. **Sync Ticket**: sync via the issue tracker sync tool (`issue-trackers.md`); the synced spec joins the in-session ticket context for downstream reuse. Final output: the ticket URL.
 - `title`: `<spec-title>`; `description`: `<spec-description>` (Destination/Problem/Solution/Notes only — no items, no patch code).
 - `checklists`: two non-empty sections as JSON array matching `{name, items: [{name, completed}]}`:
   - `{"name": "Implementation", "items": [{"name": "<requirement-item-encoded>", "completed": false}, ...]}`

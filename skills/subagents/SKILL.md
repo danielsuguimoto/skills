@@ -5,7 +5,7 @@ description: "Subagent delegation gates. MANDATORY before any spawn, any large c
 
 Default to execution in the current session. Invoking a skill means loading its instructions and executing them here. Delegate a workflow or its steps only if the user explicitly asks to delegate that work.
 
-**Ticket Brief exception.** When a workflow calls for a `Ticket Brief`, delegate only that isolated, read-only ticket inspection — unless the ticket content or a matching brief is already in session, in which case derive the scoped answers inline. Follow its isolation and blocker rules instead of the sequential, size, and inline-fallback gates below. The parent runs the workflow and never probes raw ticket content to qualify.
+**Ticket Brief exception.** When a workflow calls for a `Ticket Brief`, delegate only that isolated, read-only ticket inspection — unless a matching brief or ticket content covering the brief's evidence depth (comments and attachments included) is already in session, in which case derive the scoped answers inline. Follow its isolation and blocker rules instead of the sequential, size, and inline-fallback gates below. The parent runs the workflow and never probes raw ticket content to qualify.
 
 ## Sequential Gate
 
