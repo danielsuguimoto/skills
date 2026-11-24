@@ -74,6 +74,8 @@ Route by task shape — strong models cost latency and tokens; weak models fail 
 
 Keep work inline when streams share file writes, sync cost exceeds time saved, or the work is a bounded single stream. Apply the sequential gate to dependencies.
 
+Shared infrastructure is not the barrier: one database, server, or browser process qualifies when streams use disjoint actors and records, write only records and files assigned to their actor or tenant, and avoid writes to shared mutable state — tabs in one browser context share cookies and storage, so each parallel actor needs a separate context (or profile where the tool has no context support). Doubtful independence stays inline. Before retry, the parent removes or quarantines any partial state a failed stream wrote so siblings are not contaminated.
+
 Patterns: **fan-out/fan-in** or **scatter/gather** (N≥3 independent → wait all → parent synthesizes inline).
 
 ## Dispatch Contract (every spawn)

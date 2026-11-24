@@ -39,10 +39,10 @@ Classify each `<check>`:
 Record `<classification>`; `flaky`/`infra`/`required-status` → `<not-fixing>` with reason. All failures non-`code` → summary + stop (suggest re-runs where applicable).
 
 ### 7. Plan Fix
-Fast path: every `code` failure straightforward, no cross-check dependencies → `<implementation-plan>` = `trivial`, skip to Step 8. Otherwise ordered fix list (compile/build → test → lint; then shared file, then check); sequential thinking merges failures sharing one root cause → `<dependencies>`.
+Fast path: every `code` failure straightforward, no cross-check dependencies → `<implementation-plan>` = `trivial`, skip to Step 8. Otherwise ordered fix list (compile/build → test → lint; then shared file, then check); sequential thinking merges failures sharing one root cause → `<dependencies>`; partition `code` failures into `<fix-groups>` (shared root cause or shared file lands in one group) and mark a group `parallel-eligible` when its files are disjoint from the other groups, it has no cross-group dependencies, and it runs no commands writing shared mutable state such as lockfiles or build caches.
 
 ### 8. Implement Fix
-On `<active-branch>` — focused, minimal, existing patterns. Root cause, not symptom: never disable a failing test — fix what it asserts unless the assertion is wrong (then fix it with justification) → `<changes-count>` and `<fix-files>`.
+On `<active-branch>` — focused, minimal, existing patterns. `parallel-eligible` `<fix-groups>` may be implemented in parallel — dispatch one subagent per group, each editing only its assigned files — only with three or more groups or the user's explicit request to delegate, and only when a suitable subagent profile exists; shared-cause or doubtful-independence failures stay serial. Collect each group's changed files into `<fix-files>`, verifying they stayed within its boundaries; a failed group's changes are discarded or reset before validating or pushing — never mix successful and failed group edits. Local validation, commit, and push stay serial. Root cause, not symptom: never disable a failing test — fix what it asserts unless the assertion is wrong (then fix it with justification) → `<changes-count>` and `<fix-files>`.
 
 ### 9. Validate Locally
 Reproduce each fixed `<check>`'s `<failing-command>` locally. Set `<validation-passing>` to `no` if an executed check fails, `unverified` if any check cannot run, and `yes` only if all pass. Record the details in `<validation-results>`.

@@ -21,11 +21,11 @@ View PR via git host (`git-hosts.md`). Extract `<pr-branch>`, `<pr-number>`, `<p
 
 ### 3. Load Linked Tickets
 
-Per `<ticket-refs>` entry, load fresh via the issue tracker tool (`issue-trackers.md`): body, every comment, attachments — an earlier in-session copy does not qualify; resolution drafts must reflect the latest customer comments. This fresh snapshot is what `draft-reply` reuses. **Nested links:** traverse per the spec — the customer thread may live on an inner card; add each ref found to `<ticket-refs>`.
+Per `<ticket-refs>` entry, load fresh via the issue tracker tool (`issue-trackers.md`): body, every comment, attachments — an earlier in-session copy does not qualify; resolution drafts must reflect the latest customer comments. This fresh snapshot is what `draft-reply` reuses. Loads are independent — three or more tickets, or fewer on the user's explicit request, may be loaded in parallel under the `subagents` gate; each worker returns the snapshot plus nested refs found, and the parent dedupes new refs against `<ticket-refs>` before loading them. **Nested links:** traverse per the spec — the customer thread may live on an inner card; add each ref found to `<ticket-refs>`.
 
 ### 4. Validate Deployed Artifacts
 
-Use linked ticket context where relevant to identify deployment targets, intended effects, schedules, and verification evidence. Skip only when the PR ships no data artifacts. If artifact discovery is incomplete, record `unverifiable` with the gap instead of `none shipped`. Per artifact and production target, record `not scheduled` for confirmed manual or deferred work not expected in this deploy. If ticket schedules conflict with code or deployment configuration, resolve the conflict before recording `not scheduled`; until resolved, treat the schedule as unknown and query production. For every other pair, query the live production database per `database-tools.md`; keep production read-only. Check execution evidence and the intended effect:
+Use linked ticket context where relevant to identify deployment targets, intended effects, schedules, and verification evidence. Skip only when the PR ships no data artifacts. If artifact discovery is incomplete, record `unverifiable` with the gap instead of `none shipped`. Per artifact and production target, record `not scheduled` for confirmed manual or deferred work not expected in this deploy. If ticket schedules conflict with code or deployment configuration, resolve the conflict before recording `not scheduled`; until resolved, treat the schedule as unknown and query production. For every other pair, query the live production database per `database-tools.md`; keep production read-only. Artifact-target pairs are independent read-only checks — three or more pairs, or fewer on the user's explicit request, may run in parallel under the `subagents` gate. Check execution evidence and the intended effect:
 
 - Migration → migration history records its run; inspect the resulting schema and data.
 - Seeder → inspect execution records or durable run markers and the expected records or updated values.
@@ -51,7 +51,7 @@ Per `<customer-tickets>` entry, invoke `draft-reply` with the ticket URL and `<a
 - What the issue was: plain-language explanation from `<pr-summary>` + the thread — include **only when nobody explained it to the customer before** (check comments first); describe symptom → cause → fix at their level, no root-cause jargon.
 - Caveats: each `unverifiable` or `not scheduled` entry in `<artifact-results>` → `[NEEDS-REVIEW: <what couldn't be confirmed or isn't scheduled>]` — a reviewer flag in the draft, never customer-facing copy.
 
-One draft per ticket — `draft-reply` posts a private note; nothing reaches the customer.
+One draft per ticket — `draft-reply` posts a private note; nothing reaches the customer. Invocations are independent per ticket — three or more, or fewer on the user's explicit request, may run in parallel under the `subagents` gate; each subagent is delegated `draft-reply` for exactly one ticket and posts only there.
 
 ### 7. Clear the Workspace
 
