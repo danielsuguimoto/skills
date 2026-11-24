@@ -22,6 +22,7 @@ After the sequential gate passes, spawn **only** when at least one holds — the
 | Parallel time win | **≥3 independent workstreams**, no shared writes. Below 3, coordination overhead eats the gain. |
 | Context offloading | Exceptional read-only research that passes the context-offloading gate below. |
 | Model-tier offload | Bounded, low-reasoning work that passes the model-tier gate below — may override a sequential dependency. |
+| External capability | Read-only external agent handoff for a documented capability the parent lacks — conditions in External Agent Handoff below. |
 | Explicit user request | User asks to spawn/delegate/parallelize that work. A request to complete a task or use a skill is not delegation permission. |
 
 ### Context-Offloading Gate
