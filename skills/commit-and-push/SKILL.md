@@ -54,5 +54,5 @@ Commit:
 
 ### 5. Push to Remote
 
-Push via git host push or `git push`; no upstream → `git push -u origin <branch>`. Fails → STOP, report the error. Success → output `<hash>` + `<push-target>`.
+Push via git host push or `git push`; no upstream → `git push -u origin <branch>`. Rejected non-fast-forward (remote moved) → fetch and `git rebase @{u}`: clean → retry the push; conflict → `git rebase --abort`, STOP and report — never force-push. Any other failure → STOP, report the error. Success → output HEAD's `<hash>` + `<push-target>`.
 

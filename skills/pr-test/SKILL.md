@@ -46,7 +46,7 @@ Build a compact `<coverage-map>` from these outcomes to assertions in the planne
 
 ### 4. Align Local Branch
 
-Record `<previous-branch>`. Uncommitted changes → STOP, ask the user to stash/commit. Fetch the PR head and record its commit → `<pr-head-commit>`. Check out the PR through project tooling (`git-hosts.md`); failure → STOP. Behind `<pr-head-commit>` → sync it yourself per `git-hosts.md`: fast-forward to `<pr-head-commit>` — behind alone never blocks. Diverged or unpushed local commits → no safe automatic update → STOP and report. Verify HEAD == `<pr-head-commit>` before proceeding — evidence against a stale head is invalid. Restore `<previous-branch>` when testing ends.
+Record `<previous-branch>`. Uncommitted changes → STOP, ask the user to stash/commit. Fetch the PR head and record its commit → `<pr-head-commit>`. Check out the PR through project tooling (`git-hosts.md`); failure → STOP. Behind `<pr-head-commit>` → sync it yourself per `git-hosts.md`: fast-forward to `<pr-head-commit>` — behind alone never blocks. Ahead or diverged → `git checkout --detach <pr-head-commit>` — the branch ref and its local commits stay untouched; testing never aligns by pushing or rewriting them. Verify HEAD == `<pr-head-commit>` before proceeding — evidence against a stale head is invalid. Restore `<previous-branch>` when testing ends.
 
 ### 5. Build the Test Plan
 
