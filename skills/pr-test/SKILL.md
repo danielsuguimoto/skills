@@ -114,7 +114,7 @@ Record `<results>` by ID: steps/command, expected versus observed behavior, evid
 Write the local HTML report under [reporting.md](reporting.md); never post findings to the PR.
 
 - **Verdict** — name the driver. `FAILED` if an evidenced executed scenario failed; otherwise `INCOMPLETE` if no purpose journey executed, a blocker remains, a defining ticket is missing, a required capture has a proof gap, or mixed revisions prevent a clean tested-revision claim; otherwise `PASSED` for the exercised scope. A report delivery blocker prevents an unqualified pass. Include passed, failed, blocked, and deferred counts.
-- **Report** — give the absolute `index.html` location. Keep scenario details, expected versus observed behavior, evidence, failures, and test boundaries in the report rather than repeating its table in chat.
+- **Report** — give the absolute `index.html` location once published. On a delivery blocker, state that no report was published and give the absolute report-package path for `notes.md` and the captures; never present the unvalidated staged draft as a finished report. Keep scenario details, expected versus observed behavior, evidence, failures, and test boundaries in the report rather than repeating its table in chat.
 - **Actionable findings** — summarize concrete failures, blockers/unblock paths, missing requirements or defining tickets, premise drift, verdicts on admitted `<review-findings>` (confirmed, rebutted, unverified), and proof gaps that need attention. Cite `file:line` only where the diff is implicated; distinguish confirmed pre-existing failures from unknown attribution. Claim only what the evidence proves, not exhaustive application coverage.
 
 ## Notes
