@@ -17,7 +17,7 @@ Modes: `review` (default) or `auto` — `auto` skips the Step 9 approval gate.
 ### 2. Load PR Context
 `git rev-parse --show-toplevel` → `<repo-path>` (use as `cwd` for MCP calls). Primary thread source: git host list unresolved review comments (`isResolved=false` server-side). CLI fallback: GraphQL `reviewThreads` with `isResolved`. REST `pulls/{n}/comments` only as `databaseId` cross-reference — never primary (returns resolved too).
 
-Non-thread feedback (collect every run — threads alone miss it): git host list reviews → non-empty review bodies; git host list flat comments. Store both as `<flat-feedback>` (author, body, comment id). Review bodies are reviewer feedback regardless of author — review bots report findings there. A finding restated across a reviewer's bodies counts once — keep the latest restatement. Skip own-agent items and automation notices (CI, coverage, deploys).
+Flat feedback (collect every run — a flat-comment-only PR has zero threads): git host list reviews → non-empty review bodies; git host list flat comments. Store both as `<flat-feedback>` (author, body, comment id). Review bodies are reviewer feedback regardless of author — review bots report findings there. A finding restated across a reviewer's bodies counts once — keep the latest restatement. Skip own-agent items and automation notices (CI, coverage, deploys).
 
 PR metadata: git host view PR + list reviews (CLI fallback per spec). Extract `<pr-branch>`, `<base-branch>`, `<pr-number>`, `<pr-url>`. `git branch --show-current` → `<current-branch>`. Review attachments when relevant. No threads and no `<flat-feedback>` → output "No changes".
 
@@ -30,10 +30,10 @@ Anchor `<pr-intent>` — why the PR exists: title, body, commit messages, and a 
 Git host PR diff. Fallback: `gh pr diff <pr-number>` or `git diff <base-branch>...<active-branch>` → `<changes>`.
 
 ### 5. Analyze Feedback
-1. Review unresolved threads; check review states (`CHANGES_REQUESTED`, `APPROVED`, etc.). Every `<flat-feedback>` item is reviewer feedback, not metadata.
+1. Review unresolved threads; check review states (`CHANGES_REQUESTED`, `APPROVED`, etc.). Every `<flat-feedback>` item is reviewer feedback, not metadata — a prose ask needs no line anchor or code suggestion to be actionable; flat items alone are a complete work set.
 2. Use `<changes>` to understand the diff. Prioritize critical issues (bugs, security, broken contracts).
 3. Effectively resolved (skip): threads with a "Fixed..."/"Done..." reply plus a commit newer than the finding implementing it, or flat items addressed by a commit newer than the item or confirmed fixed in a later reviewer body — verify via commit diff. In doubt → ask.
-4. Per actionable thread record `<comment-id>`, `<file>`, `<lines>`, `<category>`, `<suggestion>`, `<reviewer-body>`, `<current-heading>`; flat items the same minus `<file>`/`<lines>`. Evaluate each suggestion against `<changes>` and `<pr-intent>` before applying. `noise`/`question` items → `not-fixing` list with reasons (`<reviewer-body>` recorded there only, for Step 12).
+4. Per actionable thread record `<comment-id>`, `<file>`, `<lines>`, `<category>`, `<suggestion>`, `<reviewer-body>`, `<current-heading>`; flat items the same minus `<file>`/`<lines>` — the item's prose request is its `<suggestion>`. Evaluate each suggestion against `<changes>` and `<pr-intent>` before applying. `noise`/`question` items → `not-fixing` list with reasons (`<reviewer-body>` recorded there only, for Step 12).
 5. Premise drift — a suggestion or `<pr-intent>` assumes a bug path, invariant, or behavior the diff/code no longer has (superseding change, misdiagnosed cause) → `not-fixing` candidate; ambiguous → ask. Never fix against a dead premise.
 6. Scope creep — a suggestion is sound but outside `<pr-intent>` (pre-existing bug, adjacent refactor, broader coverage, "while you're here" work) → `not-fixing` candidate; ambiguous → ask. Belongs to a separate change, not this PR.
 
