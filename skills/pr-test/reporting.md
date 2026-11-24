@@ -7,9 +7,9 @@ Read before materializing the Step 5 plan. Use [report-template.html](report-tem
 After branch alignment and scenario selection, resolve `<report-dir>` to `<project-root>/.devin/pr-test/pr-<pr-number>/` in the tested project, not the skill installation. Use the project's `git-hosts.md` and terminal specifications for repository operations.
 
 - Verify the resolved destination is ignored and contains no tracked files. If not ignored, ask for an ignored project-local location or permission for one narrow repository-local exclusion. Resolve the actual local exclusion file through repository tooling, preserve existing entries, and leave tracked `.gitignore` untouched. No approval → pause; no silent fallback.
-- A nonempty destination holding only this PR's prior report and evidence files is replaced without asking or archiving — except an unfinished prior run (`notes.md` present without a finished `index.html`), where you first ask whether that run is still active; a dead run's `notes.md` may seed this run's observations before replacement. Anything else requires explicit approval naming its absolute path before replacement; resolve tracked content, symlink escapes, or unknown files first. Clear neither parent directories nor another PR's artifacts.
+- A nonempty destination holding only this PR's prior report and evidence files is replaced without asking or archiving — except an unfinished prior run, where you first ask whether that run is still active; a dead run's `notes.md` may seed this run's observations before replacement. A run is unfinished when its `index.html` is missing or records no finish time — evidence files without a verified finished report count as unfinished, legacy in-progress reports included. Anything else requires explicit approval naming its absolute path before replacement; resolve tracked content, symlink escapes, or unknown files first. Clear neither parent directories nor another PR's artifacts.
 - Keep one writer; parallel test actions return observations to it rather than writing `notes.md` or `index.html` concurrently.
-- Once safe and authorized, the destination hosts captured evidence. Declined permission or unresolved safety pauses testing.
+- Once safe and authorized, initialize `notes.md` as the run marker before any application data setup or evidence capture; the destination then hosts captured evidence. Declined permission or unresolved safety pauses testing.
 
 **Done when:** an authorized, ignored destination is ready to receive evidence.
 
@@ -76,16 +76,19 @@ If a required agent-driven capture cannot be saved, preserve any behavioral find
 
 Append observations to `notes.md` as scenarios complete — a durable in-run log a resumed run may seed from; do not infer completion from it. If writing fails, keep captured evidence, disclose the delivery blocker, and pause further testing rather than accumulating unindexed artifacts. On an orderly user stop, apply the main workflow's session-ending rule while preserving established failures and observations.
 
-Write `index.html` once, then reconcile within the chosen scope:
+Reconcile results within the chosen scope before writing:
 
 - Each selected assertion has evidence or a recorded blocker/defer reason; required capture gaps are explicit.
 - Deferred IDs retain their reasons; planned count = `PASSED` + `FAILED` + `BLOCKED` + `DEFERRED`.
 - Fill proof gaps within the selected scope; keep deferred work deferred and unchanged blockers blocked — do not rerun them to polish the report. The main workflow owns terminal status and verdict rules.
+
+Record the finish time, then write `index.html` once from the reconciled results. Validate the written artifact without reopening test scope:
+
 - Index rows, sections, assertions, evidence captions, and counts agree with the plan and results.
 - Each saved artifact has a report reference. Relative file links resolve to nonempty intended files inside the package; anchor references resolve to unique IDs. Missing required captures are explicit proof gaps, never broken links.
 - The report has no leftover slots, example QA claims, duplicated captures, raw untrusted markup, scripts, or remote dependencies. Moving the package preserves its artifact links.
 - Findings and boundaries match what the evidence proves, including provenance, missing captures, and unresolved scope.
 
-Record the finish time after reconciliation. A finished run can still have an incomplete or failed verdict. Return the Step 8 chat handoff; keep details in this report, never in a PR comment.
+A finished run can still have an incomplete or failed verdict. Return the Step 8 chat handoff; keep details in this report, never in a PR comment.
 
 **Done when:** the report is written and reconciled or its delivery blocker is disclosed, and the user has the verdict, counts, and absolute report location without a duplicate chat report.
