@@ -19,9 +19,9 @@ Anchor `<pr-intent>` — why the PR exists: title, body, and, when the PR refere
 
 Inspect the worktree, index, and Git operation state before switching or merging. If there are uncommitted or untracked changes, an existing merge/rebase, or a PR branch checked out in another worktree, stop and preserve them.
 
-Fetch the PR head from its head repository and record its commit → `<pr-head-commit>`. Check out the PR branch at that commit. An existing local branch behind → sync it yourself: fast-forward to `<pr-head-commit>` — behind alone never blocks. Ahead of it → continue; the push publishes the local commits with the merge — flag them in the report. Diverged → `git rebase <pr-head-commit>`: a clean replay — already-upstream commits drop on their own — → continue, flag the replayed commits in the report; conflict → `git rebase --abort`, stop and report. Verify the checked-out branch and that `<pr-head-commit>` is an ancestor of it before continuing. Never reset, overwrite, or discard local work.
+Fetch the PR head from its head repository and record its commit → `<pr-head-commit>`. Check out the PR branch at that commit. An existing local branch behind → sync it yourself: fast-forward to `<pr-head-commit>` — behind alone never blocks. Ahead of it → continue; the push publishes the local commits with the merge — flag them in the report. Diverged → `git rebase <pr-head-commit>` only when the replay range is linear — merge commits can carry edits a clean replay silently drops → a merge in the range → stop; a clean replay — already-upstream commits drop on their own — → continue, flag the replayed commits in the report; conflict → `git rebase --abort`, stop and report. Verify the checked-out branch and that `<pr-head-commit>` is an ancestor of it; record the checked-out tip → `<aligned-tip>`. Never reset, overwrite, or discard local work.
 
-Fetch the chosen source branch from the base repository and record its fetched commit. If that commit is already an ancestor of the PR head, report that the branch is current and stop.
+Fetch the chosen source branch from the base repository and record its fetched commit → `<source-commit>`. Already an ancestor of `<pr-head-commit>` → report that the branch is current and stop. Already an ancestor of `<aligned-tip>` → the merge exists locally unpublished — skip to Step 4's approval gate; Step 5 then pushes the tip with nothing to complete.
 
 ## 3. Merge and resolve
 
@@ -37,7 +37,7 @@ Present the source and PR branches, the verified push destination `<head-reposit
 
 ## 5. Commit and push
 
-On `approved`, complete the merge with the repository's commit convention and verify that the resulting commit has both the recorded PR head and source commit as parents. Re-fetch the PR head first; if it changed since preparation, stop and report rather than overwriting it. Push normally to the verified head repository and PR branch, never force-push. Report the merge commit and the pushed ref.
+On `approved`: a pending merge → complete it with the repository's commit convention and verify its parents are `<aligned-tip>` and `<source-commit>`; a merge already in the tip → nothing to complete. Re-fetch the PR head first; if it changed since preparation, stop and report rather than overwriting it. Push normally to the verified head repository and PR branch, never force-push. Report the merge commit — or the pre-existing tip — and the pushed ref.
 
 ## Ticket Brief
 
