@@ -7,7 +7,7 @@ Read before materializing the Step 5 plan. Use [report-template.html](report-tem
 After branch alignment and scenario selection, resolve `<report-dir>` to `<project-root>/.devin/pr-test/pr-<pr-number>/` in the tested project, not the skill installation. Use the project's `git-hosts.md` and terminal specifications for repository operations.
 
 - Verify the resolved destination is ignored and contains no tracked files. If not ignored, ask for an ignored project-local location or permission for one narrow repository-local exclusion. Resolve the actual local exclusion file through repository tooling, preserve existing entries, and leave tracked `.gitignore` untouched. No approval → pause; no silent fallback.
-- A nonempty destination holding only this PR's prior report and evidence files is replaced without asking or archiving — except an unfinished prior run, where you first ask whether that run is still active; a dead run's `notes.md` may seed this run's observations before replacement. A run is unfinished when its `index.html` is missing or records no finish time — evidence files without a verified finished report count as unfinished, legacy in-progress reports included. Anything else requires explicit approval naming its absolute path before replacement; resolve tracked content, symlink escapes, or unknown files first. Clear neither parent directories nor another PR's artifacts.
+- A nonempty destination holding only this PR's prior report and evidence files is replaced without asking or archiving — except an unfinished prior run, where you first ask whether that run is still active; a dead run's `notes.md` may seed this run's observations before replacement. A run is unfinished when its `index.html` is missing or records no finish time, or a staged `index.staged.html` is left behind — evidence files without a verified finished report count as unfinished, legacy in-progress reports included. Anything else requires explicit approval naming its absolute path before replacement; resolve tracked content, symlink escapes, or unknown files first. Clear neither parent directories nor another PR's artifacts.
 - Keep one writer; parallel test actions return observations to it rather than writing `notes.md` or `index.html` concurrently.
 - Once safe and authorized, initialize `notes.md` as the run marker before any application data setup or evidence capture; the destination then hosts captured evidence. Declined permission or unresolved safety pauses testing.
 
@@ -82,12 +82,14 @@ Reconcile results within the chosen scope before writing:
 - Deferred IDs retain their reasons; planned count = `PASSED` + `FAILED` + `BLOCKED` + `DEFERRED`.
 - Fill proof gaps within the selected scope; keep deferred work deferred and unchanged blockers blocked — do not rerun them to polish the report. The main workflow owns terminal status and verdict rules.
 
-Record the finish time, then write `index.html` once from the reconciled results. Validate the written artifact without reopening test scope:
+Record the finish time, then write the report once from the reconciled results to a staged `index.staged.html` in the report directory — the same directory, so relative links validate against the final base. Validate the staged artifact without reopening test scope:
 
 - Index rows, sections, assertions, evidence captions, and counts agree with the plan and results.
 - Each saved artifact has a report reference. Relative file links resolve to nonempty intended files inside the package; anchor references resolve to unique IDs. Missing required captures are explicit proof gaps, never broken links.
 - The report has no leftover slots, example QA claims, duplicated captures, raw untrusted markup, scripts, or remote dependencies. Moving the package preserves its artifact links.
 - Findings and boundaries match what the evidence proves, including provenance, missing captures, and unresolved scope.
+
+Fix validation findings in the staged report or rewrite it from the reconciled results — never edit it into claims the evidence does not support. An unfixable validation failure is a delivery blocker: preserve `notes.md`, the captures, and the staged report, and disclose the blocker. Publish by renaming the validated file to `index.html`; the rename is the single publishing step, and a leftover staged report marks the run unfinished under Section 1.
 
 A finished run can still have an incomplete or failed verdict. Return the Step 8 chat handoff; keep details in this report, never in a PR comment.
 
