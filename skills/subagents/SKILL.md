@@ -9,7 +9,7 @@ Default to execution in the current session. Invoking a skill means loading its 
 
 ## Sequential Gate
 
-Keep sequential work in the parent. If B needs A's result, run A then B inline. This gate applies to one blocking handoff as well as a chain of subagents; waiting for a child is not parallel work.
+Keep sequential work in the parent. If B needs A's result, run A then B inline. This gate applies to one blocking handoff as well as a chain of subagents; waiting for a child is not parallel work. Fanning out independent units inside one step is not a sequential handoff — it reaches the Dispatch Rationales directly.
 
 Only an explicit user request to delegate that work overrides this gate. Context offloading, model cost, role specialization, and foreground execution do not. Apply this gate before the dispatch rationales or profile discovery.
 
@@ -73,6 +73,8 @@ Route by task shape — strong models cost latency and tokens; weak models fail 
 ## Parallel Execution
 
 Keep work inline when streams share file writes, sync cost exceeds time saved, or the work is a bounded single stream. Apply the sequential gate to dependencies.
+
+Shared infrastructure is not the barrier: one database, server, or browser process qualifies when streams use disjoint actors and records, write only records and files assigned to their actor or tenant, and avoid writes to shared mutable state — tabs in one browser context share cookies and storage, so each parallel actor needs a separate context (or profile where the tool has no context support). Doubtful independence stays inline. Before retry, the parent removes or quarantines any partial state a failed stream wrote so siblings are not contaminated.
 
 Patterns: **fan-out/fan-in** or **scatter/gather** (N≥3 independent → wait all → parent synthesizes inline).
 

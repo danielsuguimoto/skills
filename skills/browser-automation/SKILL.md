@@ -11,7 +11,7 @@ Shell-read before any browser automation action; may be gitignored — missing �
 
 ## Choose the Surface
 
-Choose the configured direct interaction or delegation surface per `browser-automation.md`. Delegate only when the `subagents` gates permit it. Respect the tool's session and tab lifecycle.
+Choose the configured direct interaction or delegation surface per `browser-automation.md`. Delegate only when the `subagents` gates permit it. Respect the tool's session and tab lifecycle. Tabs in one browser context share cookies and storage — each parallel delegated actor needs a separate context, or a separate profile where the tool has no context support.
 
 ## Open Browser Tabs
 
