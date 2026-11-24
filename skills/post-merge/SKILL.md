@@ -51,7 +51,7 @@ Per `<customer-tickets>` entry, invoke `draft-reply` with the ticket URL and `<a
 - What the issue was: plain-language explanation from `<pr-summary>` + the thread — include **only when nobody explained it to the customer before** (check comments first); describe symptom → cause → fix at their level, no root-cause jargon.
 - Caveats: each `unverifiable` or `not scheduled` entry in `<artifact-results>` → `[NEEDS-REVIEW: <what couldn't be confirmed or isn't scheduled>]` — a reviewer flag in the draft, never customer-facing copy.
 
-One draft per ticket — `draft-reply` posts a private note; nothing reaches the customer. Invocations are independent per ticket — three or more, or fewer on the user's explicit request, may run in parallel when a suitable subagent profile exists; each subagent is delegated `draft-reply` for exactly one ticket, is front-loaded with the parent's fresh snapshot for that ticket so it does not reload, and posts only there.
+One draft per ticket — `draft-reply` posts a private note; nothing reaches the customer. Invocations are independent per ticket — three or more, or fewer on the user's explicit request, may run in parallel when a suitable subagent profile exists; each subagent runs in the foreground (a background worker can silently lose the note when posting requires approval), is delegated `draft-reply` for exactly one ticket, is front-loaded with the parent's fresh snapshot for that ticket so it does not reload, and posts only there.
 
 ### 7. Clear the Workspace
 
