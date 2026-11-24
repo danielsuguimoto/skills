@@ -19,7 +19,7 @@ Anchor `<pr-intent>` — why the PR exists: title, body, and, when the PR refere
 
 Inspect the worktree, index, and Git operation state before switching or merging. If there are uncommitted or untracked changes, an existing merge/rebase, or a PR branch checked out in another worktree, stop and preserve them.
 
-Fetch the PR head from its head repository and record its commit. Check out the PR branch at that commit. If an existing local branch is behind, fast-forward it only; if it has local commits or has diverged, stop and report. Verify the checked-out branch and commit against the PR head before continuing. Never reset, overwrite, or discard local work.
+Fetch the PR head from its head repository and record its commit. Check out the PR branch at that commit. An existing local branch behind → sync it yourself: fast-forward to the recorded commit — behind alone never blocks. Local commits or divergence → no safe automatic update → stop and report. Verify the checked-out branch and commit against the PR head before continuing. Never reset, overwrite, or discard local work.
 
 Fetch the chosen source branch from the base repository and record its fetched commit. If that commit is already an ancestor of the PR head, report that the branch is current and stop.
 
