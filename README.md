@@ -55,7 +55,7 @@ Each project using these skills must create a `<project-root>/docs` folder with 
 
 ### Expected spec files
 
-The canonical list is the **Generate** table in `skills/setup-skills/SKILL.md` — one file per tool category: issue/bug tracking, observability, MCP servers, git hosting, databases, code navigation, browser automation, knowledge graphs, container CLIs, memory, terminal wrappers/tools, workspace isolation, doc lookup, external agent CLIs, LLM models.
+The canonical list is the **Generate** table in `skills/setup-skills/SKILL.md` — one file per tool category.
 
 Each spec file must define: the operations available, their input/output schemas, and expected behavior rules. Agents read these files to learn how to interact with the project's specific tool implementations.
 

@@ -11,7 +11,7 @@ Default to execution in the current session. Delegate a workflow or its steps on
 
 Keep sequential work in the parent. If B needs A's result, run A then B inline. This gate applies to one blocking handoff as well as a chain of subagents; waiting for a child is not parallel work. Fanning out independent units inside one step is not a sequential handoff — it reaches the Dispatch Rationales directly.
 
-Only two things cross this gate: an explicit user request to delegate that work, or a model-tier offload whose conditions all hold. Context offloading, role specialization, and foreground execution do not. Apply this gate before the dispatch rationales or profile discovery.
+Three things cross this gate: an explicit user request to delegate that work, a model-tier offload whose conditions all hold, or a read-only external handoff for a documented capability the parent lacks. Context offloading, role specialization, and foreground execution do not. Apply this gate before the other dispatch rationales; evaluating a model-tier candidate includes its profile lookup.
 
 ## Dispatch Rationales
 
@@ -21,7 +21,7 @@ After the sequential gate passes, spawn **only** when at least one holds — the
 |-----------|------------------|
 | Parallel time win | **≥3 independent workstreams**, no shared writes. Below 3, coordination overhead eats the gain. |
 | Context offloading | Exceptional read-only research that passes the context-offloading gate below. |
-| Model-tier offload | Bounded, low-reasoning work that passes the model-tier gate below — the only rationale that may override a sequential dependency. |
+| Model-tier offload | Bounded, low-reasoning work that passes the model-tier gate below — may override a sequential dependency. |
 | Explicit user request | User asks to spawn/delegate/parallelize that work. A request to complete a task or use a skill is not delegation permission. |
 
 ### Context-Offloading Gate
@@ -57,7 +57,7 @@ Can't fill all five → do the work inline.
 
 ## Do NOT spawn for
 
-- Anything answerable from context already in this session.
+- Anything answerable from context already in this session — unless it clears the model-tier gate.
 - A single file edit, symbol lookup, or known path + line range.
 - A bounded next step where the parent holds all inputs — unless it clears the model-tier gate.
 - Avoiding a thinking step.
@@ -81,7 +81,7 @@ Route by task shape — strong models cost latency and tokens; weak models fail 
 
 Tier comes from the profile, not a model parameter — pick the profile configured for the tier. Where the harness supports per-profile model pins, a custom profile pinning a cheaper model is the only route to a write-capable cheap subagent. No cheaper profile → run the task inline at parent tier. The tier→model mapping and the profile-pin mechanism live in `<project-root>/docs/models.md`; missing spec → discover via the harness's native mechanism.
 
-**Defaults:** a profile without a `model:` pin uses the harness's default subagent model, not the parent's, unless the profile explicitly inherits the parent model. Auto-routed → trust it, override only on clear mismatch; unsupported → inline or accept inheritance (never spawn a second subagent to work around it).
+**Defaults:** auto-routed → trust it, override only on clear mismatch; unsupported → inline or accept inheritance (never spawn a second subagent to work around it).
 
 ## Parallel Execution
 
