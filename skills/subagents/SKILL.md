@@ -9,7 +9,7 @@ Default to execution in the current session. Invoking a skill means loading its 
 
 ## Sequential Gate
 
-Keep sequential work in the parent. If B needs A's result, run A then B inline. This gate applies to one blocking handoff as well as a chain of subagents; waiting for a child is not parallel work.
+Keep sequential work in the parent. If B needs A's result, run A then B inline. This gate applies to one blocking handoff as well as a chain of subagents; waiting for a child is not parallel work. Fanning out independent units inside one step is not a sequential handoff — it reaches the Dispatch Rationales directly.
 
 Only an explicit user request to delegate that work overrides this gate. Context offloading, model cost, role specialization, and foreground execution do not. Apply this gate before the dispatch rationales or profile discovery.
 
