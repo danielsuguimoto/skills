@@ -62,12 +62,8 @@ h3 { font-size: 1rem; margin: 1.25rem 0 0.25rem; }
 .status[data-status="deferred"],
 .status[data-status="incomplete"],
 .status[data-status="proof-gap"],
-.status[data-status="unverified"],
-.status[data-status="planned"],
-.status[data-status="running"],
-.status[data-status="in-progress"] { color: var(--warn); border-color: var(--warn); }
+.status[data-status="unverified"] { color: var(--warn); border-color: var(--warn); }
 .status[data-status="unresolved"] { color: var(--muted); }
-.status[data-status="finished"] { color: var(--ink); }
 #index { overflow-x: auto; }
 #index:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
 #index table { min-width: 42rem; }
@@ -116,11 +112,9 @@ pre {
 <dt>Driver</dt><dd>&lt;test-driver&gt;</dd>
 <dt>Depth / budget</dt><dd>&lt;test-depth&gt; / &lt;scenario-budget&gt;</dd>
 <dt>Environment</dt><dd>&lt;sanitized-environment-or-entry-point&gt;</dd>
-<dt>Started / updated</dt><dd>&lt;started-at-with-tz&gt; / &lt;updated-at-with-tz&gt;</dd>
-<dt>Finished</dt><dd>&lt;finished-at-with-tz-or-—&gt;</dd>
-<dt>Phase</dt><dd><span class="status" data-status="in-progress">IN_PROGRESS</span></dd>
+<dt>Finished</dt><dd>&lt;finished-at-with-tz&gt;</dd>
 <dt>Verdict</dt><dd><span class="status" data-status="unresolved">&lt;verdict-or-unresolved&gt;</span></dd>
-<dt>Counts</dt><dd>&lt;total-planned&gt; planned — passed &lt;passed-count&gt;, failed &lt;failed-count&gt;, blocked &lt;blocked-count&gt;, deferred &lt;deferred-count&gt;, unresolved &lt;unresolved-count&gt;</dd>
+<dt>Counts</dt><dd>&lt;total-planned&gt; planned — passed &lt;passed-count&gt;, failed &lt;failed-count&gt;, blocked &lt;blocked-count&gt;, deferred &lt;deferred-count&gt;</dd>
 </dl>
 </header>
 
@@ -133,7 +127,7 @@ pre {
 <td><a href="#scenario-&lt;scenario-id-lower&gt;">&lt;Snn&gt;</a></td>
 <td>&lt;scenario-title&gt;</td>
 <td><ul class="labels"><li>&lt;purpose|data-artifact|critical-edge&gt;</li></ul></td>
-<td><span class="status" data-status="&lt;status-key&gt;">&lt;STATUS-OR-PROGRESS&gt;</span></td>
+<td><span class="status" data-status="&lt;status-key&gt;">&lt;STATUS&gt;</span></td>
 <td>&lt;proof-summary&gt;</td>
 </tr>
 </tbody>
@@ -141,7 +135,7 @@ pre {
 </section>
 
 <section class="scenario" id="scenario-&lt;scenario-id-lower&gt;" data-template="scenario">
-<h2>&lt;Snn&gt; — &lt;scenario-title&gt; <span class="status" data-status="&lt;status-key&gt;">&lt;STATUS-OR-PROGRESS&gt;</span></h2>
+<h2>&lt;Snn&gt; — &lt;scenario-title&gt; <span class="status" data-status="&lt;status-key&gt;">&lt;STATUS&gt;</span></h2>
 <div class="scenario-head">
 <dl class="field-list">
 <dt>Source</dt><dd>&lt;source-outcome-or-link&gt;</dd>
@@ -193,7 +187,7 @@ pre {
 </div>
 <div>
 <figure id="evidence-&lt;evidence-id-lower&gt;" data-template="evidence">
-<template data-template="screenshot"><img src="&lt;relative-artifact-path&gt;" alt="&lt;useful-alt-text&gt;"></template>
+<img src="&lt;relative-artifact-path&gt;" alt="&lt;useful-alt-text&gt;">
 <figcaption>
 <strong>&lt;Ennn&gt;</strong> (&lt;type&gt;) — &lt;observed-fact-and-proof-limit&gt;.
 Action by &lt;driver&gt;; observation supplied/verified by &lt;supplier-verifier&gt;.
