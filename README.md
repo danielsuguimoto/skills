@@ -35,7 +35,7 @@ Each subdirectory under `skills/` is a self-contained skill with a `SKILL.md` ma
 | setup-skills | Guide users through initial configuration — creates `<project-root>/docs` folder and generates all spec files needed by other skills. |
 | ship-changes | Ship current work end-to-end — branch, commit, push, open PR. |
 | spawn | Invoke a target skill inside a subagent so its content stays isolated to the subagent's context. |
-| subagents | Subagent spawning rules for parallel work, isolated tasks, and context offloading. |
+| subagents | Delegation gates — parallel work, context offloading, model-tier offload, and external agent CLI handoff. |
 | to-specs | Turn a request or ticket into a spec, then sync to the ticket system. Read-only. |
 | triage | Triage a ticket — load context, gather evidence, post findings. Read-only. |
 | using-code-navigation | Use code navigation tools for symbol-level code work instead of grep/read. |
@@ -55,7 +55,7 @@ Each project using these skills must create a `<project-root>/docs` folder with 
 
 ### Expected spec files
 
-The canonical list is the **Generate** table in `skills/setup-skills/SKILL.md` — one file per tool category: issue/bug tracking, observability, MCP servers, git hosting, databases, code navigation, browser automation, knowledge graphs, container CLIs, memory, terminal wrappers/tools, workspace isolation, doc lookup.
+The canonical list is the **Generate** table in `skills/setup-skills/SKILL.md` — one file per tool category.
 
 Each spec file must define: the operations available, their input/output schemas, and expected behavior rules. Agents read these files to learn how to interact with the project's specific tool implementations.
 

@@ -13,6 +13,8 @@ Generate `<project-root>/docs/` and every spec file in the Generate table — sk
 2. **Check existing state**: list `<project-root>/docs/`; check which Generate-table specs exist.
 3. **Decision gate**: all exist → ask reconfigure or abort (abort → stop) · some → ask regenerate all or only missing · none → interview directly.
 4. **Discover MCP servers**: native MCP discovery if available → `<mcp-inventory>`; offer detected servers as interview options. Skip if unsupported.
+5. **Detect external agent CLIs**: probe PATH for agent harness binaries → `<agent-cli-inventory>`; offer detected CLIs as interview options. If PATH enumeration is unsupported, skip detection; an empty inventory still flows to the interview.
+6. **Enumerate LLM models**: list models via the harness's model-listing mechanism (model picker, config file, provider API) → `<model-inventory>`; skip if unsupported.
 
 ## Interview
 
@@ -38,7 +40,7 @@ Ask about each tool category via the native user-prompting mechanism — three s
 | What knowledge graph tool do you use? | Knowledge graph | Graphify, None |
 | What container CLI do you use? | Container CLI | Kool, Docker Compose, None |
 
-### Batch 3 — Memory, Terminal, Workspaces, Docs, MCP
+### Batch 3 — Memory, Terminal, Workspaces, Docs, MCP, External Agents, Models
 
 | Question | Header | Options |
 |----------|--------|---------|
@@ -47,8 +49,14 @@ Ask about each tool category via the native user-prompting mechanism — three s
 | What isolated workspace tool do you use? | Workspaces | git worktree, None |
 | What documentation lookup tools do you use? | Doc lookup | Context7, Tavily, None |
 | Which MCP servers should be documented? | MCP servers | Auto-detect from `<mcp-inventory>`, None |
+| Which external agent CLIs should be documented? | External agents | Auto-detect from `<agent-cli-inventory>`, None, Other |
+| Which LLM models should be documented? | Models | Auto-detect from `<model-inventory>`, None, Other |
 
 MCP servers question: `<mcp-inventory>` non-empty → "Use detected servers" first; empty → "None" and "Other".
+
+External agents question: `<agent-cli-inventory>` non-empty → "Use detected CLIs" first; empty → "None" and "Other".
+
+Models question: `<model-inventory>` non-empty → "Use detected models" first; empty → "None" and "Other".
 
 ## Generate
 
@@ -91,8 +99,14 @@ Spec files:
 | `<project-root>/docs/terminal-wrappers.md` | Command prefixing, output filtering |
 | `<project-root>/docs/terminal-tools.md` | Non-standard terminal tools replacing usual defaults |
 | `<project-root>/docs/doc-lookup.md` | Framework/library/SDK docs, search fallbacks |
+| `<project-root>/docs/external-agents.md` | Other agent harness CLIs — headless invocation, output capture, auth |
+| `<project-root>/docs/models.md` | LLM models — inventory, tier/cost, selection mechanism (picker, config, profile pins) |
 
 `mcp-servers.md`: populate a server inventory section from `<mcp-inventory>` if the user chose to document detected servers.
+
+`external-agents.md`: populate a harness inventory from `<agent-cli-inventory>` plus manually named "Other" entries; per harness document the headless invocation, output capture, and auth requirements.
+
+`models.md`: populate a model inventory from `<model-inventory>` plus manually named "Other" entries; per model document tier (fast/cheap, mid, strong), cost or rate notes where known, and how the harness selects it for subagents (profile `model:` pin, default-subagent-model config, inheritance).
 
 `observability-tools.md`: when the deploy/job-log source differs from the monitoring tool, document that source's lookup operations and details alongside the monitoring tool's.
 
