@@ -46,7 +46,7 @@ Ambiguous → ask the user rather than drafting to the wrong audience or closing
 
 Skip an already closed/completed/done `<spec-tickets>` entry as `already done`. For every open entry, first match the production data or schema effects its spec requires against `<artifact-results>`; tickets without those effects have no artifact dependency. Leave the ticket unchanged and record `blocked` when such a required effect is `failed`, `not scheduled`, `unverifiable`, or absent from `<artifact-results>`; never block it on an unrelated artifact. Otherwise close it or mark it done through the issue tracker update operation (`issue-trackers.md`). Never close customer-success tickets or non-spec internal tickets here. Record `done` only when the update response or a fresh reload confirms that terminal state; `unsupported` when the tracker lacks closure/completion; `failed` when the update errors or the outcome stays unconfirmed. Store per-ticket URL, status, and error, gap, or blocking artifact and target as `<spec-ticket-results>`.
 
-**Gate:** any `failed` in `<artifact-results>` → STOP, report — spec tickets are already accounted, but customer replies and workspace cleanup wait until the artifact re-runs. `unverifiable` → proceed; flag per artifact in Step 9.
+**Gate:** any `failed` in `<artifact-results>` → STOP; report per Step 9 with customer replies and workspace cleanup `not run` — spec tickets are already accounted, but those steps wait until the artifact re-runs. `unverifiable` → proceed; flag per artifact in Step 9.
 
 ### 7. Draft Resolution Replies
 
@@ -64,7 +64,7 @@ List isolated workspaces per `workspace-isolation.md`; find the one created for 
 
 ### 9. Report
 
-Chat only: `<pr-url>` merge state · `<artifact-results>` per artifact and target — status + evidence, plus any inventory-wide discovery gap, or `none shipped` · classification counts · draft note URL per customer ticket · `<spec-ticket-results>` per entry: ticket URL + status + error, gap, or blocking artifact and target, or `none linked` · `<drifted-tickets>` per entry: ticket URL, reported problem, why `<pr-summary>` doesn't cover it · workspace removed or `none found`.
+Chat only: `<pr-url>` merge state · `<artifact-results>` per artifact and target — status + evidence, plus any inventory-wide discovery gap, or `none shipped` · classification counts · draft note URL per customer ticket or `not run` · `<spec-ticket-results>` per entry: ticket URL + status + error, gap, or blocking artifact and target, or `none linked` · `<drifted-tickets>` per entry: ticket URL, reported problem, why `<pr-summary>` doesn't cover it · workspace removed, `none found`, or `not run`.
 
 ## Notes
 
