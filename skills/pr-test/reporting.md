@@ -82,7 +82,7 @@ Reconcile results within the chosen scope before writing:
 
 - Each selected assertion has evidence or a recorded blocker/defer reason; required capture gaps are explicit.
 - Deferred IDs retain their reasons; planned count = `PASSED` + `FAILED` + `BLOCKED` + `DEFERRED`.
-- Each planned supporting check has its own report entry with a status and evidence or blocker; reconcile those entries separately from scenario totals.
+- Each planned supporting check has its own report entry with a status and evidence, a recorded blocker, or an explicit proof gap; reconcile those entries separately from scenario totals.
 - Fill proof gaps within the selected scope; keep deferred work deferred and unchanged blockers blocked — do not rerun them to polish the report. The main workflow owns terminal status and verdict rules.
 
 Record the finish time, then write the report from the reconciled results to a staged `index.staged.html` in the report directory — the same directory, so relative links validate against the final base. Each delivery uses a fresh staged file. A Step 9 continuation repeats this cycle after new evidence and replaces the prior report only through validation and rename. Validate the staged artifact without reopening test scope:
