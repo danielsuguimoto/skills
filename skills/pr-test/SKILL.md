@@ -1,6 +1,6 @@
 ---
 name: pr-test
-description: "Test or verify a PR through real entry points, with the user or agent driving. Supports `quick` and `budget <N>`."
+description: "Test or verify a PR through real entry points, with the user or agent driving. Supports `quick`, `budget <N>`, and user-directed reruns after failures or blockers."
 ---
 
 ### 0. Confirm the Test Driver
@@ -14,7 +14,9 @@ Record the answer as `<test-driver>` = `user` or `agent`. An unanswered or skipp
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before testing the PR; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`; `<project-root>/docs/issue-trackers.md` for linked requirements · `<project-root>/docs/database-tools.md` when provisioning or verifying data · `<project-root>/docs/code-navigation.md` only when locating an in-scope entry point or diagnosing a concrete failure · `<project-root>/docs/browser-automation.md` for agent-driven UI execution.
+Shell-read before testing the PR; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`; `<project-root>/docs/testing.md` for project-specific testing requirements · `<project-root>/docs/issue-trackers.md` for linked requirements · `<project-root>/docs/database-tools.md` when provisioning or verifying data · `<project-root>/docs/code-navigation.md` only when locating an in-scope entry point or diagnosing a concrete failure · `<project-root>/docs/browser-automation.md` for agent-driven UI execution.
+
+Apply `testing.md` to planning, setup, execution, and evidence: startup, test data, actors, browser/environment constraints, external-service substitutes, and supporting checks. It cannot widen PR scope, waive browser journeys, or replace safety approvals.
 
 Act as a human QA engineer. Spend most effort proving `<pr-purpose>` through realistic use. Test the main journeys and clear, critical edge cases; touched files and methods are not a coverage checklist. Stop when the scoped behavior has evidence, not when every nearby code path has been exercised.
 
@@ -46,7 +48,7 @@ Build a compact `<coverage-map>` from these outcomes to assertions in the planne
 
 ### 4. Align Local Branch
 
-Record `<previous-branch>`. Uncommitted changes → STOP, ask the user to stash/commit. Fetch the PR head and record its commit → `<pr-head-commit>`. Check out `<pr-branch>` — `git switch <pr-branch>` when it exists and tracks the head repository's `refs/heads/<pr-branch>`; any other same-named branch → `git checkout --detach <pr-head-commit>`, never modify it; only when no same-named branch exists → through project tooling (`git-hosts.md`, fast-forward-only checkouts fail on divergence); failure → STOP. Behind `<pr-head-commit>` → sync it yourself per `git-hosts.md`: fast-forward to `<pr-head-commit>` — behind alone never blocks. Ahead or diverged → `git checkout --detach <pr-head-commit>` — the branch ref and its local commits stay untouched; testing never aligns by pushing or rewriting them. Verify HEAD == `<pr-head-commit>` before proceeding — evidence against a stale head is invalid. Restore `<previous-branch>` when testing ends.
+Record `<previous-branch>`. Uncommitted changes → STOP, ask the user to stash/commit. Fetch the PR head and record its commit → `<pr-head-commit>`. Check out `<pr-branch>` — `git switch <pr-branch>` when it exists and tracks the head repository's `refs/heads/<pr-branch>`; any other same-named branch → `git checkout --detach <pr-head-commit>`, never modify it; only when no same-named branch exists → through project tooling (`git-hosts.md`, fast-forward-only checkouts fail on divergence); failure → STOP. Behind `<pr-head-commit>` → sync it yourself per `git-hosts.md`: fast-forward to `<pr-head-commit>` — behind alone never blocks. Ahead or diverged → `git checkout --detach <pr-head-commit>` — the branch ref and its local commits stay untouched; testing never aligns by pushing or rewriting them. Verify HEAD == `<pr-head-commit>` before the initial run — initial evidence against a stale head is invalid. Set initial `<tested-state>` = `<pr-head-commit>`; the PR head is a baseline, not a continuing validity gate. Step 9 updates `<tested-state>` for user-directed fixes. Restore `<previous-branch>` only after Step 9 is complete or declined. If `<previous-branch>` is the tested branch, leave user-directed fix changes in place; if it differs and uncommitted fix changes exist, ask whether to stash them or keep the tested checkout before switching; never discard them. Report where preserved fix changes live.
 
 ### 5. Build the Test Plan
 
@@ -97,13 +99,13 @@ Run coherent journeys serially by default. Parallel execution is agent-driven on
 
 With `<test-driver>` = `agent`, perform the selected actions and collect the results. With `<test-driver>` = `user`, follow `user-driven.md`.
 
-The selected driver exercises UI journeys as a regular user through real navigation, forms, and clicks; agent-driven UI uses `browser-automation.md`. Exercise API contracts, workers/jobs, CLI commands, and artifacts through their real entry points. Console shortcuts, API calls, and DB writes do not replace the main user-facing journey.
+The selected driver exercises UI journeys as a regular user through real navigation, forms, and clicks; agent-driven UI uses `browser-automation.md`. Run each selected browser journey end to end in a browser against `<tested-state>`. Non-browser automated tests (unit, integration, API, or otherwise) only supplement it; overlapping names or coverage do not replace it. Count an automated browser E2E test only when it runs the same journey, inputs, and assertions against `<tested-state>` with inspectable evidence; otherwise the selected driver performs the journey. Exercise API contracts, workers/jobs, CLI commands, and artifacts through their real entry points. Console shortcuts, API calls, and DB writes do not replace the main user-facing journey.
 
 For each selected shipped artifact, inspect the pre-state, have the selected driver run the exact command through project tooling in dependency order, then inspect schema and affected rows. Preserve existing rows where required, verify intended changes, and capture any claimed idempotency rerun. Reuse that execution for its purpose and artifact assertions; command success alone does not prove data correctness.
 
 Prove each required persistence or data-integrity outcome with the minimum sufficient evidence. Reuse the journey or an executed existing test when it proves that outcome; a success message or optimistic UI alone does not prove persistence. Query (`database-tools.md`) only when that evidence is insufficient, selecting the relevant records and fields rather than auditing every write or dumping tables. Record the finding and reuse its proof; UI-only assertions need no query. Keep the selected shipped-artifact pre/post checks above. An asserted persisted effect that is wrong fails even if the UI looks right. For repeats, reuse valid existing state and prepare only what the repeat needs within safety and approval rules; no automatic database rebuild.
 
-Use existing focused tests to answer in-scope questions the QA journeys have not proved; select checks by the unanswered risk, not by every touched file. An executed integration test can prove the backend assertions and real entry points it exercises; unit tests prove their narrower calculations. Reuse this evidence for covered critical cases rather than replaying their matrix manually. Neither proves unexercised browser behavior or an unexecuted shipped artifact. Keep the main QA journey and the runtime evidence appropriate to its entry point.
+Use existing focused tests only for in-scope risks the required end-to-end journeys leave open; select checks by unanswered risk, not by touched files. An executed integration test can prove the backend assertions and real entry points it exercises; unit tests prove their narrower calculations. Reuse this evidence for covered critical cases rather than replaying their matrix manually. Neither proves unexercised browser behavior or an unexecuted shipped artifact. Keep the main QA journey and the runtime evidence appropriate to its entry point.
 
 Capture and organize proof under [reporting.md](reporting.md), recording observations as execution proceeds. Reuse one artifact for every assertion or scenario it proves rather than repeating execution, screenshots, or queries for the same observed state.
 
@@ -113,10 +115,24 @@ Record `<results>` by ID: steps/command, expected versus observed behavior, evid
 
 Write the local HTML report under [reporting.md](reporting.md); never post findings to the PR.
 
-- **Verdict** — name the driver. `FAILED` if an evidenced executed scenario failed; otherwise `INCOMPLETE` if no purpose journey executed, a blocker remains, a defining ticket is missing, a required capture has a proof gap, or mixed revisions prevent a clean tested-revision claim; otherwise `PASSED` for the exercised scope. A report delivery blocker prevents an unqualified pass. Include passed, failed, blocked, and deferred counts.
+- **Verdict** — name the driver. `FAILED` if an evidenced executed scenario failed; otherwise `INCOMPLETE` if no purpose journey executed, a blocker remains, a defining ticket is missing, or a required capture has a proof gap; otherwise `PASSED` for the exercised scope. A report delivery blocker prevents an unqualified pass. Base the verdict on `<tested-state>`; record mixed or local working-tree provenance as a boundary. Include passed, failed, blocked, and deferred counts.
 - **Report** — give the absolute `index.html` location once published. On a delivery blocker, state that no report was published and give the absolute report-package path for `notes.md` and the captures; never present the unvalidated staged draft as a finished report. Keep scenario details, expected versus observed behavior, evidence, failures, and test boundaries in the report rather than repeating its table in chat.
 - **Actionable findings** — summarize concrete failures, blockers/unblock paths, missing requirements or defining tickets, premise drift, verdicts on admitted `<review-findings>` (confirmed, rebutted, unverified), and proof gaps that need attention. Cite `file:line` only where the diff is implicated; distinguish confirmed pre-existing failures from unknown attribution. Claim only what the evidence proves, not exhaustive application coverage.
 
+### 9. Continue After Failed or Blocked Results
+
+When a completed run has `FAILED` or `BLOCKED` scenarios, ask in one round through the interactive question tool, or a plain chat prompt where it is unavailable: **unblock**, **fix**, or **leave as reported**. Accept combined directions; use multi-select where supported or ask scenario-by-scenario. Equivalent guidance the user volunteers later enters the same continuation. The choice reopens only the scenarios the user names or the selected prerequisite/fix affects; it never expands into unrelated failures, fixes, or reruns. If the user does not name scenarios, ask which `FAILED`/`BLOCKED` items the direction covers before editing or rerunning.
+
+- **Unblock** — use the recorded unblock path or the user's supplied access, action, or path under the safety and approval rules; verify the prerequisite, then re-run each affected `BLOCKED` scenario.
+- **Fix** — the user's direction is the separate fix request required by the Notes. Make only the directed fix as uncommitted source edits; a failure alone never authorizes source changes. Commits and pushes require a separate explicit request. When the user says a fix already exists, verify it rather than editing source. Then re-run each affected `FAILED` scenario against the local fixed code, whether or not the fix is committed or pushed.
+- **Leave as reported** — keep the existing results; no rerun.
+
+If the direction lacks a concrete unblock path or fix scope, ask once. Rerun against the working tree after the unblock or fix; no commit, push, or PR-head update is required. Record `<tested-state>` as the actual tested commit SHA, any uncommitted changes, and a modified-file summary; when the fix is committed locally, that commit is the tested commit. Uncommitted or unpushed fixes never invalidate results. Restore only the minimum prerequisites under Step 6, then re-run each affected journey end to end under Step 7 with fresh evidence. No earlier result clears without fresh execution. Independent failures and blockers keep their existing results.
+
+After a continuation rerun, reconcile and regenerate the report under [reporting.md](reporting.md) before replying, applying destination safety. Uncommitted or unpushed fixes never excuse a stale report. If the verdict is unchanged, refresh affected sections and evidence. If regeneration fails, disclose the delivery blocker and preserve new evidence. Report the new verdict/counts, remaining failures or blockers, and absolute report location.
+
+**Done when:** the continuation is executed or declined; any rerun is reconciled into a regenerated report or its delivery blocker disclosed; the verdict, counts, and report location are reported; and `<previous-branch>` is restored or its restoration decision recorded while preserving user-directed fix changes.
+
 ## Notes
 
-Verifies, never fixes. Leave application source/tests and repository history as found: no code or test additions, setup scripts, stray commits, or PR updates. Retain only the authorized ignored report package and any explicitly approved narrow local exclusion; fixes require a separate request.
+Verifies, never fixes on its own. During the initial pass, leave application source/tests and repository history as found: no code or test additions, setup scripts, stray commits, or PR updates. Retain only the authorized ignored report package and any explicitly approved narrow local exclusion; fixes require a separate request. A Step 9 fix direction is that separate request and authorizes only the directed uncommitted source changes; all other boundaries remain.

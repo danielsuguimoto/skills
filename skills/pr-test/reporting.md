@@ -46,13 +46,13 @@ Read [report-template.html](report-template.html) once before writing `index.htm
 
 Record facts from already loaded context:
 
-- **Run:** PR identity/link, branch and actual tested commit SHA, driver, depth, budget, sanitized environment/entry point, finish time with timezone, verdict, and counts. Mixed tested revisions are an incomplete proof boundary, not a clean single-revision run.
+- **Run:** PR identity/link, branch and tested code state, driver, depth, budget, sanitized environment/entry point, finish time with timezone, verdict, and counts. For a clean tree, record the tested commit SHA; for local fixes, record the tested commit SHA (the local fix commit when one exists), any uncommitted changes, and a modified-file summary. Mixed or local tested states are proof boundaries, not verdict blockers.
 - **Index:** each planned ID/title, purpose/artifact/critical-edge labels, result, and proof summary; link IDs to scenario sections. One journey may have several labels.
 - **Selected scenario:** source outcome/link, entry point, prerequisites, concrete edge risk when applicable, and ordered actions or command with meaningful input conditions. Include shipped-artifact pre-state, execution, post-state, and claimed idempotency proof where applicable.
 - **Assertion:** ID, expected and observed behavior, supported behavioral finding, and evidence references. Keep behavioral findings separate from capture completeness. Record unverified assertions as unverified, not passed or failed.
 - **Evidence:** ID/type, action driver and observation supplier/verifier, supported assertion IDs, observed fact and proof limit, and relative artifact link or inline observation. Types include screenshot, command/test output, query plus result, blocking error, user observation, and agent observation.
 - **Exceptions:** blocker prerequisite, recovery or reason none fit, and unblock path; deferred source/reason; proof-gap assertion, missing capture, and error/limitation. Preserve earlier contradictory observations from permitted repeats. Record failure attribution under [Step 7](SKILL.md#7-exercise-or-guide-the-change).
-- **Boundaries:** unloaded defining tickets, missing implementation, premise drift, untested scope, focused automated coverage, and sandbox/substitute limits. Distinguish user observations from agent execution.
+- **Boundaries:** unloaded defining tickets, missing implementation, premise drift, missing or unmet project testing requirements, untested scope, focused automated coverage, and sandbox/substitute limits. Distinguish user observations from agent execution.
 
 Display screenshots beside or immediately below their assertion rows using captioned figures, useful alt text, and links to the original image. Another assertion can link to the canonical figure rather than embedding the image again. Keep headings, observed mismatches, and evidence references visible; reserve native disclosure blocks for long steps or output. Show relevant escaped command/query excerpts and link longer sanitized captures when needed. Apply [Step 7](SKILL.md#7-exercise-or-guide-the-change) to persistence claims.
 
@@ -82,14 +82,14 @@ Reconcile results within the chosen scope before writing:
 - Deferred IDs retain their reasons; planned count = `PASSED` + `FAILED` + `BLOCKED` + `DEFERRED`.
 - Fill proof gaps within the selected scope; keep deferred work deferred and unchanged blockers blocked — do not rerun them to polish the report. The main workflow owns terminal status and verdict rules.
 
-Record the finish time, then write the report once from the reconciled results to a staged `index.staged.html` in the report directory — the same directory, so relative links validate against the final base. Validate the staged artifact without reopening test scope:
+Record the finish time, then write the report from the reconciled results to a staged `index.staged.html` in the report directory — the same directory, so relative links validate against the final base. Each delivery uses a fresh staged file. A Step 9 continuation repeats this cycle after new evidence and replaces the prior report only through validation and rename. Validate the staged artifact without reopening test scope:
 
 - Index rows, sections, assertions, evidence captions, and counts agree with the plan and results.
 - Each saved artifact has a report reference. Relative file links resolve to nonempty intended files inside the package; anchor references resolve to unique IDs. Missing required captures are explicit proof gaps, never broken links.
 - The report has no leftover slots, example QA claims, duplicated captures, raw untrusted markup, scripts, or remote dependencies. Moving the package preserves its artifact links.
 - Findings and boundaries match what the evidence proves, including provenance, missing captures, and unresolved scope.
 
-Fix validation findings in the staged report or rewrite it from the reconciled results — never edit it into claims the evidence does not support. An unfixable validation failure is a delivery blocker: preserve `notes.md`, the captures, and the staged report, and disclose the blocker. Publish by renaming the validated file to `index.html`; the rename is the single publishing step, and a leftover staged report marks the run unfinished under Section 1.
+Fix validation findings in the staged report or rewrite it from the reconciled results — never edit it into claims the evidence does not support. An unfixable validation failure is a delivery blocker: preserve `notes.md`, the captures, and the staged report, and disclose the blocker. Publish by renaming the validated file to `index.html`; the rename is the single publishing step for that delivery, and a leftover staged report marks the run unfinished under Section 1.
 
 A finished run can still have an incomplete or failed verdict. Return the Step 8 chat handoff; keep details in this report, never in a PR comment.
 

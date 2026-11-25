@@ -28,11 +28,11 @@ Each subdirectory under `skills/` is a self-contained skill with a `SKILL.md` ma
 | pr-fix | Address PR feedback by making fixes and responding directly to review threads. |
 | pr-fix-ci | Fix failing CI checks on a PR — read logs, fix the code, push, verify green. |
 | pr-stack | Assess an existing PR for stacking using its purpose, linked context, project memories, conventions, and deployment; convert only after explicit agreement. |
-| pr-test | Test a PR's purpose with the user or agent driving, chosen before setup. Exercise realistic flows and critical edge cases with minimal local data; verify persisted effects and shipped artifacts. Production stays read-only; PR and repo files/history stay untouched. |
+| pr-test | Test a PR's purpose with the user or agent driving, chosen before setup. Exercise realistic flows and critical edge cases with minimal local data; verify persisted effects and shipped artifacts. After failures or blockers, user-directed unblocks or fixes trigger affected reruns and report updates. Production stays read-only. |
 | post-merge | After a PR is merged and deployed — verify deployment-run artifacts took effect in prod, draft resolution replies for linked customer-success tickets via draft-reply, then clear the work's isolated workspace. |
 | session-to-memory | Extract retention-worthy knowledge from a session and persist it to the active memory provider. |
 | sequential-thinking | Sequential thinking method for non-trivial tasks — thought chains that revise, branch, and verify before concluding. |
-| setup-skills | Guide users through initial configuration — creates `<project-root>/docs` folder and generates all spec files needed by other skills. |
+| setup-skills | Guide users through initial configuration — creates `<project-root>/docs` folder and generates all spec and project-reference files needed by other skills. |
 | ship-changes | Ship current work end-to-end — branch, commit, push, open PR. |
 | spawn | Invoke a target skill inside a subagent so its content stays isolated to the subagent's context. |
 | subagents | Delegation gates — parallel work, context offloading, model-tier offload, and external agent CLI handoff. |
@@ -55,9 +55,9 @@ Each project using these skills must create a `<project-root>/docs` folder with 
 
 ### Expected spec files
 
-The canonical list is the **Generate** table in `skills/setup-skills/SKILL.md` — one file per tool category.
+The canonical list is the **Generate** table in `skills/setup-skills/SKILL.md` — one file per tool category, plus the `testing.md` project reference.
 
-Each spec file must define: the operations available, their input/output schemas, and expected behavior rules. Agents read these files to learn how to interact with the project's specific tool implementations.
+Each tool spec file must define: the operations available, their input/output schemas, and expected behavior rules. Agents read these files to learn how to interact with the project's specific tool implementations. `testing.md` is a project-specific testing reference; it records environment facts and constraints rather than tool operations.
 
 ## Installation
 
