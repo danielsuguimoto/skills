@@ -12,7 +12,7 @@ Shell-read before running any container CLI command (reuse session reads): `<pro
 - When the command requires project config, confirm the file named in the spec exists. If missing, stop and ask.
 - For project-scoped commands, read the config once for service and script names; re-read only when it changes. Never guess names.
 - Use the tool's list/status operations to enumerate scripts and running services when unsure.
-- Config-free commands, such as logs for a named Docker container, need no project config.
+- Config-free commands, such as logs for a named container, need no project config.
 
 ## Important Rules
 
