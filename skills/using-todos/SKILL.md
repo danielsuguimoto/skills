@@ -1,13 +1,13 @@
 ---
 name: using-todos
-description: "Use the harness-native todo list when execution spans three or more steps, multiple files, distinct phases, or parallel workstreams."
+description: "Use the harness-native todo list when non-mechanical execution spans three or more steps, multiple files, distinct phases, or parallel workstreams."
 ---
 
 Use the harness-native todo list as the execution ledger: the user-visible record of what remains, what is active, and what finished.
 
 ## Create
 
-Create the list when execution spans three or more steps, multiple files, distinct phases, or parallel workstreams. Skip a single mechanical action, even when it touches multiple files.
+Create the list when non-mechanical execution spans three or more steps, multiple files, distinct phases, or parallel workstreams. Skip a single mechanical action, even when it touches multiple files. No harness-native todo mechanism → use the workflow's own plan artifact as the ledger; without one, keep a brief outcome sequence inline.
 
 ## Items
 
@@ -30,7 +30,7 @@ Create the list when execution spans three or more steps, multiple files, distin
 
 - Use one item per independent workstream. Multiple items may be `in_progress` only while their streams run concurrently; the parent owns every status transition.
 - Label each stream in `content` (`W1`, `W2`, …) when the native schema lacks ownership metadata.
-- Mark a stream `in_progress` after dispatch succeeds. Mark it `completed` only after the parent validates its result; failed or invalid results follow the Maintain rules.
+- For blocking dispatch, mark each stream `in_progress` immediately before launching it; for nonblocking dispatch, mark it `in_progress` after launch is acknowledged. Mark it `completed` only after the parent validates its result; launch errors and failed or invalid results follow the Maintain rules.
 
 ## Close
 

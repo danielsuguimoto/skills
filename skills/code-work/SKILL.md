@@ -30,7 +30,7 @@ Define success criteria; loop until verified. Transform tasks into verifiable go
 - "Fix the bug" → reproduction test goes red to green
 - "Refactor X" → tests pass before and after
 
-Multi-step work → define the verification check for each outcome before starting it.
+Multi-step work → plan the outcomes and their verification checks before starting. Use the execution ledger as the plan when active; otherwise, keep a brief `1. <outcome> → verify: <check>` plan.
 
 ## Code Reading
 
