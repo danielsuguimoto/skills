@@ -1,6 +1,6 @@
 ---
 name: post-merge
-description: "Use after a pull request is merged and deployed — verify shipped artifacts took effect, find customer-success tickets linked to the PR and draft resolution replies for them, mark linked spec tickets done, then clear the isolated workspace used for the work. No code changes."
+description: "Use after a pull request is merged and deployed — verify shipped artifacts took effect, find customer-success tickets linked to the PR and draft resolution replies for them, then clear the isolated workspace used for the work. No code changes."
 ---
 
 ## Required `<project-root>/docs` reads
@@ -21,7 +21,7 @@ View PR via git host (`git-hosts.md`). Extract `<pr-branch>`, `<pr-number>`, `<p
 
 ### 3. Load Linked Tickets
 
-Per `<ticket-refs>` entry, load fresh via the issue tracker tool (`issue-trackers.md`): body, every comment, attachments — an earlier in-session copy does not qualify; resolution drafts must reflect the latest customer comments. This fresh snapshot is what `draft-reply` reuses. Loads are independent — three or more tickets, or fewer on the user's explicit request, may be loaded in parallel when a suitable subagent profile exists; doubtful independence stays serial. Each worker returns the snapshot plus nested refs found, and the parent dedupes new refs against `<ticket-refs>` before loading them. **Nested links:** traverse per the spec — the customer thread may live on an inner card; add each ref found to `<ticket-refs>`.
+Per `<ticket-refs>` entry, load fresh via the issue tracker tool (`issue-trackers.md`): body, checklists, full comment thread, attachments — an earlier in-session copy does not qualify; resolution drafts must reflect the latest customer comments. This fresh snapshot is what `draft-reply` reuses. Loads are independent — three or more tickets, or fewer on the user's explicit request, may be loaded in parallel when a suitable subagent profile exists; doubtful independence stays serial. Each worker returns the snapshot plus nested refs found, and the parent dedupes new refs against `<ticket-refs>` before loading them. **Nested links:** traverse per the spec — the customer thread may live on an inner card; add each ref found to `<ticket-refs>`.
 
 ### 4. Validate Deployed Artifacts
 
@@ -56,7 +56,7 @@ One draft per ticket — `draft-reply` posts a private note; nothing reaches the
 
 ### 7. Close Spec Tickets
 
-Per `<spec-tickets>` entry, close it or mark it done through the issue tracker update operation (`issue-trackers.md`). Never close customer-success tickets or non-spec internal tickets here. Skip an already closed/completed/done entry as `already done`; otherwise apply the tracker's terminal completion state. Record `done` only when the update response or a fresh reload confirms that terminal state; `unsupported` when the tracker lacks closure/completion; `failed` when the update errors or the outcome stays unconfirmed. Store per-ticket URL, status, and error or gap as `<spec-ticket-results>`.
+Skip an already closed/completed/done `<spec-tickets>` entry as `already done`. For every open entry, first match the production effects its spec requires against `<artifact-results>`; implementation-only tickets have no artifact dependency. Leave the ticket unchanged and record `blocked` when a required effect is `not scheduled`, `unverifiable`, or absent from `<artifact-results>`; never block it on an unrelated artifact. Otherwise close it or mark it done through the issue tracker update operation (`issue-trackers.md`). Never close customer-success tickets or non-spec internal tickets here. Record `done` only when the update response or a fresh reload confirms that terminal state; `unsupported` when the tracker lacks closure/completion; `failed` when the update errors or the outcome stays unconfirmed. Store per-ticket URL, status, and error, gap, or blocking artifact and target as `<spec-ticket-results>`.
 
 ### 8. Clear the Workspace
 
