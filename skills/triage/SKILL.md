@@ -81,7 +81,7 @@ The last output line names the follow-up skill — always exactly one:
 
 ### Sync
 
-Always sync findings back — the spec phase reads prior comments; skipping breaks the pipeline. Missing `<ticket-url>` → ask for the target before syncing. Via issue tracker sync — convention per `issue-trackers.md` (`refUrl` = `<ticket-url>`). Write the note per `writing-for-agents`: compact, `file:line` citations, no code blocks, no client-facing tone; the posted note joins `<ticket-context>` for downstream reuse. Sync fails → report error, provide findings in chat.
+Always sync findings back — the spec phase reads prior comments; skipping breaks the pipeline. A `<ticket-url>` first identified here — not present when the ticket context was loaded → load the ticket thread before posting and confirm the findings still apply; material conflict → re-analyze, never post stale findings. Missing `<ticket-url>` → ask for the target before syncing. Via issue tracker sync — convention per `issue-trackers.md` (`refUrl` = `<ticket-url>`). Write the note per `writing-for-agents`: compact, `file:line` citations, no code blocks, no client-facing tone; the posted note joins `<ticket-context>` for downstream reuse. Sync fails → report error, provide findings in chat.
 
 ## Notes
 

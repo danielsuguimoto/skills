@@ -28,7 +28,7 @@ Treat ticket systems generically.
 
 </spec-template>
 
-1. **Interpret Arguments**: Explicit ticket reference/URL → `<ticket-url>`; any other input → `<request>`; extra focus areas or constraints → `<additional-context>`. Without an explicit ticket, use the unambiguous ticket targeted by the session's current work; ambiguous → ask. Without a ticket or arguments → use the ticket list tool to discover unresolved assigned tickets first, then fall back to `<request>` from the conversation.
+1. **Interpret Arguments**: Explicit ticket reference/URL → `<ticket-url>`; any other input → `<request>`; extra focus areas or constraints → `<additional-context>`. A written `<request>` is authoritative — skip session inference. Without a ticket or `<request>`, use the unambiguous ticket targeted by the session's current work; ambiguous → ask. Without a ticket or arguments → use the ticket list tool to discover unresolved assigned tickets first, then fall back to `<request>` from the conversation.
 
 2. **Load Planning Context**: `<ticket-url>` exists → reuse a complete, current in-session copy — full comment thread, this session's synced notes appended — or load it via the issue tracker tool (`issue-trackers.md`), store as `<planning-context>`; attachments per spec → `<attachment-insights>`. No `<ticket-url>` → the request/conversation is `<planning-context>`. Empty or missing → stop.
 

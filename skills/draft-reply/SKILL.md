@@ -66,7 +66,7 @@ The note's body is `<draft-reply>` verbatim — the whole note, nothing around i
 
 ### Sync
 
-Missing `<ticket-url>` → ask for the target before syncing. Post `<draft-reply>` as the note body via the issue tracker sync tool — convention per `issue-trackers.md` (`refUrl` = `<ticket-url>`; private note per provider, `DRAFT` prefix fallback). Fails → report error, provide draft in chat.
+A `<ticket-url>` first identified here — not present when the ticket context was loaded → load the ticket thread before posting and confirm the reply target and draft still apply; material conflict → re-analyze, never post the stale draft. Missing `<ticket-url>` → ask for the target before syncing. Post `<draft-reply>` as the note body via the issue tracker sync tool — convention per `issue-trackers.md` (`refUrl` = `<ticket-url>`; private note per provider, `DRAFT` prefix fallback). Fails → report error, provide draft in chat.
 
 ## Notes
 

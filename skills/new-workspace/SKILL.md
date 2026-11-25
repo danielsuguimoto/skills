@@ -5,7 +5,7 @@ description: "Use when a request or skill invocation is prefixed with 'new-works
 
 ## Required `<project-root>/docs` reads
 
-Shell-read **before** creating the workspace; may be gitignored and absent from the new workspace — the in-context copy stays source of truth after the move. Missing → fall back per `using-workspaces`, note gap, never invent: `<project-root>/docs/workspace-isolation.md`, `<project-root>/docs/issue-trackers.md` (only when the resolved target is a ticket/card), `<project-root>/docs/git-hosts.md` (only when the resolved target is a PR)
+Shell-read **before** creating the workspace; may be gitignored and absent from the new workspace — the in-context copy stays source of truth after the move. Missing → fall back per `using-workspaces`, note gap, never invent: `<project-root>/docs/workspace-isolation.md`, `<project-root>/docs/git-hosts.md`, `<project-root>/docs/issue-trackers.md` (only when the resolved target is a ticket/card)
 
 Companion skill: isolate first, then run whatever came next.
 

@@ -40,7 +40,7 @@ Build `<change-summary>` from `<included>` (primary) or `<ahead-commits>` (fallb
 Derive `<branch-category>` from `<change-summary>` per `new-branch` categories.
 
 Forward to subskills:
-- `new-branch`: `<additional-context>`, `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<branch-category>`.
+- `new-branch`: `<additional-context>`, `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<branch-category>`, `<ticket-url>`, `<ticket-mode>`.
 - `commit-and-push`: `<additional-context>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<excluded>`.
 - `pr-create`: `<change-summary>`, `<excluded>`, `<ticket-url>`, `<ticket-mode>`, `<ticket-brief-result>`, and `<base>` when defined.
 
@@ -48,7 +48,7 @@ Forward to subskills:
 
 Skip when `<current-branch>` is NOT the detected default (per `git-hosts.md` fallback) AND is already ticket-related → `<new-branch>` = `<current-branch>`.
 
-Otherwise invoke `new-branch`, passing `<additional-context>`, `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<branch-category>` → `<new-branch>`. "Nothing to branch from" or "Branching skipped" → STOP and report.
+Otherwise invoke `new-branch`, passing `<additional-context>`, `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<branch-category>`, `<ticket-url>`, `<ticket-mode>` → `<new-branch>`. "Nothing to branch from" or "Branching skipped" → STOP and report.
 
 ### 4. Commit and Push
 
