@@ -27,13 +27,13 @@ From `statusCheckRollup` (or `gh pr checks`), collect checks in `FAILURE`, `ERRO
 Per `<check>`: Actions run → `gh run view <run-id> --log-failed` (fallback `--log` if empty). Non-Actions → open `<url>` and read rendered output via `webfetch` if reachable, else record `<url>` for the user. Extract `<error-lines>` (first error/stack/assertion), `<failing-file>`, `<failing-test>`, `<failing-command>`.
 
 ### 6. Triage Failures
-Every `<check>` clearly matches `flaky`, `infra`, or `required-status` per the definitions below → classify and record each as below; summary + stop (suggest re-runs where applicable). Otherwise continue.
+Every `<check>` appears `flaky`, `infra`, or `required-status` per the definitions below → compare failure evidence with the PR title/body, commits, and changed paths via the git host (`git-hosts.md`). Only when that evidence rules out a PR-related cause for every failure → classify and record each as below; summary + stop (suggest re-runs where applicable). A possible connection or missing evidence → continue; known flakiness alone does not establish independence.
 
 Anchor `<pr-intent>` — why the PR exists: title, body, commit messages, and a ticket brief (see Ticket Brief) for all issue/card references in the body, commits, or branch name, scoped to intended behavior. For each scope-relevant target PR decision reference returned by the brief, reuse loaded feedback or retrieve only that decision and the context needed to establish its status via the git host (`git-hosts.md`); unavailable or ambiguous → note the gap. No usable brief → fall back to PR title/body plus any verified decision; note the gap.
 
 Classify each `<check>`:
 - `code` — caused by the PR's code (compile error, test failure, lint) → fix in Step 8.
-- `flaky` — transient (network timeout, race, known-flaky test) → re-run, don't fix code.
+- `flaky` — transient (network timeout, race, known-flaky test) with evidence of a cause independent of the PR → re-run, don't fix code. When `<pr-intent>` or PR changes target the failure, investigate the PR-related cause before classifying it as `flaky`.
 - `infra` — environment/runner (missing secret, service down, quota) → report; re-run only if user confirms.
 - `required-status` — required check missing/pending (e.g. no recent review) → out of scope; report.
 - Premise check — a `code` failure in code the PR doesn't touch, or one showing `<pr-intent>`'s assumed behavior no longer holds → verify against `<base-branch>`; pre-existing or drifted → `<not-fixing>` with reason. Don't widen scope silently.
