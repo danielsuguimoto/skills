@@ -1,6 +1,6 @@
 ---
 name: using-workspaces
-description: "Use when starting work that needs an isolated workspace — feature branches, parallel tasks, or implementation plans. Detects existing isolation, then creates one per `<project-root>/docs/workspace-isolation.md`."
+description: "Detect or create an isolated workspace for branch work, parallel tasks, or implementation plans."
 ---
 
 ## Required `<project-root>/docs` reads
@@ -29,11 +29,7 @@ VCS checks don't rule out tool-managed isolation: snapshot/copy mechanisms produ
 
 Already isolated → Step 2; report path and branch state. A detached HEAD is a valid externally-managed workspace — a branch is needed only at ship time (`new-branch`/`ship-changes`).
 
-Not isolated and no declared user preference → ask consent first:
-
-> "Would you like me to set up an isolated workspace? It protects your current checkout from changes."
-
-Honor a declared preference without asking; declined → work in place, skip to Step 2.
+An explicit workspace request or applicable preference for isolation supplies consent. Follow the explicit request over a standing preference. If the user chose to work in place, skip to Step 2. Otherwise ask for consent only if it is missing; declined means work in place and skip to Step 2.
 
 ## Step 1: Create Isolated Workspace
 

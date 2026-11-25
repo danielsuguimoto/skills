@@ -1,6 +1,6 @@
 ---
 name: new-workspace
-description: "Use when a request or skill invocation is prefixed with 'new-workspace' (e.g. '/new-workspace /implement <card>', '/new-workspace /pr-fix <pr>') or should run in a separate/isolated workspace — including work based on an existing PR."
+description: "Run a task or skill in an isolated workspace, including work on an existing PR; use on new-workspace requests."
 ---
 
 ## Required `<project-root>/docs` reads

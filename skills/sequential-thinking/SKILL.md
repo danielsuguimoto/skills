@@ -1,6 +1,6 @@
 ---
 name: sequential-thinking
-description: "Sequential thinking method for non-trivial tasks — decompose into a thought chain, revise on new evidence, branch competing hypotheses or approaches, verify before concluding. Invoke on complex debugging, multi-step planning, unclear-scope analysis, or any task where one-shot reasoning risks a wrong answer."
+description: "Use sequential reasoning for complex debugging, multi-step planning, ambiguous scope, or competing hypotheses."
 ---
 
 Externalize reasoning as a chain of numbered thoughts instead of reasoning in one pass. Each thought is a unit of work — a decomposition, an evidence read, a decision — not a narration of actions taken.

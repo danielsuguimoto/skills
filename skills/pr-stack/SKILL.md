@@ -1,11 +1,11 @@
 ---
 name: pr-stack
-description: "Assess an existing PR for stacking versus one PR or independent splits; convert to a stack only after explicit agreement."
+description: "Assess a PR for stacking, keeping it whole, or splitting it; convert an approved stack."
 ---
 
 ## Required `<project-root>/docs` reads
 
-Resolve `<project-root>` to the PR's project. Shell-read before assessment; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`; `<project-root>/docs/issue-trackers.md` for linked issues/tickets/cards · `<project-root>/docs/bug-trackers.md` for linked error reports · `<project-root>/docs/doc-lookup.md` when checking current platform support. Memory and code exploration follow `memory-usage` and `context-gathering`.
+Resolve `<project-root>` to the PR's project. Shell-read before assessment (reuse session reads): `<project-root>/docs/git-hosts.md`; `<project-root>/docs/issue-trackers.md` for linked issues/tickets/cards · `<project-root>/docs/bug-trackers.md` for linked error reports · `<project-root>/docs/doc-lookup.md` when checking current platform support. If a spec is missing, report the gap and use a documented fallback. Memory and code exploration follow `memory-usage` and `context-gathering`.
 
 Assessment is read-only. Until Step 4 agreement, do not edit files, create or switch branches, rewrite commits, push, change PR metadata, or register a stack. Report in chat; do not post the assessment to PRs or tickets without permission.
 
@@ -19,7 +19,7 @@ Load the PR's state, title, body, base/head repositories, branches and SHAs, def
 
 Invoke `memory-usage` for the **PR's project**, not the skill repository. Read its memory index and relevant architecture, review, release, deployment, and past-incident entries; verify consequential claims against current repository evidence. Invoke `context-gathering` for the changed slice and its dependencies.
 
-Read every directly linked bug, specification, issue, ticket, or card and its relevant comments, acceptance criteria, and attachments — reuse in-session copies covering the same fields. Include references from the PR body, branch name, commits, and review discussions; follow further links when they clarify requirements or dependencies. Search project docs/trackers for missing context when identifiers or the stated purpose suggest related work. Use the matching tracker spec. Reconcile conflicting requirements and separate intended behavior from incidental refactors. Store `<purpose>`, acceptance criteria, dependencies, and source links. Unavailable sources → name the gaps; continue the assessment where evidence suffices, but do not invent requirements.
+Read the body and acceptance criteria of each directly linked item that can establish purpose, dependency, or release constraints. Reuse in-session evidence; open comments or attachments only to fill a decision or evidence gap. Include references from the PR body, branch name, commits, and review discussions; follow further links when they clarify requirements or dependencies. Search project docs/trackers for missing context when identifiers or the stated purpose suggest related work. Use the matching tracker spec. Reconcile conflicting requirements and separate intended behavior from incidental refactors. Store `<purpose>`, acceptance criteria, dependencies, and source links. Unavailable sources → name the gaps; continue the assessment where evidence suffices, but do not invent requirements.
 
 Inspect project instructions and conventions, repository/module structure, ownership, tests, build configuration, CI workflows, and release/deployment configuration for the affected paths at the recorded PR head/base, not an unrelated checkout. Establish:
 
@@ -66,6 +66,8 @@ For a concrete candidate, ask: **"Do you agree with this assessment and approve 
 ### 5. Convert Only the Agreed Plan
 
 On explicit agreement, re-read the PR head/base, reviews, and stack membership. Changed since `<snapshot>` → reassess the differences; renew agreement if boundaries, scope, or risks change. Unresolved requirements or merge/deployment safety gaps → resolve before conversion.
+
+Reuse the agreed plan as authorization for its named reversible conversion steps, including workspace creation when included and new PRs opened through subskills. Do not ask again merely because a subskill performs the step. Honor tool-enforced permissions and the named-action safeguards below.
 
 Use the approved project workflow through `git-hosts.md`; prepare an isolated workspace through `using-workspaces` when needed, preserving unrelated work. Save recoverable refs to the original commits. Reuse clean commit boundaries where they match the plan; otherwise split mixed commits by hunk into new branches, preserving authorship and the original behavior. Keep the original PR and discussion on the agreed layer when possible.
 

@@ -1,12 +1,11 @@
 ---
 name: code-work
-description: >
-  Code reading and editing conventions. Activate when reading, writing, or editing code. Invoke alongside using-code-navigation for any code change task.
+description: "Follow code conventions when reading, writing, or editing code; pair with using-code-navigation for code changes."
 ---
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before reading, writing, or editing code; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`
+Shell-read before reading, writing, or editing code (reuse session reads): `<project-root>/docs/code-navigation.md`. If a spec is missing, report the gap and use a documented fallback.
 
 ## 1. Think Before Coding
 

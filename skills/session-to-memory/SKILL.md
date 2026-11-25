@@ -1,11 +1,11 @@
 ---
 name: session-to-memory
-description: "Use at the end of a non-trivial session or when the user asks to save session learnings. Extracts retention-worthy knowledge from the session and persists it to the memory provider."
+description: "Save durable lessons after a non-trivial session or on request."
 ---
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before extracting or persisting session knowledge; may be gitignored — missing → note gap, never invent: `<project-root>/docs/memory-providers.md`
+Shell-read before extracting or persisting session knowledge (reuse session reads): `<project-root>/docs/memory-providers.md`. If a spec is missing, report the gap and use a documented fallback.
 
 This skill owns bulk extraction at session end. `memory-usage` owns write triggers, naming, entry format, and in-session maintenance — defer to it for each. The memory-provider spec supplies driver mechanics (tool names, args).
 

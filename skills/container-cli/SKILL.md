@@ -1,11 +1,11 @@
 ---
 name: container-cli
-description: "Container CLI usage reference. Invoke when the project uses a container CLI (config file present) and a container command is needed — start/stop/restart, exec, logs, run scripts, share tunnels."
+description: "Use a configured container CLI for lifecycle, exec, logs, scripts, or tunnels."
 ---
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before running any container CLI command; may be gitignored — missing → note gap, never invent: `<project-root>/docs/container-clis.md`
+Shell-read before running any container CLI command (reuse session reads): `<project-root>/docs/container-clis.md`. If a spec is missing, report the gap and use a documented fallback.
 
 ## Before Running Any Container CLI Command
 

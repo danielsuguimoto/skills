@@ -1,24 +1,22 @@
 ---
 name: setup-skills
-description: "Guide initial configuration for this skills system — creates <project-root>/docs spec and project-reference files. Invoke on 'setup skills', 'configure skills', 'initialize skills', or when spec or project-reference files are missing or incomplete."
+description: "Configure skill specs and project references on request or when files are missing or incomplete."
 ---
 
 # Setup Skills
 
-Generate `<project-root>/docs/` and every file in the Generate table — skills reference these paths for tool interfaces and project-specific references.
+Configure the docs in the Generate table.
 
 ## Pre-flight
 
 1. **Detect project root**: `git rev-parse --show-toplevel` or fall back to `cwd` → `<project-root>`.
 2. **Check existing state**: list `<project-root>/docs/`; check which Generate-table files exist.
-3. **Decision gate**: all exist → ask reconfigure or abort (abort → stop) · some → ask regenerate all or only missing · none → interview directly.
-4. **Discover MCP servers**: native MCP discovery if available → `<mcp-inventory>`; offer detected servers as interview options. Skip if unsupported.
-5. **Detect external agent CLIs**: probe PATH for agent harness binaries → `<agent-cli-inventory>`; offer detected CLIs as interview options. If PATH enumeration is unsupported, skip detection; an empty inventory still flows to the interview.
-6. **Enumerate LLM models**: list models via the harness's model-listing mechanism (model picker, config file, provider API) → `<model-inventory>`; skip if unsupported.
+3. **Choose scope**: all files exist → ask whether to reconfigure or stop; some exist → ask whether to regenerate all or fill gaps only; none → generate all. Stop if declined. Record the target files.
+4. **Discover on demand**: for targeted MCP, external-agent, or model specs, record native server discovery as `<mcp-inventory>`, PATH detection as `<agent-cli-inventory>`, or native model listing as `<model-inventory>`. Skip unsupported discovery.
 
 ## Interview
 
-Ask about each tool category and the project testing reference via the native user-prompting mechanism — three sequential batches. Each tool question offers common options plus "None / not used"; include detected MCP servers when relevant. Record answers as `<tool-selections>`.
+Ask only unresolved questions for target files, in native batches. Reuse supplied answers or existing configuration when it settles the question. Offer common choices, relevant detected tools, and a none option. Record selections as `<tool-selections>`.
 
 ### Batch 1 — Tracking, Observability, Git, Database
 
@@ -59,11 +57,11 @@ External agents question: `<agent-cli-inventory>` non-empty → "Use detected CL
 
 Models question: `<model-inventory>` non-empty → "Use detected models" first; empty → "None" and "Other".
 
-A Yes answer to Testing → ask one focused follow-up per `testing.md` section — startup, test data and actors, browser/environment, external services, and supporting checks — and record the combined answers as `<testing-requirements>`. No or unanswered → generate a stub.
+A Yes answer to Testing → batch focused follow-ups for unresolved testing sections: startup, test data and actors, browser and environment, external services, and supporting checks. Record `<testing-requirements>`. No or unanswered → generate a stub.
 
 ## Generate
 
-Create `<project-root>/docs/` if missing. Generate each file below. For tool specs, fill every Operations row and Tool Details line derivable from the selected tool; keep `<!-- Fill in: ... -->` markers only where the interface can't be derived. "None" selected for a tool → stub: `**Tool**: Not configured` + note that referencing skills use fallbacks or skip. No or unanswered testing requirements → a stub recording no project-specific requirements.
+Create `<project-root>/docs/` if missing. Generate the target files from the table; leave other files unchanged. For tool specs, fill every Operations row and Tool Details line derivable from the selected tool; keep `<!-- Fill in: ... -->` markers only where the interface can't be derived. "None" selected for a tool → stub: `**Tool**: Not configured` + note that referencing skills use fallbacks or skip. No or unanswered testing requirements → a stub recording no project-specific requirements.
 
 Each tool spec documents the tool's interface only — no agent behavior rules. `testing.md` is the exception: it records project-specific testing environment facts and constraints using the structure in its note below. Tool-spec template:
 

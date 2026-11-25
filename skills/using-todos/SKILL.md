@@ -1,6 +1,6 @@
 ---
 name: using-todos
-description: "Use the harness-native todo list for execution spanning three or more steps, multiple files, distinct phases, or parallel workstreams — except a single mechanical action."
+description: "Track multi-step, multi-file, phased, or parallel execution; skip a single mechanical action."
 ---
 
 Use the harness-native todo list as the execution ledger: the user-visible record of what remains, what is active, and what finished.

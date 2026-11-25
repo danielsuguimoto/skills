@@ -1,13 +1,13 @@
 ---
 name: post-merge
-description: "Use after a pull request is merged and deployed — verify shipped artifacts took effect, find customer-success tickets linked to the PR and draft resolution replies for them, then clear the isolated workspace used for the work. No code changes."
+description: "Verify deployed PR artifacts, draft customer ticket resolutions, and clear the isolated workspace after merge and deployment."
 ---
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before post-merge cleanup; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`, `<project-root>/docs/issue-trackers.md`, `<project-root>/docs/workspace-isolation.md`; only when the PR ships data artifacts — `<project-root>/docs/database-tools.md`
+Shell-read before post-merge cleanup (reuse session reads): `<project-root>/docs/git-hosts.md`, `<project-root>/docs/issue-trackers.md`, `<project-root>/docs/workspace-isolation.md`; only when the PR ships data artifacts — `<project-root>/docs/database-tools.md`. If a spec is missing, report the gap and use a documented fallback.
 
-Drafts go to a human for review.
+Explicitly invoking `post-merge` authorizes verified spec-ticket closures, private draft notes, and recoverable cleanup of the workspace for that PR. Reuse that authorization across steps, tickets, and subskills. Follow tool-enforced permissions and the cleanup safeguards below.
 
 ### 1. Interpret Arguments
 
@@ -60,11 +60,11 @@ One draft per ticket — `draft-reply` posts a private note; nothing reaches the
 
 ### 8. Clear the Workspace
 
-List isolated workspaces per `workspace-isolation.md`; find the one created for this PR (match `<pr-branch>` or the ticket slug); remove via the spec's remove operation. Confirm removal — never delete a workspace not tied to this PR. No match → report `none found`, move on.
+Identify the isolated workspace created for this PR via `workspace-isolation.md`. No match → report `none found`; ambiguous match → leave workspaces intact and report the gap. Verify that removal preserves local-only commits, modified files, untracked or ignored data, and any other content that cannot be recovered. If recovery is verified, run the documented removal without another approval and verify the result. If removal would irreversibly discard data, describe the exact operation and workspace path and obtain specific confirmation before running it. If you cannot establish the effects, leave the workspace intact and report why.
 
 ### 9. Report
 
-Chat only: `<pr-url>` merge state · `<artifact-results>` per artifact and target — status + evidence, plus any inventory-wide discovery gap, or `none shipped` · classification counts · draft note URL per customer ticket or `not run` · `<spec-ticket-results>` per entry: ticket URL + status + error, gap, or blocking artifact and target, or `none linked` · `<drifted-tickets>` per entry: ticket URL, reported problem, why `<pr-summary>` doesn't cover it · workspace removed, `none found`, or `not run`.
+Chat only: `<pr-url>` merge state · `<artifact-results>` per artifact and target — status + evidence, plus any inventory-wide discovery gap, or `none shipped` · classification counts · draft note URL per customer ticket or `not run` · `<spec-ticket-results>` per entry: ticket URL + status + error, gap, or blocking artifact and target, or `none linked` · `<drifted-tickets>` per entry: ticket URL, reported problem, why `<pr-summary>` doesn't cover it · workspace removed, `none found`, `blocked` with reason, or `not run`.
 
 ## Notes
 

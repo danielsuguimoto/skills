@@ -1,11 +1,11 @@
 ---
 name: to-specs
-description: Use when a request or ticket needs to be turned into a spec of code changes and automated tests, synced to the ticket system — standalone or after triage. Read-only (no code changes or implementation).
+description: "Turn a request or ticket into a change and test spec, standalone or after triage, and sync it to the ticket system; leave application code unchanged."
 ---
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before turning the request into a spec; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`, `<project-root>/docs/issue-trackers.md`; only when the spec touches them — `<project-root>/docs/database-tools.md` (persisted state/schema), `<project-root>/docs/doc-lookup.md` (library/API uncertainty)
+Shell-read before turning the request into a spec (reuse session reads): `<project-root>/docs/code-navigation.md`, `<project-root>/docs/issue-trackers.md`; only when the spec touches them — `<project-root>/docs/database-tools.md` (persisted state/schema), `<project-root>/docs/doc-lookup.md` (library/API uncertainty). If a spec is missing, report the gap and use a documented fallback.
 
 Treat ticket systems generically.
 
@@ -71,9 +71,9 @@ Skip gate (ALL true): single atomic edit or small localized fix, no design decis
 Rules: one item = one single-purpose patch — split compound changes; broader changes → sub-items (`S1a`, `S1b`). Traceability check: an item naming no request line or locked decision is cut, not kept "for safety". Verify paths/symbols against `<repo-context>`; no guesses — unconfirmable target or a patch shape with no in-repo precedent → flag it in the item for step-9 review. No exploratory steps ("investigate X", "consider Y", "ensure X"). No alternative designs after the user agrees on direction. Code changes only — runtime operations (migrations, seeders, cache clears, queue restarts, user/ops actions) belong to deploy, not the spec. The spec lists only what is included: exclusions decided during grilling appear nowhere — no "out of scope" lines.
 
 9. **User Review** (the only spec presentation): present the full shaped spec exactly once — `<spec-title>`, `<spec-description>`, `<requirement-items>`, `<validation-items>`; no brief version first. In the same gate, reflect the user's inputs: list 3-5 key decisions/constraints and where they appear (cite items); confirm coverage of all concrete actions; trace-check every item against `<source-request>` and locked decisions — name any untraced item for removal — and confirm the spec solves the requester's original problem, not a drifted internal framing; then ask via the interactive question tool — header `Spec Ready`, options `Sync to Ticket` / `Revise Spec`:
-> Spec ready: `<spec-title>`. Implementation: N items. Validation: N items. Sync to the ticket system, or revise the spec?
+> Spec ready: `<spec-title>`. Implementation: N items. Validation: N items. Sync the spec, patches, and any required source-ticket link, or revise the spec?
 
-Only two outcomes: sync or revise — never offer to apply/implement/execute; user asks to implement → decline, point to the implementation workflow. `Revise Spec` → grill the revision points (step 5), reshape, re-enter this gate; `Sync to Ticket` → step 10. Sync only on that answer.
+Only two outcomes: sync or revise — never offer to apply/implement/execute; user asks to implement → decline, point to the implementation workflow. `Revise Spec` → grill the revision points (step 5), reshape, re-enter this gate; `Sync to Ticket` → step 10. Sync only on that answer. That answer authorizes this spec's Step 10 batch: create or update the resolved spec ticket, add its patches comment or attachment, and link it from the source ticket when applicable. Do not ask again for those writes. A material change to the spec or destination beyond the disclosed sync scope requires renewed approval. Honor tool-enforced permissions.
 
 10. **Sync Ticket**: sync via the issue tracker sync tool (`issue-trackers.md`); the synced spec joins the in-session ticket context for downstream reuse. Final output: the ticket URL.
 - `title`: `<spec-title>`; `description`: `<spec-description>` (Destination/Problem/Solution/Notes only — no items, no patch code).

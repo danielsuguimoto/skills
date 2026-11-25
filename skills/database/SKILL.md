@@ -1,11 +1,11 @@
 ---
 name: database
-description: "Use database inspection tools for schema, queries, reconciling counts, EXPLAIN plans, read/write operations. Not for code-level model/repository work — use code navigation tools there."
+description: "Inspect live schemas, query data, reconcile counts, inspect execution plans, or write data. Use code navigation for model or repository code."
 ---
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before any database query, schema inspection, or read/write operation; may be gitignored — missing → note gap, never invent: `<project-root>/docs/database-tools.md`
+Shell-read before any database query, schema inspection, or read/write operation (reuse session reads): `<project-root>/docs/database-tools.md`. If a spec is missing, report the gap and use a documented fallback.
 
 ## Source of Truth
 
@@ -39,6 +39,6 @@ Trace the application's query path and reproduce its joins, filters, and scopes 
 
 ## Runtime Safety
 
-- Obtain explicit user confirmation for each write unless the invoking workflow authorizes the specific local write. Irreversible actions always require specific confirmation.
+- A user-approved workflow can authorize a bounded class of reversible writes to a verified local target. Reuse that authorization for each covered action; do not ask again just because a write uses a different command or tool. Outside that scope, obtain explicit consent before writing. Verify the effective target and expected effects. Irreversible destructive actions and real-world side effects require specific approval. Honor tool-enforced permissions.
 - A rolled-back transaction does not undo external effects. Check events, jobs, mail, webhooks, and integrations before experiments.
 - Batch independent runtime queries when initialization is expensive.

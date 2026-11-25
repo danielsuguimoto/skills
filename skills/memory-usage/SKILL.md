@@ -5,7 +5,7 @@ description: "Use for persistent project memory reads/writes during non-trivial 
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before memory operations; may be gitignored — missing → note gap, never invent: `<project-root>/docs/memory-providers.md`
+Shell-read before memory operations (reuse session reads): `<project-root>/docs/memory-providers.md`. If a spec is missing, report the gap and use a documented fallback.
 
 Persistent memory holds facts that are expensive to re-derive and survive across sessions: lessons learned working with the user, written as short notes — not session summaries.
 

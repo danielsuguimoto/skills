@@ -1,11 +1,11 @@
 ---
 name: browser-automation
-description: Use for browser automation (QA, element interaction, screencapture/snapshot, network capture) or to work across the user's logged-in accounts, apps, memory, and browsing history.
+description: "Automate browser QA, page interaction, screenshots, snapshots, network capture, or work across signed-in accounts, apps, memory, and browsing history."
 ---
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before any browser automation action; may be gitignored — missing → note gap, never invent: `<project-root>/docs/browser-automation.md`
+Shell-read before any browser automation action (reuse session reads): `<project-root>/docs/browser-automation.md`. If a spec is missing, report the gap and use a documented fallback.
 
 # Browser Automation
 
