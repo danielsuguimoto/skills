@@ -13,8 +13,6 @@ Resolve the PR from the explicit number/URL, else the unambiguous PR targeted by
 
 Choose the source branch from the base repository: the PR base if it is `master` or `main`; otherwise the repository's default branch if it is `master` or `main`. If neither identifies the source, ask the user which `master` or `main` branch to use. Match Git remotes to the base and head repositories, including forks; if either cannot be identified or fetched, stop rather than guessing `origin`.
 
-Anchor `<pr-intent>` — why the PR exists: title, body, and, when the PR references issues or cards, a ticket brief (see Ticket Brief) scoped to intended behavior and constraints. For each scope-relevant target PR decision reference returned by the brief, reuse loaded feedback or retrieve only that decision and the context needed to establish its status via the git host (`git-hosts.md`); unavailable or ambiguous → note the gap. No usable brief → fall back to title/body plus any verified decision; note the gap. Step 3 resolves conflicts against it.
-
 ## 2. Prepare the PR branch
 
 Inspect the worktree, index, and Git operation state before switching or merging. If there are uncommitted or untracked changes, an existing merge/rebase, or a PR branch checked out in another worktree, stop and preserve them.
@@ -25,9 +23,13 @@ Fetch the chosen source branch from the base repository and record its fetched c
 
 ## 3. Merge and resolve
 
-Merge the recorded source commit into the PR branch with `git merge --no-ff --no-commit <source-commit>`, leaving the merge pending for review and approval. Investigate each conflict using the merge base, both sides, and the surrounding behavior. Preserve the intent of both changes — judge the PR side against `<pr-intent>`; do not blindly select one side. Resolve and stage each affected path, including deletions and renames. The base removing or replacing behavior `<pr-intent>` assumes is premise drift → a product decision per below, never a silent resolution.
+Merge the recorded source commit into the PR branch with `git merge --no-ff --no-commit <source-commit>`, leaving the merge pending for review and approval. A merge error unrelated to conflicts → stop and report.
 
-If a conflict requires a product decision or cannot be resolved safely, leave the merge pending and ask the user. Do not abort the merge or discard changes without explicit approval. If a merge error is unrelated to conflicts, stop and report.
+If conflicts exist, anchor `<pr-intent>` — why the PR exists: title, body, and, when the PR references issues or cards, a ticket brief (see Ticket Brief) scoped to intended behavior and constraints. For each scope-relevant target PR decision reference returned by the brief, reuse loaded feedback or retrieve only that decision and the context needed to establish its status via the git host (`git-hosts.md`); unavailable or ambiguous → note the gap. No usable brief → fall back to title/body plus any verified decision; note the gap.
+
+Investigate each conflict using the merge base, both sides, and the surrounding behavior. Preserve the intent of both changes — judge the PR side against `<pr-intent>`; do not blindly select one side. Resolve and stage each affected path, including deletions and renames. The base removing or replacing behavior `<pr-intent>` assumes is premise drift → a product decision per below, never a silent resolution.
+
+If a conflict requires a product decision or cannot be resolved safely, leave the merge pending and ask the user. Do not abort the merge or discard changes without explicit approval.
 
 ## 4. Verify and commit
 
