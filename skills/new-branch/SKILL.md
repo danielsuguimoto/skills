@@ -18,11 +18,11 @@ Create and switch to a categorized branch. All git/gh operations follow `git-hos
 
 ### 1. Interpret Arguments
 
-Classify the argument (if any) → `<arg-mode>` (`description`|`ticket`|`none`) + `<branch-context>`:
+Classify the explicit argument first. Without one, use the unambiguous ticket targeted by the session's current work; ambiguous → ask. Classify the result → `<arg-mode>` (`description`|`ticket`|`none`) + `<branch-context>`:
 
 - **Description** — free-form text, not a URL/issue link → use directly as `<branch-context>`.
 - **Ticket/issue link** — get a ticket brief (see Ticket Brief) scoped to title, purpose, and labels/type relevant to branch naming → `<branch-context>`. No usable brief → fall back to a slug-relevant fragment (issue number, path slug); note the gap. Do not load the raw ticket inline.
-- **None** — no argument; `<branch-context>` empty; name derived from git changes (Step 2).
+- **None** — no argument or session ticket; `<branch-context>` empty; name derived from git changes (Step 2).
 
 ### 2. Load Changes
 

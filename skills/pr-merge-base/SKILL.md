@@ -9,7 +9,7 @@ Shell-read before loading PR metadata: `<project-root>/docs/git-hosts.md`. If mi
 
 ## 1. Identify the PR and branches
 
-Require a PR number or URL argument; if absent, ask for it. Use that PR as the sole target, not the current branch. Load its state, base repository and branch, head repository and branch, and URL through the git host. If the PR is closed, its head branch is missing, a repository is inaccessible, or metadata is unavailable, stop and report.
+Resolve the PR from the explicit number/URL, else the unambiguous PR targeted by the session's current work. Missing or ambiguous → ask. Use that PR as the sole target, not the current branch. Load its current state, base repository and branch, head repository and branch, and URL through the git host. If the PR is closed, its head branch is missing, a repository is inaccessible, or metadata is unavailable, stop and report.
 
 Choose the source branch from the base repository: the PR base if it is `master` or `main`; otherwise the repository's default branch if it is `master` or `main`. If neither identifies the source, ask the user which `master` or `main` branch to use. Match Git remotes to the base and head repositories, including forks; if either cannot be identified or fetched, stop rather than guessing `origin`.
 

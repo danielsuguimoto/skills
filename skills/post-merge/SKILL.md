@@ -11,7 +11,7 @@ Drafts go to a human for review.
 
 ### 1. Interpret Arguments
 
-PR number/URL → `<pr-ref>`; none → derive from conversation or the most recently merged PR on the current branch (git host list PRs, merged state); extra guidance → `<additional-context>`.
+Explicit PR number/URL → `<pr-ref>`; extra guidance → `<additional-context>`. Without an explicit reference, use the unambiguous PR targeted by the session's current work; ambiguous → ask. No session target → use the most recently merged PR on the current branch (git host list PRs, merged state); unavailable or ambiguous → ask.
 
 ### 2. Load PR Context
 

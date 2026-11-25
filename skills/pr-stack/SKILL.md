@@ -11,7 +11,7 @@ Assessment is read-only. Until Step 4 agreement, do not edit files, create or sw
 
 ### 1. Identify and Snapshot the PR
 
-PR URL/number → `<pr-ref>`; extra constraints → `<additional-context>`. Without a reference, use the current branch's PR only when it identifies one open PR unambiguously; otherwise ask.
+Explicit PR URL/number → `<pr-ref>`; extra constraints → `<additional-context>`. Without an explicit reference, use the unambiguous PR targeted by the session's current work; ambiguous → ask. No session target → use the current branch's PR only when it identifies one open PR unambiguously; otherwise ask.
 
 Load the PR's state, title, body, base/head repositories, branches and SHAs, default branch, commits, complete changed-file list and diff, comments, reviews, checks, and existing stack membership through `git-hosts.md`. Page through truncated results. Record `<original-head>`, `<original-base>`, merge base, and `<pr-url>` as `<snapshot>`. Closed/merged PR, unavailable diff, or ambiguous target → report and stop. Already stacked → assess the existing boundaries; do not create a duplicate stack.
 

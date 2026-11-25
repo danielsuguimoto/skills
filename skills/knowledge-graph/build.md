@@ -20,7 +20,7 @@
 | `add <url>` | Fetch URL, save to ./raw, update graph |
 | `query "<q>"` / `path "A" "B"` / `explain "X"` | Query operations (`--dfs` chain tracing, `--budget N` token cap) |
 
-`UPPER_SNAKE` tokens in scripts (`INPUT_PATH`, `LABELS_DICT`, `IS_DIRECTED`, `NEO4J_URI`…) are placeholders — substitute actual values from the invocation.
+`UPPER_SNAKE` tokens in scripts (`INPUT_PATH`, `LABELS_DICT`, `IS_DIRECTED`, `NEO4J_URI`…) are placeholders — substitute resolved values. For `add` or `--neo4j-push`, use the explicit URL first, else the unambiguous source or destination URL respectively from the session's current work; missing or ambiguous → ask. A session URL identifies the target only; it does not authorize an unrequested add or push.
 
 ## When Invoked
 

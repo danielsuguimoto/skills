@@ -21,7 +21,7 @@ All git/gh operations follow `git-hosts.md`. Forward git host tool availability 
 
 ### 1. Interpret Arguments
 
-Ticket URL/reference → `<ticket-url>` · skip or no ticket → `<ticket-mode>` = `skip` · wording influencing branch name/commit → `<additional-context>` · base branch → `<base>`.
+Explicit ticket URL/reference → `<ticket-url>` · explicit skip → `<ticket-mode>` = `skip` · wording influencing branch name/commit → `<additional-context>` · base branch → `<base>`. Without an explicit ticket or skip, use the unambiguous ticket targeted by the session's current work; ambiguous → ask; no session ticket → `<ticket-mode>` = `skip`. A selected ticket → `<ticket-mode>` = `provided`; `skip` → `<ticket-url>` empty.
 
 ### 2. Pre-Scan Changes (Shared Context)
 

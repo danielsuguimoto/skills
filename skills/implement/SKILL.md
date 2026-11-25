@@ -9,7 +9,7 @@ Shell-read before implementing: `<project-root>/docs/code-navigation.md`, `<proj
 
 Use git host operations (`<project-root>/docs/git-hosts.md`) for branch check and pull latest; all git host tools need `repo_path`.
 
-1. **Capture Input**: Extract `<ticket-url>` when supplied (mention without URL → ask for link). Otherwise use the approved plan in the request or conversation; no plan → ask for it.
+1. **Capture Input**: Explicit ticket reference/URL → `<ticket-url>`; otherwise use the unambiguous ticket targeted by the session's current work. Ambiguous → ask; a ticket mentioned without a resolvable reference → ask for it. Without a ticket, use the approved plan in the request or conversation; no plan → ask for it.
 
 2. **Load Planning Context**: When `<ticket-url>` exists:
 1. Reuse complete, current in-session copies — the primary ticket plus its source ticket and other implementation-relevant linked tickets — when they cover bodies, full comment threads, checklists, attachments, and notes this session posted.

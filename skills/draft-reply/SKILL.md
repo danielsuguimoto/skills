@@ -19,7 +19,7 @@ Treat ticket systems generically. `<additional-context>` shapes tone, audience, 
 
 ### Interpret Arguments
 
-Ticket reference/URL → `<ticket-url>`; extra focus/constraints/audience hints → `<additional-context>`; none → derive from conversation. No `<question>` expected in arguments — it lives on the ticket; an explicit one → store as `<question>` to scope the reply.
+Explicit ticket reference/URL → `<ticket-url>`; otherwise use the unambiguous ticket targeted by the session's current work. Ambiguous → ask; no ticket target → derive context from the conversation. Extra focus/constraints/audience hints → `<additional-context>`. No `<question>` expected in arguments — it lives on the ticket; an explicit one → store as `<question>` to scope the reply.
 
 ### Load Ticket Context
 
@@ -66,7 +66,7 @@ The note's body is `<draft-reply>` verbatim — the whole note, nothing around i
 
 ### Sync
 
-Post `<draft-reply>` as the note body via the issue tracker sync tool — convention per `issue-trackers.md` (`refUrl` = `<ticket-url>`; private note per provider, `DRAFT` prefix fallback). Fails → report error, provide draft in chat.
+Missing `<ticket-url>` → ask for the target before syncing. Post `<draft-reply>` as the note body via the issue tracker sync tool — convention per `issue-trackers.md` (`refUrl` = `<ticket-url>`; private note per provider, `DRAFT` prefix fallback). Fails → report error, provide draft in chat.
 
 ## Notes
 

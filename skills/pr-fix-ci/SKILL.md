@@ -12,7 +12,7 @@ Fix failing CI checks on a PR: read logs, fix code, push, verify. Tools: git hos
 Modes: `review` (default) or `auto` — `auto` skips the Step 10 approval gate. `<pr-ref>` is the only authoritative source for the target PR — never infer from the current branch.
 
 ### 1. Interpret Arguments
-`auto` → `<execution-mode>` = `auto`; PR number/URL → `<pr-ref>`; extra guidance → `<additional-context>`; otherwise → `review`.
+`auto` → `<execution-mode>` = `auto`; extra guidance → `<additional-context>`; otherwise → `review`. Resolve `<pr-ref>` from the explicit PR number/URL, else the unambiguous PR targeted by the session's current work. Missing or ambiguous → ask; never pick an unrelated PR. Load current PR and check state even when the reference came from the session.
 
 ### 2. Load PR Context
 Verify git host auth (`git-hosts.md`). `git rev-parse --show-toplevel` → `<repo-path>` (use as `cwd`). View PR via git host view PR (includes checks) or spec CLI fallback. Extract `<pr-branch>`, `<base-branch>`, `<pr-number>`, `<pr-url>`. `git branch --show-current` → `<current-branch>`.

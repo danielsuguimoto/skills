@@ -17,7 +17,7 @@ An explicit PR or shipping request authorizes pushing the branch and creating th
 
 ### 1. Interpret Arguments
 
-Base branch → `<base>`; auto-create ticket → `<ticket-mode>` = `auto`; ticket URL/reference → `<ticket-url>` + `<ticket-mode>` = `provided`; skip or no ticket → `<ticket-mode>` = `skip`; guidance/focus areas → `<additional-context>`; files deliberately left uncommitted → `<excluded>`; no base → detect default in Step 2.
+Base branch → `<base>`; explicit auto-create ticket → `<ticket-mode>` = `auto`; explicit ticket URL/reference → `<ticket-url>` + `<ticket-mode>` = `provided`; explicit skip → `<ticket-mode>` = `skip`; guidance/focus areas → `<additional-context>`; files deliberately left uncommitted → `<excluded>`; no base → detect default in Step 2. Without an explicit ticket choice, retain a forwarded `<ticket-mode>`; otherwise use a forwarded `<ticket-url>` or the unambiguous ticket targeted by the session's current work as `provided`. Ambiguous → ask; no session ticket → `<ticket-mode>` = `skip`. `skip` → `<ticket-url>` = `SKIPPED`; `auto` → `<ticket-url>` empty until a ticket is created.
 
 ### 2. Load & Analyze Changes
 
