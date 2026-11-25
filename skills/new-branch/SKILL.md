@@ -21,7 +21,7 @@ Create and switch to a categorized branch. All git/gh operations follow `git-hos
 Classify the explicit argument first. A forwarded `<ticket-url>` counts as the ticket argument; a forwarded `<ticket-mode>` = `skip` suppresses session inference — `<arg-mode>` = `none`. Otherwise, without an explicit argument, use the unambiguous ticket targeted by the session's current work; ambiguous → ask. Classify the result → `<arg-mode>` (`description`|`ticket`|`none`) + `<branch-context>`:
 
 - **Description** — free-form text, not a URL/issue link → use directly as `<branch-context>`.
-- **Ticket/issue link** — get a ticket brief (see Ticket Brief) scoped to title and purpose — plus labels/type for branch naming only when no `<branch-category>` is forwarded → `<branch-context>`. A forwarded `<ticket-brief-result>` covering that scope → reuse it directly, no second read. No usable brief → fall back to a slug-relevant fragment (issue number, path slug); note the gap. Do not load the raw ticket inline.
+- **Ticket/issue link** — get a ticket brief (see Ticket Brief) scoped to title and purpose — plus labels/type for branch naming only when no `<branch-category>` is forwarded → `<branch-context>`. A forwarded `<ticket-brief-result>` covering that scope → reuse it directly, no second read; a forwarded blocker for the same reference → accept it as the final lookup outcome, never retry. No usable brief → fall back to a slug-relevant fragment (issue number, path slug); note the gap. Do not load the raw ticket inline.
 - **None** — no argument or session ticket; `<branch-context>` empty; name derived from git changes (Step 2).
 
 ### 2. Load Changes

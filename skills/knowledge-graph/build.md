@@ -20,7 +20,7 @@
 | `add [<url>]` | Fetch URL, save to ./raw, update graph — omitted URL reuses the session per the rule below |
 | `query "<q>"` / `path "A" "B"` / `explain "X"` | Query operations (`--dfs` chain tracing, `--budget N` token cap) |
 
-`UPPER_SNAKE` tokens in scripts (`INPUT_PATH`, `LABELS_DICT`, `IS_DIRECTED`, `NEO4J_URI`…) are placeholders — substitute resolved values. For `add`, use the explicit URL first, else the unambiguous source URL from the session's current work; missing or ambiguous → ask. For `--neo4j-push`, use the explicit URL first, else the unambiguous destination URL from the session, else the documented default in `references/flags.md`. A session URL identifies the target only; it does not authorize an unrequested add or push.
+`UPPER_SNAKE` tokens in scripts (`INPUT_PATH`, `LABELS_DICT`, `IS_DIRECTED`, `NEO4J_URI`…) are placeholders — substitute resolved values. For `add`, use the explicit URL first, else the unambiguous source URL from the session's current work; missing or ambiguous → ask. For `--neo4j-push`, use the explicit URL first, else the unambiguous destination URL from the session's current work. If multiple destinations fit, ask before pushing; if none fit, use the documented default in `references/flags.md`. A session URL identifies the target only; it does not authorize an unrequested add or push.
 
 ## When Invoked
 
