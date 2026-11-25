@@ -66,11 +66,11 @@ The note's body is `<draft-reply>` verbatim — the whole note, nothing around i
 
 ### Sync
 
-Explicitly invoking `draft-reply` authorizes posting the private draft to the resolved ticket. Reuse authorization from a calling workflow for the same ticket. Do not ask again before posting; honor tool-enforced permissions. If the tracker cannot guarantee the note stays private, return the draft in chat.
+Explicitly invoking `draft-reply` authorizes posting the private draft to the resolved ticket. Reuse authorization from a calling workflow for the same ticket. Do not ask again before posting; honor tool-enforced permissions. If the tracker cannot guarantee the note stays private, return the unposted draft and reason to the caller or user and stop.
 
 A `<ticket-url>` first identified here — not present when the ticket context was loaded → load the ticket thread before posting and confirm the reply target and draft still apply; material conflict → re-analyze, never post the stale draft. Missing `<ticket-url>` → ask for the target before syncing. Post `<draft-reply>` as the note body via the issue tracker sync tool — convention per `issue-trackers.md` (`refUrl` = `<ticket-url>`; private note per provider, `DRAFT` prefix fallback). Fails → report error, provide draft in chat.
 
 ## Notes
 
-- Final output: ticket URL of the posted note — one line confirming, never the full draft pasted back.
+- Successful post: return the ticket URL only. Unposted draft: return the draft and reason without posting it.
 - Revision after posting → edit the note in place per provider rules; never post a second draft.

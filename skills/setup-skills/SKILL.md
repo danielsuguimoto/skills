@@ -12,7 +12,7 @@ Configure the docs in the Generate table.
 1. **Detect project root**: `git rev-parse --show-toplevel` or fall back to `cwd` → `<project-root>`.
 2. **Check existing state**: list `<project-root>/docs/`; check which Generate-table files exist.
 3. **Choose scope**: all files exist → ask whether to reconfigure or stop; some exist → ask whether to regenerate all or fill gaps only; none → generate all. Stop if declined. Record the target files.
-4. **Discover on demand**: for targeted MCP, external-agent, or model specs, record native server discovery as `<mcp-inventory>`, PATH detection as `<agent-cli-inventory>`, or native model listing as `<model-inventory>`. Skip unsupported discovery.
+4. **Discover on demand**: discover MCP servers once for the MCP spec or any unresolved category question that can use them; reuse current session discovery as `<mcp-inventory>`. For targeted external-agent or model specs, record PATH detection as `<agent-cli-inventory>` or native model listing as `<model-inventory>`. Skip unsupported discovery.
 
 ## Interview
 

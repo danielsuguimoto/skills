@@ -56,7 +56,7 @@ Per `<customer-tickets>` entry, invoke `draft-reply` with the ticket URL and `<a
 - What the issue was: plain-language explanation from `<pr-summary>` + the thread — include **only when nobody explained it to the customer before** (check comments first); describe symptom → cause → fix at their level, no root-cause jargon.
 - Caveats: each `unverifiable` or `not scheduled` entry in `<artifact-results>` → `[NEEDS-REVIEW: <what couldn't be confirmed or isn't scheduled>]` — a reviewer flag in the draft, never customer-facing copy.
 
-One draft per ticket — `draft-reply` posts a private note; nothing reaches the customer. Invocations are independent per ticket — three or more, or fewer on the user's explicit request, may run in parallel when a suitable subagent profile exists; each subagent runs in the foreground (a background worker can silently lose the note when posting requires approval), is delegated `draft-reply` for exactly one ticket, is front-loaded with the parent's fresh snapshot for that ticket so it does not reload, and posts only there.
+One draft per ticket — `draft-reply` posts a private note or returns the unposted draft and reason; nothing reaches the customer. Relay each unposted draft and reason to the user. Invocations are independent per ticket — three or more, or fewer on the user's explicit request, may run in parallel when a suitable subagent profile exists; each subagent runs in the foreground (a background worker can silently lose the note when posting requires approval), is delegated `draft-reply` for exactly one ticket, is front-loaded with the parent's fresh snapshot for that ticket so it does not reload, and posts only there.
 
 ### 8. Clear the Workspace
 
@@ -64,7 +64,7 @@ Identify the isolated workspace created for this PR via `workspace-isolation.md`
 
 ### 9. Report
 
-Chat only: `<pr-url>` merge state · `<artifact-results>` per artifact and target — status + evidence, plus any inventory-wide discovery gap, or `none shipped` · classification counts · draft note URL per customer ticket or `not run` · `<spec-ticket-results>` per entry: ticket URL + status + error, gap, or blocking artifact and target, or `none linked` · `<drifted-tickets>` per entry: ticket URL, reported problem, why `<pr-summary>` doesn't cover it · workspace removed, `none found`, `blocked` with reason, or `not run`.
+Chat only: `<pr-url>` merge state · `<artifact-results>` per artifact and target — status + evidence, plus any inventory-wide discovery gap, or `none shipped` · classification counts · per customer ticket, the draft note URL, unposted draft and reason, or `not run` · `<spec-ticket-results>` per entry: ticket URL + status + error, gap, or blocking artifact and target, or `none linked` · `<drifted-tickets>` per entry: ticket URL, reported problem, why `<pr-summary>` doesn't cover it · workspace removed, `none found`, `blocked` with reason, or `not run`.
 
 ## Notes
 

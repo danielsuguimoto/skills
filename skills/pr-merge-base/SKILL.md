@@ -1,6 +1,6 @@
 ---
 name: pr-merge-base
-description: "Merge the latest default branch into a PR branch and resolve conflicts."
+description: "Merge the latest master or main branch into a PR branch and resolve conflicts."
 ---
 
 ## Required `<project-root>/docs` reads
@@ -45,7 +45,7 @@ On `approved`: a pending merge → complete it with the repository's commit conv
 
 ## Ticket Brief
 
-Reuse session evidence that covers the references, scoped answers, and decision status. Otherwise dispatch one isolated, read-only worker with the references, scope, `<project-root>`, these rules, and the target PR when known. The parent receives the brief only. If the worker or spec is unavailable, report the gap without fetching inline.
+Reuse current session evidence that covers the references, scoped answers, and decision status. Otherwise dispatch one isolated, read-only worker with the references, scope, `<project-root>`, these rules, and the target PR when known. The parent receives the brief only. If the worker or spec is unavailable, report the gap without fetching inline.
 
 Worker: read `<project-root>/docs/issue-trackers.md`. Dedupe by tracker and ID; read title, body, checklists, and requested metadata. Read the latest comment page when scope includes behavior or constraints. Read older comments, attachments, and linked tickets only to close a scope gap or settle an unclear decision; this overrides general tracker traversal. For the target PR, return relevant decision references without fetching its feedback. Follow other PR links only for specific evidence the scope needs. Ignore unrelated bundled content; leave tracker state unchanged.
 
