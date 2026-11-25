@@ -92,6 +92,12 @@ Shared infrastructure is not the barrier: one database, server, or browser proce
 
 Patterns: **fan-out/fan-in** or **scatter/gather** (N≥3 independent → wait all → parent synthesizes inline).
 
+For parallel fan-out, extend an active ledger; absent one, create it in a native todo list when available, otherwise in the workflow plan, or in an inline outcome sequence when no plan exists:
+
+- Before dispatch, the parent projects one item per workstream into that ledger and owns every status transition.
+- Assign each workstream a stable stream ID unique within the ledger (`W1`, `W2`, …), continuing the sequence across successive fan-outs. Use it in the ledger item and dispatch prompt so fan-in results map without inference.
+- Require the final report's first line as `<stream-id>: <status> — <one-line result>`, with `<status>` = `completed`, `blocked`, or `failed`; the dispatch's return shape supplies the remainder.
+
 ## Dispatch Contract (every spawn)
 
 - Front-load all context (paths, symbols, what's known, what to return) — subagents are stateless, no mid-run questions.
