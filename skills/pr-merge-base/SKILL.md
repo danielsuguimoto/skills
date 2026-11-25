@@ -25,13 +25,11 @@ Fetch the chosen source branch from the base repository and record its fetched c
 
 Merge the recorded source commit into the PR branch with `git merge --no-ff --no-commit <source-commit>`, leaving the merge pending for review and approval. A merge error unrelated to conflicts → stop and report.
 
-Inspect source-side changes since the merge base against the PR title and body for removed or replaced behavior that may affect the PR, including changes outside its files. Uncertain relevance → treat as potential premise drift.
-
-If conflicts or potential premise drift exist, anchor `<pr-intent>` — why the PR exists: title, body, and, when the PR references issues or cards, a ticket brief (see Ticket Brief) scoped to intended behavior and constraints. For each scope-relevant target PR decision reference returned by the brief, reuse loaded feedback or retrieve only that decision and the context needed to establish its status via the git host (`git-hosts.md`); unavailable or ambiguous → note the gap. No usable brief → fall back to title/body plus any verified decision; note the gap.
+If conflicts exist, anchor `<pr-intent>` — why the PR exists: title, body, and, when the PR references issues or cards, a ticket brief (see Ticket Brief) scoped to intended behavior and constraints. For each scope-relevant target PR decision reference returned by the brief, reuse loaded feedback or retrieve only that decision and the context needed to establish its status via the git host (`git-hosts.md`); unavailable or ambiguous → note the gap. No usable brief → fall back to title/body plus any verified decision; note the gap.
 
 Investigate each conflict using the merge base, both sides, and the surrounding behavior. Preserve the intent of both changes — judge the PR side against `<pr-intent>`; do not blindly select one side. Resolve and stage each affected path, including deletions and renames. The base removing or replacing behavior `<pr-intent>` assumes is premise drift → a product decision per below, never a silent resolution.
 
-Investigate potential drift against `<pr-intent>` and source-side behavior, even on a clean merge. Confirmed drift, unresolved material uncertainty, or a conflict requiring a product decision or unsafe to resolve → leave the merge pending and ask the user before approval. Do not abort the merge or discard changes without explicit approval.
+If a conflict requires a product decision or cannot be resolved safely, leave the merge pending and ask the user. Do not abort the merge or discard changes without explicit approval.
 
 ## 4. Verify and commit
 

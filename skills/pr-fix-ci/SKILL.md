@@ -27,17 +27,16 @@ From `statusCheckRollup` (or `gh pr checks`), collect checks in `FAILURE`, `ERRO
 Per `<check>`: Actions run → `gh run view <run-id> --log-failed` (fallback `--log` if empty). Non-Actions → open `<url>` and read rendered output via `webfetch` if reachable, else record `<url>` for the user. Extract `<error-lines>` (first error/stack/assertion), `<failing-file>`, `<failing-test>`, `<failing-command>`.
 
 ### 6. Triage Failures
+Anchor `<pr-intent>` — why the PR exists: title, body, commit messages, and a ticket brief (see Ticket Brief) for all issue/card references in the body, commits, or branch name, scoped to intended behavior. For each scope-relevant target PR decision reference returned by the brief, reuse loaded feedback or retrieve only that decision and the context needed to establish its status via the git host (`git-hosts.md`); unavailable or ambiguous → note the gap. No usable brief → fall back to PR title/body plus any verified decision; note the gap.
+
 Classify each `<check>`:
-- `code` — compile error, test failure, or lint issue, including unknown PR attribution → provisional until the premise check; fix in-scope failures in Step 8.
+- `code` — caused by the PR's code (compile error, test failure, lint) → fix in Step 8.
 - `flaky` — transient (network timeout, race, known-flaky test) → re-run, don't fix code.
 - `infra` — environment/runner (missing secret, service down, quota) → report; re-run only if user confirms.
 - `required-status` — required check missing/pending (e.g. no recent review) → out of scope; report.
+- Premise check — a `code` failure in code the PR doesn't touch, or one showing `<pr-intent>`'s assumed behavior no longer holds → verify against `<base-branch>`; pre-existing or drifted → `<not-fixing>` with reason. Don't widen scope silently.
 
 Record `<classification>`; `flaky`/`infra`/`required-status` → `<not-fixing>` with reason. All failures non-`code` → summary + stop (suggest re-runs where applicable).
-
-For remaining `code` failures, anchor `<pr-intent>` — why the PR exists: title, body, commit messages, and a ticket brief (see Ticket Brief) for all issue/card references in the body, commits, or branch name, scoped to intended behavior. For each scope-relevant target PR decision reference returned by the brief, reuse loaded feedback or retrieve only that decision and the context needed to establish its status via the git host (`git-hosts.md`); unavailable or ambiguous → note the gap. No usable brief → fall back to PR title/body plus any verified decision; note the gap.
-
-Premise check — a `code` failure with unknown PR attribution, in code the PR doesn't touch, or showing `<pr-intent>`'s assumed behavior no longer holds → verify against `<base-branch>`; pre-existing or drifted → `<not-fixing>` with reason. Don't widen scope silently. No in-scope `code` failures remain → summary + stop.
 
 ### 7. Plan Fix
 Fast path: every `code` failure straightforward, no cross-check dependencies → `<implementation-plan>` = `trivial` — on this path partition `code` failures into `<fix-groups>` (shared file lands in one group) and mark `parallel-eligible` per the criteria below before skipping to Step 8 when dispatch is viable: three or more groups or the user's explicit request. Otherwise ordered fix list (compile/build → test → lint; then shared file, then check); sequential thinking merges failures sharing one root cause → `<dependencies>`; partition `code` failures into `<fix-groups>` (shared root cause or shared file lands in one group) and mark a group `parallel-eligible` when its files are disjoint from the other groups, it has no cross-group dependencies, and it runs no commands writing shared mutable state such as lockfiles or build caches.
