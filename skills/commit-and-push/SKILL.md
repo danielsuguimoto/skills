@@ -5,7 +5,7 @@ description: "Commit and push current changes."
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before committing or pushing; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`
+Shell-read before committing or pushing (reuse session reads): `<project-root>/docs/git-hosts.md`. If a spec is missing, report the gap and use a documented fallback.
 
 ## Operations
 
@@ -55,4 +55,3 @@ Commit:
 ### 5. Push to Remote
 
 Record the push destination's remote tip before pushing → `<remote-tip>` (`@{u}`, else `origin/<branch>`). Push via git host push or `git push`; no upstream → `git push -u origin <branch>`. Rejected non-fast-forward (remote moved) → fetch the pushed-to remote ref — not `@{u}` when it names a different ref; a rejected first `push -u` → fetch `origin <branch>` — then `git rebase --onto <new-tip> <remote-tip>`: only local commits replay, a plain rebase could republish replaced upstream commits; linear range only (no merge commits): clean → retry the push once; conflict → `git rebase --abort`, STOP and report — never force-push. Any other failure → STOP, report the error. Success → output HEAD's `<hash>` + `<push-target>`.
-

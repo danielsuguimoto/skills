@@ -1,6 +1,6 @@
 ---
 name: spawn
-description: "Spawn a subagent to run a raw prompt or invoke a target skill — its context stays out of the parent; the parent gets the result. Use when a subagent dispatch is warranted (see subagents for rationales); spawning one to invoke a skill is usually an anti-pattern."
+description: "Spawn a subagent for a prompt or skill when delegation gates allow it."
 ---
 
 Spawn a subagent to run work off-thread — raw prompt or target-skill invocation; the harness infers which from the input.

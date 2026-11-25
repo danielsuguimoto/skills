@@ -1,25 +1,19 @@
 ---
 name: pr-fix
-description: "Activate when a pull request has review feedback requiring code fixes and replies — inline threads, review bodies, or flat comments."
+description: "Fix PR review feedback and respond to inline threads, review bodies, or flat comments."
 ---
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before fixing PR review feedback; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`
-
-Fix PR feedback and reply in review threads. Tools: git host (`git-hosts.md`).
-
-Modes: `review` (default) or `auto` — `auto` skips the Step 9 approval gate.
+Shell-read before fixing PR review feedback (reuse session reads): `<project-root>/docs/git-hosts.md`. If a spec is missing, report the gap and use a documented fallback.
 
 ### 1. Interpret Arguments
 `auto` → `<execution-mode>` = `auto`; extra guidance → `<additional-context>`; otherwise → `review`. Resolve `<pr-ref>` from the explicit PR number/URL, else the unambiguous PR targeted by the session's current work. Missing or ambiguous → ask; never pick an unrelated PR. Load current PR state even when its reference came from the session.
 
 ### 2. Load PR Context
-`git rev-parse --show-toplevel` → `<repo-path>` (use as `cwd` for MCP calls). Primary thread source: git host list unresolved review comments (`isResolved=false` server-side). CLI fallback: GraphQL `reviewThreads` with `isResolved`. REST `pulls/{n}/comments` only as `databaseId` cross-reference — never primary (returns resolved too).
+Resolve the repo root. Record `<repo-path>`, `<pr-branch>`, `<base-branch>`, `<pr-number>`, `<pr-url>`, and `<current-branch>`. Load PR metadata, unresolved review threads, reviews, and flat comments via `git-hosts.md`; batch independent reads. Filter threads server-side when supported; otherwise use the documented review-thread fallback and filter by resolution state. Use REST review-comment IDs only to match replies, never as the unresolved-thread list. Keep first-comment IDs and thread node IDs for replies and resolution.
 
-Flat feedback (collect every run — a flat-comment-only PR has zero threads): git host list reviews → non-empty review bodies; git host list flat comments. Store both as `<flat-feedback>` (author, body, comment id). Review bodies are reviewer feedback regardless of author — review bots report findings there. A finding restated across a reviewer's bodies counts once — keep the latest restatement. Skip own-agent items and automation notices (CI, coverage, deploys).
-
-PR metadata: git host view PR + list reviews (CLI fallback per spec). Extract `<pr-branch>`, `<base-branch>`, `<pr-number>`, `<pr-url>`. `git branch --show-current` → `<current-branch>`. Review attachments when relevant. No threads and no `<flat-feedback>` → output "No changes".
+Collect nonempty review bodies and flat comments even when no threads exist. Keep author, body, and ID; keep the latest restatement of each reviewer's finding. Store these as `<flat-feedback>`. Include bot findings; skip own-agent items and CI, coverage, or deployment notices. Read relevant attachments. If no feedback remains, report no changes and stop before checkout.
 
 Anchor `<pr-intent>` — why the PR exists: title, body, commit messages, and a ticket brief (see Ticket Brief) for all issue/card references in the body, commits, or branch name, scoped to intended behavior and constraints. For each scope-relevant target PR decision reference returned by the brief, reuse loaded feedback or retrieve only that decision and the context needed to establish its status via the git host (`git-hosts.md`); unavailable or ambiguous → note the gap. No usable brief → fall back to PR title/body plus any verified decision; note the gap. Threads supply the what; intent arbitrates scope.
 
@@ -46,35 +40,33 @@ Critical first, existing patterns, `<active-branch>`, focused minimal changes �
 ### 8. Validate Changes
 Lint + tests on changed files. Confirm fixes address feedback → `<validation-results>`, `<validation-passing>` (`yes`/`no`).
 
-### 9. Approval Gate (mandatory in `review` mode)
-Never skip — only `decision: approved` counts; don't infer from silence. `<validation-passing>` = `no` → STOP. `auto` mode → skip to Step 11.
+### 9. Approve the Batch (`review` mode)
+Stop on failed validation. If nothing will change or be posted, report and stop. In `auto` mode, the explicit `auto` argument authorizes the same in-scope batch without this question. Otherwise show the PR, one line per fix, file count, validation, any existing commits the push would publish, and feedback items to reply to and threads to resolve. Show comment-only work even when there are no code changes.
 
-Present gate: fix summary, changed file count, validation results. Ask (header `Approval`): "Ready to commit, push, and respond?" Options: `Go Ahead` → `approved`; `Needs Review` → `concerns` (requires feedback).
+Ask once: "Approve this batch for <pr-url>: commit and push the listed fixes (if any), post the listed replies, and resolve the listed fully addressed threads?" Offer `Go Ahead` and `Needs Review`. Only `Go Ahead` approves. An unanswered or declined gate stops publication.
 
-- `approved` → Step 11. `concerns` → `<review-feedback>` → Step 10 → re-implement (7) → re-validate (8) → re-present. Repeat until `approved`.
-- `<changes-count>` = 0 → surface no-change state so user picks `Go Ahead` (no-op) or `Needs Review` with feedback.
+`Go Ahead` authorizes Steps 11-13 for this PR and listed batch. Execute them in order without asking again for individual commits, pushes, replies, or resolutions. Keep the same approval when switching to a documented fallback. Honor tool-enforced permissions and higher-priority safety gates; never bypass them. If the target or batch changes materially after approval, return to this gate in `review` mode, even if the run started in `auto`.
 
 ### 10. Apply Review Feedback
-Use `<review-feedback>` to refine without widening scope → Step 7. No commit/push/reply during this step. Re-derive `<fix-groups>` and `parallel-eligible` marks when `<review-feedback>` changes which files a fix touches — stale boundaries invalidate the prior partition.
+`Needs Review` → refine within scope, regroup if the affected files changed, rerun Steps 7–9. Publish nothing until approved.
 
 ### 11. Commit and Push (after `approved` or `auto`)
-Inspect the worktree and index again, including changes within `<fix-files>`. Unexpected changes → STOP and preserve them. Stage and commit only `<fix-files>` with explicit pathspecs, then `git push <head-remote> <active-branch>:<pr-branch>`. Rejected non-fast-forward — the head moved since `<pr-head-commit>` → re-fetch; `git rebase --onto <new-head> <pr-head-commit>` — replays only commits added on top of the recorded head, so replaced PR commits never return; linear range only → a merge → STOP; clean → re-run local validation on the rebased tree, retry once, re-record `<pr-head-commit>`; conflict → `git rebase --abort`, STOP — never force-push. Never use a generic message like "address review feedback" → `<pushed>` (`yes`/`no`).
+No fixes to commit → skip to Step 12. If the head moved, retry only for the same approved batch; a material change returns to Step 9 before publication.
+Inspect the worktree and index again, including changes within `<fix-files>`. Unexpected changes → STOP and preserve them. Stage and commit only `<fix-files>` with explicit pathspecs, then `git push <head-remote> <active-branch>:<pr-branch>`. Rejected non-fast-forward — the head moved since `<pr-head-commit>` → re-fetch; `git rebase --onto <new-head> <pr-head-commit>` — replays only commits added on top of the recorded head, so replaced PR commits never return; linear range only → a merge → STOP; clean → revalidate on the rebased tree; retry once only if validation passes and the batch is unchanged, then record `<pr-head-commit>`; conflict → `git rebase --abort`, STOP — never force-push. Never use a generic message like "address review feedback" → `<pushed>` (`yes`/`no`).
 
 ### 12. Respond to Threads
-Reply after commit + push succeed — with nothing pushed (`<changes-count>` = 0), reply after gate approval instead; reviewers are still owed the `not-fixing` reasons. ALWAYS reply via thread reply API — NEVER standalone PR comments (`gh pr review -c`, `gh pr comment`). Sole exception: flat items (flat comments, review bodies — no line anchor) → one flat comment per item quote-replying (blockquote original + author handle, then response).
-
-Git host reply to review thread (`pr_number`, `comment_id`, `body`; fallback per spec — `--input -` for special chars). Replies short and factual.
+Execute the approved replies after a successful push or on the authorized comment-only path. Use inline thread replies for line-anchored feedback; for each flat item, post one flat comment quoting the item and tagging its author. State the fix or the reason for skipping. If a write result is uncertain, check for the reply before retrying.
 
 ### 13. Resolve Addressed Threads
-After replying, resolve fully addressed threads via GraphQL `resolveReviewThread` (GraphQL-only; no REST). Map comment IDs to thread node IDs (`PRRT_...`) by first-comment `databaseId` via git host list review threads (fallback per spec), then git host resolve review thread. Only fully addressed threads — never intentionally skipped or reviewer-reopened ones. Flat items have no resolution — reply only (Step 12) → `<threads-resolved>`.
+Under the same approval, resolve a listed inline thread only after its reply succeeds and its fix is verified; leave skipped or reviewer-reopened threads open. Use thread node IDs from Step 2; look up missing IDs by first-comment ID via `git-hosts.md`. Refresh affected thread state before resolution if there is evidence the review changed. Flat feedback has no resolution. Report any reply or resolution that failed or was blocked.
 
 ## Ticket Brief
 
-Reuse a current session brief, summary, or ticket content covering the references and scoped answers, with sufficient evidence and decision status for that scope. Otherwise delegate one isolated, read-only subagent: pass the ticket references, scope, `<project-root>`, these rules, and the target PR reference when known; the parent receives only the brief.
+Reuse current session evidence that covers the references, scoped answers, and decision status. Otherwise dispatch one isolated, read-only worker with the references, scope, `<project-root>`, these rules, and the target PR when known. The parent receives the brief only. If the worker or spec is unavailable, report the gap without fetching inline.
 
-Worker: read `<project-root>/docs/issue-trackers.md` and use its read operations. Start with each ticket's title, body, checklists, and requested metadata; dedupe by tracker and ID. When scope includes intended, expected, or current behavior or constraints, check the latest page of ticket comments for updates. Read older comments, attachment contents, or linked tickets only when needed to answer the scope or resolve conflicting or unclear decisions. These scoped rules override the spec's general attachment and nested-link traversal. Do not treat the target PR as a ticket or fetch its comments or reviews; return scope-relevant target PR decision references as evidence gaps for the parent. Follow other PR links only when needed for the scope, and retrieve specific relevant evidence rather than full comment or review history. If a provider bundles extra content, inspect only what the scope requires.
+Worker: read `<project-root>/docs/issue-trackers.md`. Dedupe by tracker and ID; read title, body, checklists, and requested metadata. Read the latest comment page when scope includes behavior or constraints. Read older comments, attachments, and linked tickets only to close a scope gap or settle an unclear decision; this overrides general tracker traversal. For the target PR, return relevant decision references without fetching its feedback. Follow other PR links only for specific evidence the scope needs. Ignore unrelated bundled content; leave tracker state unchanged.
 
-Return a compact cited brief with scoped answers, decision status, blockers, and evidence gaps; cite ticket, comment permalink, or attachment name and location as appropriate. Omit raw threads and attachment contents. Distinguish confirmed decisions from proposals and superseded decisions when evidenced; mark answers partial when evidence indicates uninspected or inaccessible material could change them. Stop when the scoped answers are supported; never post or modify tracker state. Worker or spec unavailable → report the gap without fetching inline.
+Return cited answers, decision status (confirmed, proposed, or superseded), blockers, and evidence gaps. Cite tickets, comment permalinks, or attachment names and locations; omit raw threads and attachments. Mark answers partial if unseen material could change them. Stop when the scope is supported.
 
 ## Output
-Summary of changes and validation results. At the approval gate: one line per fix, not full diffs — e.g. "Fixed N threads across M files" + validation status.
+Report fixes, validation, push status, replies, resolutions, and remaining blockers.

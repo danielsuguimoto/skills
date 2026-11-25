@@ -1,11 +1,11 @@
 ---
 name: pr-create
-description: "Use when creating or opening a pull request for the current branch — standalone or as a ship-changes subskill."
+description: "Open a pull request for the current branch, standalone or during shipping."
 ---
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before creating the PR; may be gitignored — missing → note gap, never invent: `<project-root>/docs/git-hosts.md`, `<project-root>/docs/issue-trackers.md` (Step 10 only — a ticket to link)
+Shell-read before creating the PR (reuse session reads): `<project-root>/docs/git-hosts.md`, `<project-root>/docs/issue-trackers.md` (Step 10 only — a ticket to link). If a spec is missing, report the gap and use a documented fallback.
 
 ## Operations
 
@@ -13,7 +13,7 @@ MCP tools take business-level inputs (title, body, base, head) — no CLI flags,
 
 As a subskill, the invoking skill owns Steps 1-10; on "Nothing to ship.", proceed to Step 3 blockers.
 
-An explicit PR or shipping request authorizes pushing the branch and creating the PR. Proceed without asking again solely to confirm either action; honor mandatory safety gates.
+An explicit PR or shipping request authorizes the normal branch push and PR creation. A verified ticket selected for this workflow authorizes posting the PR link there as part of Step 10; create a ticket only in the explicitly selected `auto` mode. Do not ask again for these covered actions. Honor safety gates and tool-enforced permissions.
 
 ### 1. Interpret Arguments
 
@@ -40,7 +40,7 @@ Uncommitted changes outside `<excluded>` → STOP (report + list files). A stage
 
 **Mandatory gate — do not compose `<pr-body>` until this completes. Most common failure mode.**
 
-Check the repo for a GitHub PR template → `<pr-template>` verbatim (headings, placeholders, reviewer checkboxes). Don't fill — Step 7 does. None found → `<pr-template>` = `none`; re-probe before accepting `none`.
+Probe all repo PR-template locations once. Keep the selected template verbatim in `<pr-template>`; set it to `none` only when the completed probe finds none. Step 7 fills it.
 
 ### 7. Generate Metadata + Prepare Ticket Reference
 
@@ -86,12 +86,14 @@ Use `<pr-title>` + `<pr-body>` (already reflects `<pr-template>`). Body when `<p
 
 Skip when `<ticket-url>` = `SKIPPED` AND `<pr-body>` references no issues.
 
-Collect every unique issue reference: `<ticket-url>` (unless `SKIPPED`) + issue URLs or `#N`/`OWNER/REPO#N` in `<pr-body>` (`#N` resolves against the current repo). For each, post `PR: <pr-url>` via the issue tracker update-ticket operation (`issue-trackers.md`); CLI fallback `gh issue comment <issue-ref> --body "PR: <pr-url>"`. Report any ticket lacking a matching tracker operation — don't skip silently.
+Reuse the creation workflow's authorization for verified, in-scope tickets. A stray or ambiguous reference is not consent to post; ask only if the target or intended link remains unresolved.
+
+Collect every unique issue reference: `<ticket-url>` (unless `SKIPPED`) + issue URLs or `#N`/`OWNER/REPO#N` in `<pr-body>` (`#N` resolves against the current repo). For each verified, in-scope reference, post `PR: <pr-url>` via the issue tracker update-ticket operation (`issue-trackers.md`); CLI fallback `gh issue comment <issue-ref> --body "PR: <pr-url>"`. Report any ticket lacking a matching tracker operation — don't skip silently.
 
 ## Ticket Brief
 
-Reuse a current session brief, summary, or ticket content covering the references and scoped answers, with sufficient evidence and decision status for that scope. Otherwise delegate one isolated, read-only subagent: pass the ticket references, scope, `<project-root>`, these rules, and the target PR reference when known; the parent receives only the brief.
+Reuse current session evidence that covers the references, scoped answers, and decision status. Otherwise dispatch one isolated, read-only worker with the references, scope, `<project-root>`, these rules, and the target PR when known. The parent receives the brief only. If the worker or spec is unavailable, report the gap without fetching inline.
 
-Worker: read `<project-root>/docs/issue-trackers.md` and use its read operations. Start with each ticket's title, body, checklists, and requested metadata; dedupe by tracker and ID. When scope includes intended, expected, or current behavior or constraints, check the latest page of ticket comments for updates. Read older comments, attachment contents, or linked tickets only when needed to answer the scope or resolve conflicting or unclear decisions. These scoped rules override the spec's general attachment and nested-link traversal. Do not treat the target PR as a ticket or fetch its comments or reviews; return scope-relevant target PR decision references as evidence gaps for the parent. Follow other PR links only when needed for the scope, and retrieve specific relevant evidence rather than full comment or review history. If a provider bundles extra content, inspect only what the scope requires.
+Worker: read `<project-root>/docs/issue-trackers.md`. Dedupe by tracker and ID; read title, body, checklists, and requested metadata. Read the latest comment page when scope includes behavior or constraints. Read older comments, attachments, and linked tickets only to close a scope gap or settle an unclear decision; this overrides general tracker traversal. For the target PR, return relevant decision references without fetching its feedback. Follow other PR links only for specific evidence the scope needs. Ignore unrelated bundled content; leave tracker state unchanged.
 
-Return a compact cited brief with scoped answers, decision status, blockers, and evidence gaps; cite ticket, comment permalink, or attachment name and location as appropriate. Omit raw threads and attachment contents. Distinguish confirmed decisions from proposals and superseded decisions when evidenced; mark answers partial when evidence indicates uninspected or inaccessible material could change them. Stop when the scoped answers are supported; never post or modify tracker state. Worker or spec unavailable → report the gap without fetching inline.
+Return cited answers, decision status (confirmed, proposed, or superseded), blockers, and evidence gaps. Cite tickets, comment permalinks, or attachment names and locations; omit raw threads and attachments. Mark answers partial if unseen material could change them. Stop when the scope is supported.

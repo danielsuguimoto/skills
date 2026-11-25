@@ -1,6 +1,6 @@
 ---
 name: grill-with-codebase
-description: "Use when a task, ticket, or vague intent touching a codebase needs interrogation into a buildable plan, or on 'grill' trigger phrases."
+description: "Grill an unresolved code task, ticket, or idea into a buildable plan; also use on explicit grill requests."
 ---
 
 I have a task or intent, not a finished plan. Interview me until the answers form a concrete plan. Resolve dependencies between decisions one-by-one — order the chain as sequential thinking; each settled answer revises what stays open.

@@ -1,6 +1,6 @@
 ---
 name: adjust
-description: "Apply requested fixes, improvements, or refactors to existing code; clarify unresolved decisions before implementation."
+description: "Apply requested fixes, improvements, or refactors to existing code."
 ---
 
 # Adjust

@@ -1,11 +1,11 @@
 ---
 name: draft-reply
-description: "Draft a reply to a ticket and post it as a private note for review. READ-ONLY — no code changes, no public reply."
+description: "Draft a ticket reply as a private note for human review."
 ---
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before drafting the reply; may be gitignored — missing → note gap, never invent: `<project-root>/docs/issue-trackers.md`; only when the gather-context step runs — `<project-root>/docs/code-navigation.md`, `<project-root>/docs/database-tools.md`, `<project-root>/docs/doc-lookup.md`
+Shell-read before drafting the reply (reuse session reads): `<project-root>/docs/issue-trackers.md`; only when the gather-context step runs — `<project-root>/docs/code-navigation.md`, `<project-root>/docs/database-tools.md`, `<project-root>/docs/doc-lookup.md`. If a spec is missing, report the gap and use a documented fallback.
 
 Load and analyze the ticket, gather context if needed, draft a reply, post it as a private note for human review. READ-ONLY — the note is a draft the human sends; it promises no work (changes, commits, PRs) unless `<additional-context>` explicitly asks.
 
@@ -66,9 +66,11 @@ The note's body is `<draft-reply>` verbatim — the whole note, nothing around i
 
 ### Sync
 
+Explicitly invoking `draft-reply` authorizes posting the private draft to the resolved ticket. Reuse authorization from a calling workflow for the same ticket. Do not ask again before posting; honor tool-enforced permissions. If the tracker cannot guarantee the note stays private, return the unposted draft and reason to the caller or user and stop.
+
 A `<ticket-url>` first identified here — not present when the ticket context was loaded → load the ticket thread before posting and confirm the reply target and draft still apply; material conflict → re-analyze, never post the stale draft. Missing `<ticket-url>` → ask for the target before syncing. Post `<draft-reply>` as the note body via the issue tracker sync tool — convention per `issue-trackers.md` (`refUrl` = `<ticket-url>`; private note per provider, `DRAFT` prefix fallback). Fails → report error, provide draft in chat.
 
 ## Notes
 
-- Final output: ticket URL of the posted note — one line confirming, never the full draft pasted back.
+- Successful post: return the note permalink when available, otherwise the ticket URL. Unposted draft: return the draft and reason without posting it.
 - Revision after posting → edit the note in place per provider rules; never post a second draft.

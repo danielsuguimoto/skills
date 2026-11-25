@@ -1,6 +1,6 @@
 ---
 name: subagents
-description: "Delegation gates. MANDATORY before any spawn, any large context-gathering scan (codebase, DB, docs, memories), any work splittable into parallel independent tasks, any bounded task a cheaper model tier could run, or any handoff to another agent CLI."
+description: "Apply delegation gates before spawning, large context scans, parallel work, cheaper-tier offload, or external agent handoffs."
 ---
 
 Default to execution in the current session. Delegate a workflow or its steps only when a dispatch rationale below fires or the user explicitly asks to delegate.

@@ -1,11 +1,11 @@
 ---
 name: triage
-description: "Use when a ticket needs investigation, debugging, or a response — the pipeline entry before to-specs (spec-ready code change) or draft-reply (answer or client input needed). READ-ONLY — no code changes."
+description: "Investigate, diagnose, or answer a ticket without changing code; route it to a spec or draft reply."
 ---
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before investigating the ticket; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`, `<project-root>/docs/issue-trackers.md`; debug branch only — `<project-root>/docs/bug-trackers.md`, `<project-root>/docs/database-tools.md`, `<project-root>/docs/doc-lookup.md`, `<project-root>/docs/observability-tools.md`
+Shell-read before investigating the ticket (reuse session reads): `<project-root>/docs/code-navigation.md`, `<project-root>/docs/issue-trackers.md`; debug branch only — `<project-root>/docs/bug-trackers.md`, `<project-root>/docs/database-tools.md`, `<project-root>/docs/doc-lookup.md`, `<project-root>/docs/observability-tools.md`. If a spec is missing, report the gap and use a documented fallback.
 
 Load ticket context, determine mode (ask or debug), gather evidence, sync the result back. READ-ONLY — no code changes, no commits.
 
@@ -54,7 +54,7 @@ Ambiguous → ask the user before posting. Both apply → debug (root cause answ
 
 ### Production Data for Local Reproduction
 
-You may copy production data into a local database as fixture setup when reproducing a production scenario. The READ-ONLY boundary permits this local setup; code and production data stay unchanged.
+Explicitly invoking `triage` authorizes the reversible local fixture imports and replay writes needed for reproduction. Once the target and effects are verified, reuse that authorization for each covered write. Keep code and production data unchanged, and honor tool-enforced permissions.
 
 - Follow project database-tool and data-handling rules (`database-tools.md`). Confirm the source is production and the destination is local before importing.
 - Copy only the records needed for the scenario, including required relationships and tenant context. Preserve reproduction-critical values; mask unrelated sensitive data and exclude secrets from logs, reports, and version control.
@@ -81,7 +81,7 @@ The last output line names the follow-up skill — always exactly one:
 
 ### Sync
 
-Always sync findings back — the spec phase reads prior comments; skipping breaks the pipeline. A `<ticket-url>` first identified here — not present when the ticket context was loaded → load the ticket thread before posting and confirm the findings still apply; material conflict → re-analyze, never post stale findings. Missing `<ticket-url>` → ask for the target before syncing. Via issue tracker sync — convention per `issue-trackers.md` (`refUrl` = `<ticket-url>`). Write the note per `writing-for-agents`: compact, `file:line` citations, no code blocks, no client-facing tone; the posted note joins `<ticket-context>` for downstream reuse. Sync fails → report error, provide findings in chat.
+Always sync findings back — the spec phase reads prior comments; skipping breaks the pipeline. Explicit invocation covers the findings note on the resolved ticket; do not ask again for that post. A `<ticket-url>` first identified here — not present when the ticket context was loaded → load the ticket thread before posting and confirm the findings still apply; material conflict → re-analyze, never post stale findings. Missing `<ticket-url>` → ask for the target before syncing. Via issue tracker sync — convention per `issue-trackers.md` (`refUrl` = `<ticket-url>`). Write the note per `writing-for-agents`: compact, `file:line` citations, no code blocks, no client-facing tone; the posted note joins `<ticket-context>` for downstream reuse. Sync fails → report error, provide findings in chat.
 
 ## Notes
 

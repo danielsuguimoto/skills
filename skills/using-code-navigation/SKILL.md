@@ -1,11 +1,11 @@
 ---
 name: using-code-navigation
-description: "Use semantic code navigation for symbols, references, implementations, refactors, and codebase onboarding or memory capture."
+description: "Navigate symbols, references, and implementations; use for refactors, onboarding, or project memory capture."
 ---
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before any code navigation lookup; may be gitignored — missing → note gap, never invent: `<project-root>/docs/code-navigation.md`, `<project-root>/docs/memory-providers.md` (memory operations only)
+Shell-read before any code navigation lookup (reuse session reads): `<project-root>/docs/code-navigation.md`, `<project-root>/docs/memory-providers.md` (memory operations only). If a spec is missing, report the gap and use a documented fallback.
 
 LSP-backed semantic ops (`code-navigation.md`) — prefer over `grep`/`read` for symbol-level work.
 

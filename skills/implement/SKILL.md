@@ -1,6 +1,6 @@
 ---
 name: implement
-description: "Activate when implementing a ticket or planned change on an existing feature/fix branch, falling back to master."
+description: "Implement a ticket or planned change on an existing feature/fix branch, or on master."
 ---
 
 ## Required `<project-root>/docs` reads
