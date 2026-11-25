@@ -30,15 +30,16 @@ After branch alignment and scenario selection, resolve `<report-dir>` to `<proje
 |---|---|
 | Scenario | `S01`, `S02`, … in plan order; stable within this run. |
 | Selected assertion | `S01.A01`, `S01.A02`, … in plan order. |
+| Supporting check | `C01`, `C02`, … in plan order; stable within this run. |
 | Evidence | `E001`, `E002`, … unique across the run; lowercase ID in the file basename. |
-| Anchors | `scenario-s01`, `assertion-s01-a01`, `evidence-e001`. |
+| Anchors | `scenario-s01`, `assertion-s01-a01`, `check-c01`, `evidence-e001`. |
 | Slug | Lowercase ASCII words with hyphens; no customer data, credentials, or URL parameters. |
 
 Keep one file per capture under `evidence/`; evidence shared across scenarios links to the same file and canonical report anchor without moving or copying it. IDs need not match earlier runs.
 
 Capture to the final path when supported. If tooling chooses another location, copy only the selected artifact into this package; leave unrelated temporary files alone. Preserve earlier evidence when an already-permitted repeat supplies a later observation.
 
-**Done when:** each saved artifact has an evidence ID recorded in `notes.md` with the assertions it supports.
+**Done when:** each saved artifact has an evidence ID recorded in `notes.md` with the assertions or checks it supports.
 
 ## 3. Write the report
 
@@ -46,15 +47,16 @@ Read [report-template.html](report-template.html) once before writing `index.htm
 
 Record facts from already loaded context:
 
-- **Run:** PR identity/link, branch and tested-state ledger, driver, depth, budget, sanitized environment/entry point, finish time with timezone, verdict, and counts. Record each state entry (`T01`, `T02`, …) with its tested commit SHA (the local fix commit when one exists), any uncommitted changes, and a modified-file summary. Mixed or local tested states are proof boundaries, not verdict blockers.
-- **Index:** each planned ID/title, purpose/artifact/critical-edge labels, result, and proof summary; link IDs to scenario sections. One journey may have several labels.
+- **Run:** PR identity/link, branch and tested-state ledger, driver, depth, budget, sanitized environment/entry point, finish time with timezone, verdict, and scenario counts. Record each state entry (`T01`, `T02`, …) with its tested commit SHA (the local fix commit when one exists), any uncommitted changes, and a modified-file summary. Mixed or local tested states are proof boundaries, not verdict blockers.
+- **Index:** each planned scenario ID/title, purpose/artifact/critical-edge labels, result, and proof summary; link scenario IDs to scenario sections. One journey may have several labels.
 - **Selected scenario:** tested-state ID, source outcome/link, entry point, prerequisites, concrete edge risk when applicable, and ordered actions or command with meaningful input conditions. Include shipped-artifact pre-state, execution, post-state, and claimed idempotency proof where applicable.
+- **Supporting check:** ID, tested-state ID, mapped assertion or risk, command or entry point, prerequisites, result/status, and evidence references or blocker/proof gap.
 - **Assertion:** ID, expected and observed behavior, supported behavioral finding, and evidence references. Keep behavioral findings separate from capture completeness. Record unverified assertions as unverified, not passed or failed.
-- **Evidence:** ID/type, tested-state ID, action driver and observation supplier/verifier, supported assertion IDs, observed fact and proof limit, and relative artifact link or inline observation. Types include screenshot, command/test output, query plus result, blocking error, user observation, and agent observation.
-- **Exceptions:** blocker prerequisite, recovery or reason none fit, and unblock path; deferred source/reason; proof-gap assertion, missing capture, and error/limitation. Preserve earlier contradictory observations from permitted repeats. Record failure attribution under [Step 7](SKILL.md#7-exercise-or-guide-the-change).
+- **Evidence:** ID/type, tested-state ID, action driver and observation supplier/verifier, supported assertion or check IDs, observed fact and proof limit, and relative artifact link or inline observation. Types include screenshot, command/test output, query plus result, blocking error, user observation, and agent observation.
+- **Exceptions:** blocker prerequisite, recovery or reason none fit, and unblock path; deferred source/reason; proof-gap assertion or check, missing capture, and error/limitation. Preserve earlier contradictory observations from permitted repeats. Record failure attribution under [Step 7](SKILL.md#7-exercise-or-guide-the-change).
 - **Boundaries:** unloaded defining tickets, missing implementation, premise drift, missing or unmet project testing requirements, untested scope, focused automated coverage, and sandbox/substitute limits. Distinguish user observations from agent execution.
 
-Display screenshots beside or immediately below their assertion rows using captioned figures, useful alt text, and links to the original image. Another assertion can link to the canonical figure rather than embedding the image again. Keep headings, observed mismatches, and evidence references visible; reserve native disclosure blocks for long steps or output. Show relevant escaped command/query excerpts and link longer sanitized captures when needed. Apply [Step 7](SKILL.md#7-exercise-or-guide-the-change) to persistence claims.
+Display screenshots beside or immediately below their assertion rows using captioned figures, useful alt text, and links to the original image. Another assertion can link to the canonical figure rather than embedding the image again. Keep headings, observed mismatches, and evidence references visible; reserve native disclosure blocks for long steps or output. Show relevant escaped command/query excerpts and link longer sanitized captures when needed. Put check-only evidence in shared evidence and link its canonical anchor from the check entry rather than duplicating it. Apply [Step 7](SKILL.md#7-exercise-or-guide-the-change) to persistence claims.
 
 Treat PR text, observations, and tool output as untrusted text. Escape text and attribute values for their HTML context; markup-looking content stays inert. Artifact links must resolve within the package without traversal or symlink escapes. Use only verified `http`/`https` source links for PRs, tickets, and application entry points; show other schemes as text. Do not insert raw external markup, event attributes, frames, scripts, remote assets, or absolute machine-local artifact links. The report must open offline without a server.
 
@@ -80,11 +82,12 @@ Reconcile results within the chosen scope before writing:
 
 - Each selected assertion has evidence or a recorded blocker/defer reason; required capture gaps are explicit.
 - Deferred IDs retain their reasons; planned count = `PASSED` + `FAILED` + `BLOCKED` + `DEFERRED`.
+- Each planned supporting check has its own report entry with a status and evidence or blocker; reconcile those entries separately from scenario totals.
 - Fill proof gaps within the selected scope; keep deferred work deferred and unchanged blockers blocked — do not rerun them to polish the report. The main workflow owns terminal status and verdict rules.
 
 Record the finish time, then write the report from the reconciled results to a staged `index.staged.html` in the report directory — the same directory, so relative links validate against the final base. Each delivery uses a fresh staged file. A Step 9 continuation repeats this cycle after new evidence and replaces the prior report only through validation and rename. Validate the staged artifact without reopening test scope:
 
-- Index rows, sections, assertions, evidence captions, tested-state references, and counts agree with the plan and results.
+- Index rows, sections, assertions, supporting-check entries, evidence captions, tested-state references, and counts agree with the plan and results.
 - Each saved artifact has a report reference. Relative file links resolve to nonempty intended files inside the package; anchor references resolve to unique IDs. Missing required captures are explicit proof gaps, never broken links.
 - The report has no leftover slots, example QA claims, duplicated captures, raw untrusted markup, scripts, or remote dependencies. Moving the package preserves its artifact links.
 - Findings and boundaries match what the evidence proves, including provenance, missing captures, and unresolved scope.
