@@ -64,7 +64,7 @@ Identify the isolated workspace created for this PR via `workspace-isolation.md`
 
 ### 9. Report
 
-Chat only: `<pr-url>` merge state · `<artifact-results>` per artifact and target — status + evidence, plus any inventory-wide discovery gap, or `none shipped` · classification counts · per customer ticket, the draft note URL, unposted draft and reason, or `not run` · `<spec-ticket-results>` per entry: ticket URL + status + error, gap, or blocking artifact and target, or `none linked` · `<drifted-tickets>` per entry: ticket URL, reported problem, why `<pr-summary>` doesn't cover it · workspace removed, `none found`, `blocked` with reason, or `not run`.
+Chat only: `<pr-url>` merge state · `<artifact-results>` per artifact and target — status + evidence, plus any inventory-wide discovery gap, or `none shipped` · classification counts · per customer ticket, the draft note permalink (ticket URL if unavailable), unposted draft and reason, or `not run` · `<spec-ticket-results>` per entry: ticket URL + status + error, gap, or blocking artifact and target, or `none linked` · `<drifted-tickets>` per entry: ticket URL, reported problem, why `<pr-summary>` doesn't cover it · workspace removed, `none found`, `blocked` with reason, or `not run`.
 
 ## Notes
 

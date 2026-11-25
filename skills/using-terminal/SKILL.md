@@ -11,7 +11,7 @@ Shell-read before running terminal/shell commands (reuse session reads): `<proje
 
 Follow `terminal-wrappers.md` for which commands to wrap. Use the matching subcommand or the raw proxy. Without a configured wrapper, run raw commands. Run raw for byte-exact output, interactive tools, commands already inside a proxy, and project or user exceptions.
 
-For container commands, use `container-clis.md` to locate the project config. Missing config → stop and ask. Read it for service and script names; if unsure, use the tool's list/status operations rather than guessing. Run from the config's project root or use the tool's working-directory flag. Run the container CLI directly, without the wrapper.
+Run container commands directly, without the wrapper. When the command requires project config, use `container-clis.md` to locate it; missing required config → stop and ask. Read it for service and script names; if unsure, use the tool's list/status operations rather than guessing. Run project-scoped commands from the config's project root or use the tool's working-directory flag. Config-free commands, such as logs for a named Docker container, need no project config.
 
 Use absolute paths from the project's working directory. Change directories only when a command has no absolute-path form.
 

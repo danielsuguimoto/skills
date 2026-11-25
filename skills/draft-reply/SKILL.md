@@ -72,5 +72,5 @@ A `<ticket-url>` first identified here — not present when the ticket context w
 
 ## Notes
 
-- Successful post: return the ticket URL only. Unposted draft: return the draft and reason without posting it.
+- Successful post: return the note permalink when available, otherwise the ticket URL. Unposted draft: return the draft and reason without posting it.
 - Revision after posting → edit the note in place per provider rules; never post a second draft.
