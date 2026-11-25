@@ -1,6 +1,6 @@
 # PR test reporting
 
-Read before materializing the Step 5 plan. Use [report-template.html](report-template.html) for the report; [SKILL.md](SKILL.md) owns scenario statuses, verdicts, scope, and recovery limits. This contract changes output, not test depth or retry authority.
+Read before materializing the Step 5 plan. Use [report-template.html](report-template.html) for the report; [SKILL.md](SKILL.md) owns scenario statuses, verdicts, scope, and recovery limits. This contract changes output, not scenario scope or retry authority.
 
 ## 1. Initialize the report
 
@@ -47,8 +47,8 @@ Read [report-template.html](report-template.html) once before writing `index.htm
 
 Record facts from already loaded context:
 
-- **Run:** PR identity/link, branch and tested-state ledger, driver, depth, budget, sanitized environment/entry point, finish time with timezone, verdict, and scenario counts. Record each state entry (`T01`, `T02`, …) with its tested commit SHA (the local fix commit when one exists), any uncommitted changes, and a modified-file summary. Mixed or local tested states are proof boundaries, not verdict blockers.
-- **Index:** each planned scenario ID/title, purpose/artifact/critical-edge labels, result, and proof summary; link scenario IDs to scenario sections. One journey may have several labels.
+- **Run:** PR identity/link, branch and tested-state ledger, driver, sanitized environment/entry point, finish time with timezone, verdict, and scenario counts. Record each state entry (`T01`, `T02`, …) with its tested commit SHA (the local fix commit when one exists), any uncommitted changes, and a modified-file summary. Mixed or local tested states are proof boundaries, not verdict blockers.
+- **Index:** each planned scenario ID/title, purpose/regression/artifact/critical-edge/reviewer-finding labels, result, and proof summary; link scenario IDs to scenario sections. One journey may have several labels.
 - **Selected scenario:** tested-state ID, source outcome/link, entry point, prerequisites, concrete edge risk when applicable, and ordered actions or command with meaningful input conditions. Include shipped-artifact pre-state, execution, post-state, and claimed idempotency proof where applicable.
 - **Supporting check:** ID, tested-state ID, mapped assertion or risk, command or entry point, prerequisites, result/status, and evidence references or blocker/proof gap.
 - **Assertion:** ID, expected and observed behavior, supported behavioral finding, and evidence references. Keep behavioral findings separate from capture completeness. Record unverified assertions as unverified, not passed or failed.

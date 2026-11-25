@@ -28,7 +28,7 @@ Each subdirectory under `skills/` is a self-contained skill with a `SKILL.md` ma
 | pr-fix | Address PR feedback by making fixes and responding directly to review threads. |
 | pr-fix-ci | Fix failing CI checks on a PR — read logs, fix the code, push, verify green. |
 | pr-stack | Assess an existing PR for stacking using its purpose, linked context, project memories, conventions, and deployment; convert only after explicit agreement. |
-| pr-test | Test a PR's purpose with the user or agent driving, chosen before setup. Exercise realistic flows and critical edge cases with minimal local data; verify persisted effects and shipped artifacts. After failures or blockers, user-directed unblocks or fixes trigger affected reruns and report updates. Production stays read-only. |
+| pr-test | Test a PR's changed behavior with the user or agent driving, chosen before setup. Exercise realistic flows, review-driven regressions, and critical edge cases with minimal local data; verify persisted effects and shipped artifacts. After failures or blockers, user-directed unblocks or fixes trigger affected reruns and report updates. Production stays read-only. |
 | post-merge | After a PR is merged and deployed — verify deployment-run artifacts took effect in prod, draft resolution replies for linked customer-success tickets via draft-reply, then clear the work's isolated workspace. |
 | session-to-memory | Extract retention-worthy knowledge from a session and persist it to the active memory provider. |
 | sequential-thinking | Sequential thinking method for non-trivial tasks — thought chains that revise, branch, and verify before concluding. |
