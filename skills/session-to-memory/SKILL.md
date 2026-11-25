@@ -23,18 +23,7 @@ Scan: conversation history (requests, decisions, corrections, surprises) · tool
 
 ## Extraction Targets
 
-Pull only what clears the `memory-usage` write bar.
-
-| Category | Keep |
-| --- | --- |
-| Invariants | Non-obvious constraints the code enforces |
-| Conventions | Naming, layout, patterns the project mandates |
-| Corrections | User corrections as the rule to follow next time |
-| Preferences | How the user wants the agent to work/communicate |
-| Pitfalls | Traps that required real investigation |
-| Decisions | Architectural choices with lasting rationale |
-| Module facts | Shape, seams, ownership, lifecycle |
-| External facts | API quirks, version-specific behavior, rate limits |
+Pull only what clears the `memory-usage` write bar: non-obvious invariants, mandated conventions, user corrections and preferences, investigated pitfalls, decisions and rationale, module facts, or external API quirks and limits.
 
 Drop what fails the bar: restated code/comments, greppable style, mistake narratives, one-off phrasing/typos, reversible preferences, trivial structure, public doc defaults.
 

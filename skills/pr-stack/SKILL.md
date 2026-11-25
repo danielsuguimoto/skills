@@ -36,15 +36,7 @@ Read [GitHub stack mechanics](references/github-stacks.md). Verify current host 
 
 Map **every changed file and hunk**, including tests, migrations, generated files, configuration, docs, binary assets, renames, and deletions, to coherent concerns. Trace dependencies between concerns and map every acceptance criterion to the concerns that satisfy it. File boundaries and existing commits are evidence, not mandatory split points.
 
-Weigh the alternatives against this PR's evidence:
-
-| Dimension | Favors stacking | Favors keeping one PR or another split |
-|-----------|-----------------|----------------------------------------|
-| Review | Distinct concerns yield focused diffs and clear reviewer ownership. | Small/cohesive diff; repeated context would obscure the behavior. |
-| Dependencies | A linear sequence of meaningful changes builds toward one purpose. | Unrelated concerns can target trunk independently; a forced chain adds delay. |
-| Correctness | Each layer builds and passes its relevant checks with its prerequisites below it. | Circular coupling or artificial boundaries leave broken intermediate states. |
-| Deployment | Each permitted merge boundary preserves contracts and rollout order. | Partial deployment breaks schema/API compatibility or violates release policy. |
-| Delivery cost | Smaller reviews unblock dependent work or expose risky foundations early. | Urgent fix, mature approvals, shared branches, churn, or CI/restacking costs outweigh the benefit. |
+Weigh review focus and ownership, dependency order, per-layer correctness, deployment safety, and delivery cost against this PR's evidence. Consider whether each layer can build and pass its checks with lower layers, and each merge boundary preserves contracts and rollout order. Account for urgency, existing approvals, shared branches, churn, and CI/restacking costs.
 
 Size alone never decides. Keep tests with the behavior they verify; do not create a code-only layer whose required tests arrive later. Prefer the fewest useful layers. A schema → API → UI shape is a candidate only when the actual dependencies and deployment process support it.
 

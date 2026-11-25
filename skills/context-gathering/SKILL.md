@@ -9,13 +9,11 @@ Shell-read `<project-root>/docs/<category>.md` before first use of that category
 
 ## Core Principle
 
-Never write code from assumptions — gather the minimum that answers the questions the change raises, then stop. Context past them is load: it thins attention and steers solutions toward irrelevant code.
-
-Flow: frame the questions → pull answers → verify → act.
+Gather the minimum evidence needed for the change, then stop; never write code from assumptions.
 
 ### 1. Frame the questions
 
-A wrong target wastes the whole gather. Name the 2–4 things the change must know — e.g. where does X get called · what shape does Y return · which convention does this neighborhood follow · does Z persist.
+Name the 2–4 questions the change must answer.
 
 Ambiguous → ask BEFORE exploring (goal, module/area, constraints); `grill-with-codebase` if complex or under-specified. Still undefined after one round → **stop and say so**, listing what's ambiguous.
 
@@ -28,7 +26,7 @@ Give each question a target and stop when it is answered. Batch independent look
 - **Persisted state** — only when touched: schema, row counts, sample rows, EXPLAIN plans for the queries involved (`database-tools.md`). Live DB is ground truth.
 - **External docs** — only when a library API/version is genuinely uncertain (`doc-lookup.md`); code already in context answers first.
 
-Widen on evidence — a reference that surprises, an invariant the slice can't explain, a new question an answer raised. Answer it, then return to the list. Non-trivial widening runs as sequential thinking — each answer revises the open questions.
+Widen when evidence raises an unanswered question, then return to the list. Non-trivial widening runs as sequential thinking.
 
 ### 3. Verify — ready to act
 
@@ -49,4 +47,4 @@ A criterion that doesn't apply → skip it explicitly. The gate binds the framed
 | Behavioral fix / additive feature | Full pull on the slice. |
 | Contract, signature, or schema change | Slice + blast radius: every caller and implementer, every consumer of the changed shape. |
 
-The gather is done when the framed questions are answered — stop there. Whole modules, sibling features, architecture tours read "for context" — load, not signal.
+Stop when the framed questions are answered; avoid unrelated modules and architecture tours.

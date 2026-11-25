@@ -20,21 +20,21 @@ Every tell below is a default choice. The strongest justify an edit on one sight
 
 ### Staging: signaling importance instead of stating
 
-- **Not X but Y.** "not just X but Y", "it's not X, it's Y", split across sentences ("This does not mean X. It means Y."), clipped tails ("no guessing", "no wasted motion"). State the point. Keep a contrast only when the negative half corrects a belief the reader holds.
-- **Dramatic closers and fragments.** One-line paragraphs that restate the point ("Let that sink in.", "That distinction matters.", "Read that again."), sentences naming what an example showed ("It was a lesson in patience."), fragment runs ("No prior. No nostalgia."), ALL-CAPS or every.single.word emphasis. Keep a short line only when it adds a fact; merge fragments into a sentence with a claim.
-- **Deep-sounding sayings.** "at its core", "the real question is", "what really matters", "fundamentally", "X is the language/currency of Y", "X becomes a trap", "X is not a tool but a mirror". Replace the aphorism with the specific claim.
-- **Run-ups.** "Let's dive in", "Here's what you need to know", "Here's the thing", "Honestly?", "Real talk", "Quick note", "Without further ado", "In this article we'll explore". Delete the announcement; make the point.
-- **Arguing with no one.** "I'm not saying X, but", "Don't get me wrong", "To be clear", "Some might say… but". Delete the rebuttal; state the position.
+- **Not X but Y.** Includes split contrasts and clipped tails ("no guessing"). State the point; keep a contrast only when the negative half corrects a belief the reader holds.
+- **Dramatic closers and fragments.** Cut restatements ("Let that sink in."), sentences explaining what an example showed, ALL-CAPS or every.single.word emphasis. Merge fragment runs into a sentence with a claim; keep a short line only when it adds a fact.
+- **Deep-sounding sayings.** Replace aphorisms like "at its core" or "X is the language of Y" with the specific claim.
+- **Run-ups.** Delete announcements like "Let's dive in" or "Here's what you need to know"; make the point.
+- **Arguing with no one.** Delete unneeded rebuttals like "Don't get me wrong"; state the position.
 
 ### Inflation: dressing facts as more than they are
 
 - **Stock AI words.** additionally, bolster, crucial, delve, elevate, empower, enduring, enhance, garner, intricate, interplay, landscape (abstract), meticulous, pivotal, showcase, tapestry (abstract), testament, underscore, vibrant; marketing set: unlock, seamless, cutting-edge, game-changer, next-level, revolutionary, journey. Use the plain word.
-- **Inflated significance.** "marking a pivotal moment", "setting the stage for", "a testament to", "plays a key role", "reflects a broader", "indelible mark"; stock "challenges and outlook" sections; send-offs like "the future looks bright" or "exciting times ahead". Keep the fact, drop the significance; end on the last concrete fact or a real stated plan.
+- **Inflated significance.** Cut claims like "marking a pivotal moment", stock "challenges and outlook" sections, and send-offs like "the future looks bright". Keep the fact; end on the last concrete fact or a real stated plan.
 - **Sales language.** nestled, in the heart of, breathtaking, stunning, renowned, rich (figurative), must-visit, profound, groundbreaking (figurative), diverse array, commitment to. State what the thing is.
-- **Empty proof.** "trusted by thousands", "industry-leading", "world-class", prestige outlet lists, "active social media presence with N followers". Keep only named, verifiable sources; cut the rest.
-- **Unnamed authority.** "experts say", "industry reports suggest", "some critics argue", "observers note". Name the source or cut the claim.
-- **-ing riders.** "highlighting", "underscoring", "ensuring", "reflecting", "symbolizing", "fostering", "showcasing" bolted onto a fact. Keep the fact; keep the rider only if the source supports it.
-- **Vague links.** "associated with", "connected to", "linked to", "tied to". Name the actual relationship; if the source does not say, keep the vague wording rather than inventing one.
+- **Empty proof.** Claims like "trusted by thousands", prestige outlet lists, or follower counts are not proof. Keep only named, verifiable sources.
+- **Unnamed authority.** Name the source behind "experts say" or cut the claim.
+- **-ing riders.** Keep explanatory riders like "highlighting" or "ensuring" only if the source supports them.
+- **Vague links.** Name the actual relationship behind "associated with" or "linked to"; if the source does not say, keep the vague wording rather than inventing one.
 - **Fancy copulas.** "serves as", "stands as", "functions as", "boasts", "features", "represents". Write is/are/has.
 - **False agency.** Abstractions with mind-verbs: "the data tells us", "the dashboard understands", "the market rewards". Ordinary product verbs are fine ("the filter narrows the list"); the tell is a verb needing a mind: understands, decides, wants, believes. Name the actor or state what it does.
 - **Invented specifics.** Realistic but unsourced numbers, quotes, testimonials, dates. Flag or cut; this stays a defect even when it sounds human.
@@ -42,7 +42,7 @@ Every tell below is a default choice. The strongest justify an edit on one sight
 ### Rhythm by rule
 
 - **Forced triads.** Ideas padded into groups of three. List the items the content actually has.
-- **Synonym cycling.** protagonist / main character / central figure in one paragraph. Pick the clearest word and repeat it.
+- **Synonym cycling.** Pick the clearest word and repeat it.
 - **False ranges.** "from X to Y, and everything in between" where X and Y are not a scale. List the concrete topics.
 - **Repeated openings.** The same subject starting every sentence. Merge, change the subject, or lead with the action; deliberate anaphora can stay.
 - **Em dashes.** None in output. Replace each with a period, comma, colon, or parentheses; this covers ` — ` and ` -- ` used as dashes. Skip inside code, commands, paths, URLs. One dash in a source text is *weak*; a text full of them is not. A user's sample sets the rate.
@@ -52,7 +52,7 @@ Every tell below is a default choice. The strongest justify an edit on one sight
 
 ### Plain speech
 
-- **Filler and fancy words.** "in order to" → "to"; "due to the fact that" → "because"; "in the event that" → "if"; "at this point in time" → "now"; utilize/leverage → use; facilitate → help; numerous → many; "it is important to note that" → delete.
+- **Filler and fancy words.** Prefer plain words: "in order to" → "to"; "due to the fact that" → "because"; utilize/leverage → use. Delete empty framing.
 - **Metaphor jargon.** substrate, wedge, vector, locus, nexus, paradigm, modality, north star, flywheel, scaffolding, bedrock, gold-plating, ratchet, endgame, harness/surface as metaphors. Use the concrete word.
 - **Feelings over mechanisms.** "the database stays close at hand", "SQL you can read" name a feeling. Name the mechanism or the number instead. If the sentence could run unchanged in another project's docs, it says nothing. Cut it.
 - **Mannered prose.** Rhetorical fragments, personified code ("the plan holds it", "rides along", "stands on"), stock framings. Say it literally.
@@ -68,7 +68,7 @@ Every tell below is a default choice. The strongest justify an edit on one sight
 
 ### Leftovers and meta
 
-- **Chat residue.** "Great question!", "I hope this helps!", "Let me know if", "Would you like me to", "You're absolutely right", "Of course!", "Here is a…". Remove the wrapper, keep the content. Letter salutations and sign-offs predate chatbots; they stay.
+- **Chat residue.** Remove wrappers like "Great question!" and "I hope this helps!"; keep the content. Letter salutations and sign-offs stay.
 - **Knowledge-limit disclaimers.** "as of [date]", "while specific details are limited", "based on available information", followed by a guess ("likely grew up"). State the gap in one sentence or cut it; never fill it with a plausible invention.
 - **Self-description.** Text about how the text was made ("was added to replace", "generated from", "the table below compares", "this section is organized by"). Keep only in changelogs, release notes, and migration guides, or when the reader cannot infer the convention.
 - **Re-explaining the reader's context.** In replies: restating the problem and diagnosis so the decision lands last. Lead with the decision; keep only the reasoning that could change agreement.

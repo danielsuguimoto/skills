@@ -3,29 +3,16 @@ name: sequential-thinking
 description: "Use sequential reasoning for complex debugging, multi-step planning, ambiguous scope, or competing hypotheses."
 ---
 
-Externalize reasoning as a chain of numbered thoughts instead of reasoning in one pass. Each thought is a unit of work — a decomposition, an evidence read, a decision — not a narration of actions taken.
+For non-trivial work, reason in a chain of numbered thoughts. Each advances, revises, or branches the investigation; do not narrate actions.
 
 ## Mechanism
 
-The method needs no dedicated tool — pick whatever carries the chain:
-
-- **Task/todo list** — one item per thought for reasoning-only work; encode revisions and branches in item text when nesting is unsupported. When execution work also needs the native list, keep the chain inline or in a thinking tool.
-- **Inline reasoning** — run the loop mentally for short chains where tool overhead exceeds gain.
-- **Thinking tool** — use a configured tool (`<project-root>/docs/mcp-servers.md`) when persistent branches or revisions justify its call overhead.
-
-The loop binds either way — tool availability never gates it.
+Use a todo list for reasoning-only work, inline reasoning for short chains, or a configured thinking tool (`<project-root>/docs/mcp-servers.md`) when persistent branches justify it. One thought per todo; encode revisions and branches in the item when nesting is unsupported. If the todo list tracks execution, keep reasoning inline or in a thinking tool. Tool availability never gates the method.
 
 ## The Loop
 
-1. **Frame** — state the problem; estimate the thoughts needed. The estimate is a guess — extend when the problem proves deeper, never pad to reach it.
-2. **Advance** — one thought, one job: decompose a subproblem, weigh evidence, compare options, conclude a step. A thought doing two jobs splits.
-3. **Revise** — later evidence contradicting an earlier thought → mark it a revision of that thought. Silent restatement buries what changed; the chain keeps the correction visible.
-4. **Branch** — competing explanations or approaches the evidence can't yet settle → fork each from the divergence point; pursue the strongest, keep the rest alive until falsified.
-5. **Verify** — a hypothesis earns conclusion only through its prediction: derive what must hold, test it, mark confirmed or falsified.
-6. **Close** — stop on a verified conclusion or a decision that belongs to the user. The last thought is the answer — no summary pass.
-
-## Discipline
-
-- Every thought advances, revises, or branches — one restating context or narrating a tool call is noise.
-- Course correction is the point: a long chain on a hard problem with no revision or branch rationalizes the first idea rather than reasoning.
-- Non-trivial only — a mechanical step or a question context already answers never opens a chain.
+1. **Frame** the problem and estimate the chain length; extend as needed, never pad.
+2. **Advance** one job per thought. When evidence contradicts earlier reasoning, mark the revision and the thought it revises.
+3. **Branch** unresolved alternatives; pursue the strongest while retaining the others until falsified.
+4. **Verify** hypotheses against predictions and evidence; mark each confirmed or falsified.
+5. **Close** on a verified conclusion or a decision for the user. The last thought is the answer.
