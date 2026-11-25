@@ -5,7 +5,7 @@ description: "Delegation gates. MANDATORY before any spawn, any large context-ga
 
 Default to execution in the current session. Delegate a workflow or its steps only when a dispatch rationale below fires or the user explicitly asks to delegate.
 
-**Ticket Brief exception.** When a workflow calls for a `Ticket Brief`, delegate only that isolated, read-only ticket inspection — unless a matching brief or ticket content covering the brief's evidence depth (comments and attachments included) is already in session, in which case derive the scoped answers inline. Follow its isolation and blocker rules instead of the sequential, size, and inline-fallback gates below. The parent runs the workflow and never probes raw ticket content to qualify.
+**Ticket Brief exception.** When a workflow calls for a `Ticket Brief`, delegate only that isolated, read-only ticket inspection — unless the session already holds a matching brief, an evidence-complete ticket summary, or ticket content at the brief's required depth covering the same references and scope, in which case derive the scoped answers inline. Evidence-complete means raw threads and attachment contents need not be present, but each ticket's body, checklists, full comment thread, and accessible attachments must be accounted for, with confirmed decisions distinguished from open proposals and superseded decisions; a lighter read, bare summary, or summary missing the status of a scoped decision does not qualify. Follow its isolation and blocker rules instead of the sequential, size, and inline-fallback gates below. The parent runs the workflow and never probes raw ticket content to qualify.
 
 ## Sequential Gate
 
