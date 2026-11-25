@@ -77,7 +77,7 @@ Use `<pr-title>` + `<pr-body>` (already reflects `<pr-template>`). Body when `<p
 <checklist-items>
 ```
 - `<pr-template>` ≠ `none` → the filled template from Step 7. No attribution lines. Preserve markdown newlines (single-line strings render `\n` literally).
-- Create via git host create PR (title, body, base, head, assignee `@me`). CLI fallback: pass `<pr-body>` inline with shell quoting that preserves its contents.
+- Create via git host create PR (title, body, base, head, assignee `@me`). CLI fallback: pass `<pr-title>`, `<resolved-base>`, `<current-branch>`, assignee `@me`, and `<pr-body>` inline with shell quoting that preserves its contents.
 - PR exists → git host view PR (pr_ref=`<current-branch>`, fields=`url,number`) or `gh pr view <current-branch> --json url,number`.
 - URL → `<pr-url>`. Verify the rendered body (fields=`body` or `gh pr view <current-branch> --json body | jq -r '.body'`); re-edit if needed.
 - Output the PR URL, created or existing.
