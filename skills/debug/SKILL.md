@@ -27,7 +27,7 @@ Clarify an unclear symptom before exploring; otherwise proceed.
 
 Use sequential thinking when competing hypotheses need investigation; otherwise follow the evidence directly.
 
-When the cause is uncertain, rank plausible, falsifiable hypotheses from `<investigation-findings>` and test predictions one variable at a time. Use targeted boundary logs tagged `[DEBUG-a4f2]` for cleanup.
+When the cause is uncertain, rank plausible, falsifiable hypotheses from `<investigation-findings>` and test predictions one variable at a time. When diagnostic logs are needed, target boundaries and tag them `[DEBUG-a4f2]` for cleanup.
 
 Record `<root-cause>`, `<affected-components>`, `<impact-scope>`, `<reproduction-conditions>`, and ranked `<potential-fixes>`. Choose the smallest fix and relevant verification; ask only when a material decision remains unresolved → `<plan-decisions>`.
 

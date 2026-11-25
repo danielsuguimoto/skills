@@ -12,7 +12,7 @@ Use a todo list for reasoning-only work, inline reasoning for short chains, or a
 ## The Loop
 
 1. **Frame** the problem and estimate the chain length; extend as needed, never pad.
-2. **Advance** one job per thought. Mark revisions when evidence contradicts earlier reasoning.
+2. **Advance** one job per thought. When evidence contradicts earlier reasoning, mark the revision and the thought it revises.
 3. **Branch** unresolved alternatives; pursue the strongest while retaining the others until falsified.
-4. **Verify** hypotheses against predictions and evidence.
+4. **Verify** hypotheses against predictions and evidence; mark each confirmed or falsified.
 5. **Close** on a verified conclusion or a decision for the user. The last thought is the answer.
