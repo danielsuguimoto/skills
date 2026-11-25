@@ -108,7 +108,7 @@ pre {
 <header>
 <h1>PR test report — <a href="&lt;pr-url&gt;">&lt;pr-title&gt; (#&lt;pr-number&gt;)</a></h1>
 <dl class="meta">
-<dt>Branch / tested code</dt><dd>&lt;pr-branch&gt; @ &lt;tested-state&gt;</dd>
+<dt>Branch / tested states</dt><dd>&lt;pr-branch&gt; @ &lt;tested-state-ledger&gt;</dd>
 <dt>Driver</dt><dd>&lt;test-driver&gt;</dd>
 <dt>Depth / budget</dt><dd>&lt;test-depth&gt; / &lt;scenario-budget&gt;</dd>
 <dt>Environment</dt><dd>&lt;sanitized-environment-or-entry-point&gt;</dd>
@@ -141,6 +141,9 @@ pre {
 <dt>Source</dt><dd>&lt;source-outcome-or-link&gt;</dd>
 <dt>Entry point</dt><dd>&lt;entry-point&gt;</dd>
 <dt>Prerequisites</dt><dd>&lt;prerequisites&gt;</dd>
+</dl>
+<dl class="field-list" data-optional="tested-state">
+<dt>Tested state</dt><dd>&lt;tested-state-id&gt;</dd>
 </dl>
 <dl class="field-list" data-optional="edge-risk">
 <dt>Critical edge risk</dt><dd>&lt;concrete-risk&gt;</dd>
@@ -191,7 +194,7 @@ pre {
 <figcaption>
 <strong>&lt;Ennn&gt;</strong> (&lt;type&gt;) — &lt;observed-fact-and-proof-limit&gt;.
 Action by &lt;driver&gt;; observation supplied/verified by &lt;supplier-verifier&gt;.
-Supports <a href="#assertion-&lt;assertion-id-lower&gt;">&lt;Snn.Ann&gt;</a>.
+Tested state &lt;tested-state-id&gt;. Supports <a href="#assertion-&lt;assertion-id-lower&gt;">&lt;Snn.Ann&gt;</a>.
 <a href="&lt;relative-artifact-path&gt;" data-optional="artifact-link">Open original</a>
 </figcaption>
 </figure>
@@ -199,7 +202,7 @@ Supports <a href="#assertion-&lt;assertion-id-lower&gt;">&lt;Snn.Ann&gt;</a>.
 <p><strong>&lt;Ennn&gt;</strong> (&lt;type&gt;) — &lt;observed-fact-and-proof-limit&gt;.</p>
 <p data-optional="inline-observation">&lt;inline-observation-or-excerpt&gt;</p>
 <details data-optional="output-excerpt"><summary>Captured output</summary><pre>&lt;output-excerpt&gt;</pre></details>
-<p>Action by &lt;driver&gt;; observation supplied/verified by &lt;supplier-verifier&gt;. Supports <a href="#assertion-&lt;assertion-id-lower&gt;">&lt;Snn.Ann&gt;</a>. <a href="&lt;relative-artifact-path&gt;" data-optional="artifact-link">Open artifact</a></p>
+<p>Action by &lt;driver&gt;; observation supplied/verified by &lt;supplier-verifier&gt;. Tested state &lt;tested-state-id&gt;. Supports <a href="#assertion-&lt;assertion-id-lower&gt;">&lt;Snn.Ann&gt;</a>. <a href="&lt;relative-artifact-path&gt;" data-optional="artifact-link">Open artifact</a></p>
 </div>
 </div>
 </div>

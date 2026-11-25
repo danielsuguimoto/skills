@@ -1,6 +1,6 @@
 ---
 name: setup-skills
-description: "Guide initial configuration for this skills system — creates <project-root>/docs spec and project-reference files. Invoke on 'setup skills', 'configure skills', 'initialize skills', or when spec files are missing or incomplete."
+description: "Guide initial configuration for this skills system — creates <project-root>/docs spec and project-reference files. Invoke on 'setup skills', 'configure skills', 'initialize skills', or when spec or project-reference files are missing or incomplete."
 ---
 
 # Setup Skills
