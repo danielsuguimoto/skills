@@ -9,7 +9,7 @@ Shell-read before creating the PR (reuse session reads): `<project-root>/docs/gi
 
 ## Operations
 
-MCP tools take business-level inputs (title, body, base, head) — no CLI flags, no `--body-file` temp files. All git host ops per `git-hosts.md` (detect branch+default base, check uncommitted, fetch base+diff, push, create issue, create/view PR, auth). Ticket comments via issue tracker update-ticket (`issue-trackers.md`).
+MCP tools take business-level inputs (title, body, base, head) — no CLI flags. All git host ops per `git-hosts.md` (detect branch+default base, check uncommitted, fetch base+diff, push, create issue, create/view PR, auth). Ticket comments via issue tracker update-ticket (`issue-trackers.md`).
 
 As a subskill, the invoking skill owns Steps 1-10; on "Nothing to ship.", proceed to Step 3 blockers.
 
@@ -50,7 +50,7 @@ Generate `<pr-title>`, `<issue-summary>`, `<pr-body>`, and (when `auto`) `<ticke
 
 `<issue-summary>`: 1-2 sentences explaining the problem the PR solves. For `provided`, use the forwarded `<ticket-brief-result>` if it matches `<ticket-url>`, including a blocker as the final lookup result. Only without a matching result, get a ticket brief (see Ticket Brief) for that reference, scoped to the problem the PR addresses. No usable brief → note the gap outside the PR and infer from `<changes>` without fetching the ticket inline. For `auto` or `skip`, infer from `<changes>` directly. Include only details appropriate for the PR audience. Restate the problem even when linking `<ticket-url>`.
 
-`<ticket-mode>` = `auto`: reuse `<change-summary>` themes from actual commits/diff. Title ≤70 chars reflecting the delivered outcome; description = what and why; checklists = 2-4 functional sections + final `Validation` section (reviewer-facing: "Verify that...", "Confirm that..."). Create via git host create issue (title, body, assignee `@me`) or CLI fallback with temp file. No attribution lines. Issue URL → `<ticket-url>`.
+`<ticket-mode>` = `auto`: reuse `<change-summary>` themes from actual commits/diff. Title ≤70 chars reflecting the delivered outcome; description = what and why; checklists = 2-4 functional sections + final `Validation` section (reviewer-facing: "Verify that...", "Confirm that..."). Create via git host create issue (title, body, assignee `@me`); CLI fallback: pass `<ticket-body>` inline with shell quoting that preserves its contents. No attribution lines. Issue URL → `<ticket-url>`.
 
 Otherwise: `provided` → use it; `skip` → `SKIPPED`.
 
@@ -77,7 +77,7 @@ Use `<pr-title>` + `<pr-body>` (already reflects `<pr-template>`). Body when `<p
 <checklist-items>
 ```
 - `<pr-template>` ≠ `none` → the filled template from Step 7. No attribution lines. Preserve markdown newlines (single-line strings render `\n` literally).
-- Create via git host create PR (title, body, base, head, assignee `@me`). CLI fallback: body to temp file, `gh pr create --title "<pr-title>" --body-file /tmp/pr-body.md --base "<resolved-base>" --head "<current-branch>" --assignee "@me"`.
+- Create via git host create PR (title, body, base, head, assignee `@me`). CLI fallback: pass `<pr-body>` inline with shell quoting that preserves its contents.
 - PR exists → git host view PR (pr_ref=`<current-branch>`, fields=`url,number`) or `gh pr view <current-branch> --json url,number`.
 - URL → `<pr-url>`. Verify the rendered body (fields=`body` or `gh pr view <current-branch> --json body | jq -r '.body'`); re-edit if needed.
 - Output the PR URL, created or existing.
