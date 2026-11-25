@@ -122,11 +122,4 @@ On missing binary, non-zero exit, or unreadable output, stop and report; do not 
 
 ## Exploration Offloading
 
-For exploration across files or modules, apply the dispatch rationales above. File count alone does not establish that offloading saves time or tokens.
-
-| State | Scan shape | Action |
-|---|---|---|
-| Cold scan — parent doesn't hold the area | Multi-file / multi-module | Scout only when a dispatch rationale fires |
-| Warm read — parent holds the bulk | A few lines, one symbol, one file | Inline — dispatch overhead exceeds savings |
-
-Inline exceptions: exact path + line range known · a single navigation symbol lookup/reference call answers it · target file <~50 lines and isolated.
+Apply the dispatch rationales above; file count alone does not justify offloading. Keep exact path + line ranges, single navigation lookups, and isolated files under ~50 lines inline.

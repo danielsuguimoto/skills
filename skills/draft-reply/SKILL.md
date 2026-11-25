@@ -54,11 +54,10 @@ Store as `<evidence>` — internal grounding that stays in session. Cite `file:l
 Write `<draft-reply>` as a message the human can send with minimal edits:
 
 - **Audience match.** Tone/depth per `<requester-profile>` + `<additional-context>`. Customer-facing default: greet, plain language, no jargon, no `file:line` in the body. Internal reviewer: technical, cite `file:line`, no client tone.
-- **Answer first.** Lead with the answer to `<reply-target>`; background/caveats after.
+- **Answer first.** Lead with the answer to `<reply-target>`; background/caveats after. Match length and structure to the question; no padding.
 - **Human prose.** Write `<draft-reply>` per the `writing-for-humans` skill — it is text for a human reader: no staging, stock vocabulary, formatting tics, or chat residue, and keep the requester's own vocabulary where the draft mirrors their words.
 - **Ground every claim.** Technical assertions trace to `<ticket-facts>`, `<evidence>`, or `<doc-context>`; ungrounded → `[NEEDS-REVIEW: <what's uncertain>]`, not stated as fact.
 - **No invented details.** No fabricated dates, IDs, statuses, quotes — say what's missing, flag for the human.
-- **Length matches the question.** One-line answer for a one-line question; structured for multi-part. No padding.
 
 ### Shape the Note
 

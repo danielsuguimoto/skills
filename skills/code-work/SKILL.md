@@ -23,11 +23,7 @@ Touch only what the request requires and match existing style. Remove unused imp
 
 ## 4. Goal-Driven Execution
 
-Define success criteria; loop until verified. Transform tasks into verifiable goals:
-
-- "Add validation" → tests for invalid inputs pass
-- "Fix the bug" → reproduction test goes red to green
-- "Refactor X" → tests pass before and after
+Define verifiable success criteria; loop until verified.
 
 Multi-step work → plan the outcomes and their verification checks before starting. Use the execution ledger as the plan when active; otherwise, keep a brief `1. <outcome> → verify: <check>` plan.
 

@@ -22,14 +22,6 @@ The task touches an existing codebase. When the target is identifiable, read the
 
 ## From task to plan
 
-Establish scope and success state first, then rotate through:
-
-- **Scope & success** — what "done" looks like; explicitly out of scope; behavior that must not change.
-- **Fit with existing patterns** — follows surrounding conventions or silently introduces a new shape; where the new code lives.
-- **Data flow & persistence** — where new data comes from, is stored, who reads it, scopes, migrations needed.
-- **Invariants & lifecycle** — what must stay true; which subscriber/observer/lifecycle hooks the task breaks or bypasses.
-- **Edge cases & failure modes** — null/empty inputs, concurrent writes, soft-delete, company scoping, partial failures, rollbacks.
-- **Cross-module wiring** — who calls the changed code, who implements the contracts, what events/jobs fire, what breaks downstream.
-- **Test impact** — which existing tests change; which new tests are demanded; what would regress untested.
+Establish scope, success, exclusions, and preserved behavior first. Resolve relevant decisions about existing patterns and placement; data flow, persistence, scopes, and migrations; invariants and lifecycle hooks; edge cases and failures; callers, contracts, events, jobs, and downstream effects; and test impact. Consider concurrency, soft-delete, company scoping, partial failures, and rollbacks where applicable.
 
 Record each decision. Every branch resolved → present the concrete plan: file-by-file changes, new artifacts, migrations, tests, open risks.

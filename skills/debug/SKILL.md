@@ -27,13 +27,9 @@ Clarify an unclear symptom before exploring; otherwise proceed.
 
 Use sequential thinking when competing hypotheses need investigation; otherwise follow the evidence directly.
 
-**2.1 Choose a Strategy** — use the evidence to choose the smallest fix and relevant verification. Ask only when a material decision remains unresolved → `<plan-decisions>`.
+When the cause is uncertain, rank plausible, falsifiable hypotheses from `<investigation-findings>` and test predictions one variable at a time. Use targeted boundary logs tagged `[DEBUG-a4f2]` for cleanup.
 
-**2.2 Hypotheses** — when the cause is uncertain, rank plausible, falsifiable causes from `<investigation-findings>`. Do not invent alternatives to meet a count.
-
-**2.3 Test Hypotheses** — one variable at a time; each probe maps to a prediction. Tag debug logs `[DEBUG-a4f2]` (cleanup = one grep). Targeted logs at boundaries — never "log everything and grep."
-
-**2.4 Analyze Root Cause** — synthesize `<root-cause>`, `<affected-components>`, `<impact-scope>`, `<reproduction-conditions>`, `<potential-fixes>` (ranked).
+Record `<root-cause>`, `<affected-components>`, `<impact-scope>`, `<reproduction-conditions>`, and ranked `<potential-fixes>`. Choose the smallest fix and relevant verification; ask only when a material decision remains unresolved → `<plan-decisions>`.
 
 **Done when:** evidence supports the cause and fix, material alternatives are resolved, and remaining gaps are named.
 
