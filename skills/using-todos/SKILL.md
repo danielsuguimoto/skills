@@ -1,13 +1,13 @@
 ---
 name: using-todos
-description: "Use the harness-native todo list when non-mechanical execution spans three or more steps, multiple files, distinct phases, or parallel workstreams."
+description: "Use the harness-native todo list for execution spanning three or more steps, multiple files, distinct phases, or parallel workstreams — except a single mechanical action."
 ---
 
 Use the harness-native todo list as the execution ledger: the user-visible record of what remains, what is active, and what finished.
 
 ## Create
 
-Create the list when non-mechanical execution spans three or more steps, multiple files, distinct phases, or parallel workstreams. Skip a single mechanical action, even when it touches multiple files. No harness-native todo mechanism → use the workflow's own plan artifact as the ledger; without one, keep a brief outcome sequence inline.
+Create the list when execution spans three or more steps, multiple files, distinct phases, or parallel workstreams. Skip only a single mechanical action, even when it touches multiple files. No harness-native todo mechanism → use the workflow's own plan artifact as the ledger; without one, keep a brief outcome sequence inline.
 
 ## Items
 
