@@ -92,6 +92,12 @@ Shared infrastructure is not the barrier: one database, server, or browser proce
 
 Patterns: **fan-out/fan-in** or **scatter/gather** (N≥3 independent → wait all → parent synthesizes inline).
 
+For parallel fan-out with a native todo list active:
+
+- Before dispatch, the parent projects one item per workstream, owns every status transition, and confines worker status reporting to the final report.
+- Assign each workstream a stable stream ID (`W1`, `W2`, …). Use it in the todo item and dispatch prompt so fan-in results map without inference.
+- Require the final report's first line as `<stream-id>: <status> — <one-line result>`, with `<status>` = `completed`, `blocked`, or `failed`; the dispatch's return shape supplies the remainder.
+
 ## Dispatch Contract (every spawn)
 
 - Front-load all context (paths, symbols, what's known, what to return) — subagents are stateless, no mid-run questions.

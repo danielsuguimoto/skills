@@ -40,6 +40,7 @@ Each subdirectory under `skills/` is a self-contained skill with a `SKILL.md` ma
 | triage | Triage a ticket — load context, gather evidence, post findings. Read-only. |
 | using-code-navigation | Use code navigation tools for symbol-level code work instead of grep/read. |
 | using-terminal | MANDATORY pre-flight before sending any command to the terminal/shell. |
+| using-todos | Use the harness-native todo list as an execution ledger for work spanning three or more steps, multiple files, distinct phases, or parallel workstreams. |
 | using-workspaces | Set up an isolated workspace — configured mechanism, harness-provided capability, or the spec's documented fallback. |
 | writing-for-humans | Write and edit prose for human readers — strips AI tells (staging, inflation, stock vocabulary, formatting tics, chat residue) while keeping facts and voice. |
 

@@ -30,7 +30,7 @@ Define success criteria; loop until verified. Transform tasks into verifiable go
 - "Fix the bug" → reproduction test goes red to green
 - "Refactor X" → tests pass before and after
 
-Multi-step tasks → brief plan: `1. [Step] → verify: [check]`
+Multi-step work → define the verification check for each outcome before starting it.
 
 ## Code Reading
 

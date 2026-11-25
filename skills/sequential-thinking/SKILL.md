@@ -9,7 +9,7 @@ Externalize reasoning as a chain of numbered thoughts instead of reasoning in on
 
 The method needs no dedicated tool — pick whatever carries the chain:
 
-- **Task/todo list** — one item per thought; updates mark revisions, nested items mark branches. Persists the chain across steps and context boundaries.
+- **Task/todo list** — one item per thought for reasoning-only work; encode revisions and branches in item text when nesting is unsupported. When execution work also needs the native list, keep the chain inline or in a thinking tool.
 - **Inline reasoning** — run the loop mentally for short chains where tool overhead exceeds gain.
 - **Thinking tool** — use a configured tool (`<project-root>/docs/mcp-servers.md`) when persistent branches or revisions justify its call overhead.
 
