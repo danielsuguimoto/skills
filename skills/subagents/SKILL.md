@@ -92,7 +92,7 @@ Shared infrastructure is not the barrier: one database, server, or browser proce
 
 Patterns: **fan-out/fan-in** or **scatter/gather** (N≥3 independent → wait all → parent synthesizes inline).
 
-For parallel fan-out, use the active ledger — a native todo list, workflow plan, or inline outcome sequence:
+For parallel fan-out, create the ledger in a native todo list when available; otherwise use the workflow plan, or an inline outcome sequence when no plan exists:
 
 - Before dispatch, the parent projects one item per workstream into that ledger and owns every status transition.
 - Assign each workstream a stable stream ID (`W1`, `W2`, …). Use it in the ledger item and dispatch prompt so fan-in results map without inference.

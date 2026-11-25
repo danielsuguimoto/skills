@@ -7,7 +7,7 @@ Use the harness-native todo list as the execution ledger: the user-visible recor
 
 ## Create
 
-Create the list when execution spans three or more steps, multiple files, distinct phases, or parallel workstreams. Skip only a single mechanical action, even when it touches multiple files. No harness-native todo mechanism → use the workflow's own plan artifact as the ledger; without one, keep a brief outcome sequence inline.
+Create the list only when execution spans three or more steps, multiple files, distinct phases, or parallel workstreams. Skip a single mechanical action, even when it touches multiple files. No harness-native todo mechanism → use the workflow's own plan artifact as the ledger; without one, keep a brief outcome sequence inline.
 
 ## Items
 
