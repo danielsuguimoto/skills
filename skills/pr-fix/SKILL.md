@@ -12,7 +12,7 @@ Fix PR feedback and reply in review threads. Tools: git host (`git-hosts.md`).
 Modes: `review` (default) or `auto` — `auto` skips the Step 9 approval gate.
 
 ### 1. Interpret Arguments
-`auto` → `<execution-mode>` = `auto`; PR number/URL → `<pr-ref>`; extra guidance → `<additional-context>`; otherwise → `review`.
+`auto` → `<execution-mode>` = `auto`; extra guidance → `<additional-context>`; otherwise → `review`. Resolve `<pr-ref>` from the explicit PR number/URL, else the unambiguous PR targeted by the session's current work. Missing or ambiguous → ask; never pick an unrelated PR. Load current PR state even when its reference came from the session.
 
 ### 2. Load PR Context
 `git rev-parse --show-toplevel` → `<repo-path>` (use as `cwd` for MCP calls). Primary thread source: git host list unresolved review comments (`isResolved=false` server-side). CLI fallback: GraphQL `reviewThreads` with `isResolved`. REST `pulls/{n}/comments` only as `databaseId` cross-reference — never primary (returns resolved too).

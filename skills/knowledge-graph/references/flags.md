@@ -19,7 +19,7 @@ Agent-crawlable export — `index.md` plus one article per community and god-nod
 `--neo4j` — Cypher file for manual import:
 <!-- script: see references/scripts.md §Step 7 - Neo4j export (only if --neo4j) -->
 
-`--neo4j-push <uri>` — push to a running Neo4j; ask for credentials if not provided:
+`--neo4j-push [<uri>]` — push to a running Neo4j; an omitted URI reuses the session per the Usage rule in `build.md` before falling back to the default; ask for credentials if not provided:
 <!-- script: see references/scripts.md §Step 7 - Neo4j push (only if --neo4j-push) -->
 
 Defaults: URI `bolt://localhost:7687`, user `neo4j`. MERGE-based — safe to re-run, no duplicates.

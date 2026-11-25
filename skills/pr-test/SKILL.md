@@ -26,7 +26,7 @@ Act as a human QA engineer. The tested code defines `<behavioral-surface>`; PR t
 
 ### 1. Interpret Arguments
 
-PR number/URL → `<pr-ref>`; focus areas or constraints → `<additional-context>`. No PR reference → derive from conversation or the current branch's open PR (`git-hosts.md`).
+Explicit PR number/URL → `<pr-ref>`; focus areas or constraints → `<additional-context>`. Without an explicit reference, use the unambiguous PR targeted by the session's current work; ambiguous → ask. No session target → use the current branch's open PR (`git-hosts.md`) when unambiguous; otherwise ask.
 
 ### 2. Load PR Context
 

@@ -21,7 +21,7 @@ All git/gh operations follow `git-hosts.md`. Forward git host tool availability 
 
 ### 1. Interpret Arguments
 
-Ticket URL/reference → `<ticket-url>` · skip or no ticket → `<ticket-mode>` = `skip` · wording influencing branch name/commit → `<additional-context>` · base branch → `<base>`.
+Explicit ticket URL/reference → `<ticket-url>` · explicit skip → `<ticket-mode>` = `skip` · wording influencing branch name/commit → `<additional-context>` · base branch → `<base>`. Without an explicit ticket or skip, use the unambiguous ticket targeted by the session's current work; ambiguous → ask; no session ticket → `<ticket-mode>` = `skip`. A selected ticket → `<ticket-mode>` = `provided`; `skip` → `<ticket-url>` empty.
 
 ### 2. Pre-Scan Changes (Shared Context)
 
@@ -40,7 +40,7 @@ Build `<change-summary>` from `<included>` (primary) or `<ahead-commits>` (fallb
 Derive `<branch-category>` from `<change-summary>` per `new-branch` categories.
 
 Forward to subskills:
-- `new-branch`: `<additional-context>`, `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<branch-category>`.
+- `new-branch`: `<additional-context>`, `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<branch-category>`, `<ticket-url>`, `<ticket-mode>`, `<ticket-brief-result>`.
 - `commit-and-push`: `<additional-context>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<excluded>`.
 - `pr-create`: `<change-summary>`, `<excluded>`, `<ticket-url>`, `<ticket-mode>`, `<ticket-brief-result>`, and `<base>` when defined.
 
@@ -48,7 +48,7 @@ Forward to subskills:
 
 Skip when `<current-branch>` is NOT the detected default (per `git-hosts.md` fallback) AND is already ticket-related → `<new-branch>` = `<current-branch>`.
 
-Otherwise invoke `new-branch`, passing `<additional-context>`, `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<branch-category>` → `<new-branch>`. "Nothing to branch from" or "Branching skipped" → STOP and report.
+Otherwise invoke `new-branch`, passing `<additional-context>`, `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<branch-category>`, `<ticket-url>`, `<ticket-mode>`, `<ticket-brief-result>` → `<new-branch>`. "Nothing to branch from" or "Branching skipped" → STOP and report.
 
 ### 4. Commit and Push
 
