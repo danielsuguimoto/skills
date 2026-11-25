@@ -1,16 +1,16 @@
 ---
 name: setup-skills
-description: "Guide initial configuration for this skills system — creates <project-root>/docs spec files per tool category. Invoke on 'setup skills', 'configure skills', 'initialize skills', or when spec files are missing or incomplete."
+description: "Guide initial configuration for this skills system — creates <project-root>/docs spec and project-reference files. Invoke on 'setup skills', 'configure skills', 'initialize skills', or when spec or project-reference files are missing or incomplete."
 ---
 
 # Setup Skills
 
-Generate `<project-root>/docs/` and every spec file in the Generate table — skills reference specs by path to locate tools.
+Generate `<project-root>/docs/` and every file in the Generate table — skills reference these paths for tool interfaces and project-specific references.
 
 ## Pre-flight
 
 1. **Detect project root**: `git rev-parse --show-toplevel` or fall back to `cwd` → `<project-root>`.
-2. **Check existing state**: list `<project-root>/docs/`; check which Generate-table specs exist.
+2. **Check existing state**: list `<project-root>/docs/`; check which Generate-table files exist.
 3. **Decision gate**: all exist → ask reconfigure or abort (abort → stop) · some → ask regenerate all or only missing · none → interview directly.
 4. **Discover MCP servers**: native MCP discovery if available → `<mcp-inventory>`; offer detected servers as interview options. Skip if unsupported.
 5. **Detect external agent CLIs**: probe PATH for agent harness binaries → `<agent-cli-inventory>`; offer detected CLIs as interview options. If PATH enumeration is unsupported, skip detection; an empty inventory still flows to the interview.
@@ -18,7 +18,7 @@ Generate `<project-root>/docs/` and every spec file in the Generate table — sk
 
 ## Interview
 
-Ask about each tool category via the native user-prompting mechanism — three sequential batches. Each question offers common options plus "None / not used"; include detected MCP servers when relevant. Record answers as `<tool-selections>`.
+Ask about each tool category and the project testing reference via the native user-prompting mechanism — three sequential batches. Each tool question offers common options plus "None / not used"; include detected MCP servers when relevant. Record answers as `<tool-selections>`.
 
 ### Batch 1 — Tracking, Observability, Git, Database
 
@@ -31,7 +31,7 @@ Ask about each tool category via the native user-prompting mechanism — three s
 | What git hosting platform do you use? | Git host | GitHub, GitLab, Bitbucket, None |
 | What database inspection tools do you use? | Database | Laravel Boost MCP, Direct SQL client, None |
 
-### Batch 2 — Code, Browser, Containers
+### Batch 2 — Code, Browser, Containers, Testing
 
 | Question | Header | Options |
 |----------|--------|---------|
@@ -39,6 +39,7 @@ Ask about each tool category via the native user-prompting mechanism — three s
 | What browser automation tool do you use? | Browser | Playwright, Aside, None |
 | What knowledge graph tool do you use? | Knowledge graph | Graphify, None |
 | What container CLI do you use? | Container CLI | Kool, Docker Compose, None |
+| Does the project have testing requirements beyond standard local startup/browser execution? | Testing | Yes, No |
 
 ### Batch 3 — Memory, Terminal, Workspaces, Docs, MCP, External Agents, Models
 
@@ -58,11 +59,13 @@ External agents question: `<agent-cli-inventory>` non-empty → "Use detected CL
 
 Models question: `<model-inventory>` non-empty → "Use detected models" first; empty → "None" and "Other".
 
+A Yes answer to Testing → ask one focused follow-up per `testing.md` section — startup, test data and actors, browser/environment, external services, and supporting checks — and record the combined answers as `<testing-requirements>`. No or unanswered → generate a stub.
+
 ## Generate
 
-Create `<project-root>/docs/` if missing. Generate each spec file below, filling every Operations row and Tool Details line derivable from the selected tool; keep `<!-- Fill in: ... -->` markers only where the interface can't be derived. "None" selected → stub: `**Tool**: Not configured` + note that referencing skills use fallbacks or skip.
+Create `<project-root>/docs/` if missing. Generate each file below. For tool specs, fill every Operations row and Tool Details line derivable from the selected tool; keep `<!-- Fill in: ... -->` markers only where the interface can't be derived. "None" selected for a tool → stub: `**Tool**: Not configured` + note that referencing skills use fallbacks or skip. No or unanswered testing requirements → a stub recording no project-specific requirements.
 
-Each spec documents the tool's interface only — no agent behavior rules:
+Each tool spec documents the tool's interface only — no agent behavior rules. `testing.md` is the exception: it records project-specific testing environment facts and constraints using the structure in its note below. Tool-spec template:
 
 ```markdown
 # <Category>
@@ -92,6 +95,7 @@ Spec files:
 | `<project-root>/docs/database-tools.md` | Schema, queries, REPL operations |
 | `<project-root>/docs/code-navigation.md` | Find symbols, trace references, refactor |
 | `<project-root>/docs/browser-automation.md` | Snapshots, element interaction, downloads |
+| `<project-root>/docs/testing.md` | Project-specific test startup, data, actors, environment constraints, supporting checks |
 | `<project-root>/docs/knowledge-graphs.md` | Build, query, path, explain |
 | `<project-root>/docs/container-clis.md` | Lifecycle, exec, logs, scripts |
 | `<project-root>/docs/workspace-isolation.md` | Detect, create, list, remove isolated workspaces |
@@ -110,6 +114,8 @@ Spec files:
 
 `observability-tools.md`: when the deploy/job-log source differs from the monitoring tool, document that source's lookup operations and details alongside the monitoring tool's.
 
+`testing.md`: use sections `Startup`, `Test data and actors`, `Browser and environment`, `External services`, and `Supporting checks`. Populate them from `<testing-requirements>` and existing project testing docs. Record access requirements without secrets or credentials.
+
 ## Verify and Output
 
-Confirm every spec file exists. Report a summary table: spec file, tool, configured or not. List files still carrying `<!-- Fill in: ... -->` markers as manual-completion gaps. Do not commit or push.
+Confirm every generated file exists. Report a summary table: file, tool or reference, configured or not. List files still carrying `<!-- Fill in: ... -->` markers as manual-completion gaps. Do not commit or push.

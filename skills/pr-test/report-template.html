@@ -108,13 +108,13 @@ pre {
 <header>
 <h1>PR test report — <a href="&lt;pr-url&gt;">&lt;pr-title&gt; (#&lt;pr-number&gt;)</a></h1>
 <dl class="meta">
-<dt>Branch / tested commit</dt><dd>&lt;pr-branch&gt; @ &lt;tested-commit-sha&gt;</dd>
+<dt>Branch / tested states</dt><dd>&lt;pr-branch&gt; @ &lt;tested-state-ledger&gt;</dd>
 <dt>Driver</dt><dd>&lt;test-driver&gt;</dd>
 <dt>Depth / budget</dt><dd>&lt;test-depth&gt; / &lt;scenario-budget&gt;</dd>
 <dt>Environment</dt><dd>&lt;sanitized-environment-or-entry-point&gt;</dd>
 <dt>Finished</dt><dd>&lt;finished-at-with-tz&gt;</dd>
 <dt>Verdict</dt><dd><span class="status" data-status="unresolved">&lt;verdict-or-unresolved&gt;</span></dd>
-<dt>Counts</dt><dd>&lt;total-planned&gt; planned — passed &lt;passed-count&gt;, failed &lt;failed-count&gt;, blocked &lt;blocked-count&gt;, deferred &lt;deferred-count&gt;</dd>
+<dt>Scenario counts</dt><dd>&lt;total-planned&gt; planned — passed &lt;passed-count&gt;, failed &lt;failed-count&gt;, blocked &lt;blocked-count&gt;, deferred &lt;deferred-count&gt;</dd>
 </dl>
 </header>
 
@@ -141,6 +141,9 @@ pre {
 <dt>Source</dt><dd>&lt;source-outcome-or-link&gt;</dd>
 <dt>Entry point</dt><dd>&lt;entry-point&gt;</dd>
 <dt>Prerequisites</dt><dd>&lt;prerequisites&gt;</dd>
+</dl>
+<dl class="field-list" data-optional="tested-state">
+<dt>Tested state</dt><dd>&lt;tested-state-id&gt;</dd>
 </dl>
 <dl class="field-list" data-optional="edge-risk">
 <dt>Critical edge risk</dt><dd>&lt;concrete-risk&gt;</dd>
@@ -191,7 +194,7 @@ pre {
 <figcaption>
 <strong>&lt;Ennn&gt;</strong> (&lt;type&gt;) — &lt;observed-fact-and-proof-limit&gt;.
 Action by &lt;driver&gt;; observation supplied/verified by &lt;supplier-verifier&gt;.
-Supports <a href="#assertion-&lt;assertion-id-lower&gt;">&lt;Snn.Ann&gt;</a>.
+Tested state &lt;tested-state-id&gt;. Supports &lt;assertion-or-check-links&gt;.
 <a href="&lt;relative-artifact-path&gt;" data-optional="artifact-link">Open original</a>
 </figcaption>
 </figure>
@@ -199,9 +202,35 @@ Supports <a href="#assertion-&lt;assertion-id-lower&gt;">&lt;Snn.Ann&gt;</a>.
 <p><strong>&lt;Ennn&gt;</strong> (&lt;type&gt;) — &lt;observed-fact-and-proof-limit&gt;.</p>
 <p data-optional="inline-observation">&lt;inline-observation-or-excerpt&gt;</p>
 <details data-optional="output-excerpt"><summary>Captured output</summary><pre>&lt;output-excerpt&gt;</pre></details>
-<p>Action by &lt;driver&gt;; observation supplied/verified by &lt;supplier-verifier&gt;. Supports <a href="#assertion-&lt;assertion-id-lower&gt;">&lt;Snn.Ann&gt;</a>. <a href="&lt;relative-artifact-path&gt;" data-optional="artifact-link">Open artifact</a></p>
+<p>Action by &lt;driver&gt;; observation supplied/verified by &lt;supplier-verifier&gt;. Tested state &lt;tested-state-id&gt;. Supports &lt;assertion-or-check-links&gt;. <a href="&lt;relative-artifact-path&gt;" data-optional="artifact-link">Open artifact</a></p>
 </div>
 </div>
+</div>
+</section>
+
+<section id="supporting-checks" data-optional="checks">
+<h2>Supporting checks</h2>
+<div class="check" id="check-&lt;check-id-lower&gt;" data-template="check">
+<h3>&lt;Cnn&gt; <span class="status" data-status="&lt;status-key&gt;">&lt;STATUS&gt;</span></h3>
+<dl class="field-list">
+<dt>Supports</dt><dd>&lt;assertion-id-or-risk&gt;</dd>
+<dt>Entry point</dt><dd>&lt;command-or-entry-point&gt;</dd>
+<dt>Prerequisites</dt><dd>&lt;prerequisites&gt;</dd>
+<dt>Tested state</dt><dd>&lt;tested-state-id&gt;</dd>
+<dt>Expected / observed</dt><dd>&lt;expected-versus-observed-result&gt;</dd>
+</dl>
+<div class="evidence-refs" data-optional="evidence">
+<strong>Evidence:</strong>
+<ul data-template="check-evidence-refs">
+<li><a href="#evidence-&lt;evidence-id-lower&gt;">&lt;Ennn&gt;</a> — &lt;what-it-proves&gt;</li>
+</ul>
+</div>
+<dl class="field-list" data-optional="blocker">
+<dt>Missing prerequisite</dt><dd>&lt;missing-prerequisite&gt;</dd>
+<dt>Recovery</dt><dd>&lt;attempted-recovery-or-none-fit&gt;</dd>
+<dt>Unblock path</dt><dd>&lt;unblock-path&gt;</dd>
+</dl>
+<p class="gap" data-optional="proof-gap"><strong>Proof gap:</strong> &lt;missing-capture&gt; — &lt;error-or-limitation&gt;</p>
 </div>
 </section>
 
