@@ -110,7 +110,6 @@ pre {
 <dl class="meta">
 <dt>Branch / tested states</dt><dd>&lt;pr-branch&gt; @ &lt;tested-state-ledger&gt;</dd>
 <dt>Driver</dt><dd>&lt;test-driver&gt;</dd>
-<dt>Depth / budget</dt><dd>&lt;test-depth&gt; / &lt;scenario-budget&gt;</dd>
 <dt>Environment</dt><dd>&lt;sanitized-environment-or-entry-point&gt;</dd>
 <dt>Finished</dt><dd>&lt;finished-at-with-tz&gt;</dd>
 <dt>Verdict</dt><dd><span class="status" data-status="unresolved">&lt;verdict-or-unresolved&gt;</span></dd>
@@ -126,7 +125,7 @@ pre {
 <tr data-template="index-row">
 <td><a href="#scenario-&lt;scenario-id-lower&gt;">&lt;Snn&gt;</a></td>
 <td>&lt;scenario-title&gt;</td>
-<td><ul class="labels"><li>&lt;purpose|data-artifact|critical-edge&gt;</li></ul></td>
+<td><ul class="labels"><li>&lt;purpose|regression|data-artifact|critical-edge|reviewer-finding&gt;</li></ul></td>
 <td><span class="status" data-status="&lt;status-key&gt;">&lt;STATUS&gt;</span></td>
 <td>&lt;proof-summary&gt;</td>
 </tr>
@@ -145,8 +144,8 @@ pre {
 <dl class="field-list" data-optional="tested-state">
 <dt>Tested state</dt><dd>&lt;tested-state-id&gt;</dd>
 </dl>
-<dl class="field-list" data-optional="edge-risk">
-<dt>Critical edge risk</dt><dd>&lt;concrete-risk&gt;</dd>
+<dl class="field-list" data-optional="scenario-risk">
+<dt>Scenario risk</dt><dd>&lt;concrete-risk&gt;</dd>
 </dl>
 <div data-optional="actions">
 <h3>Actions</h3>
