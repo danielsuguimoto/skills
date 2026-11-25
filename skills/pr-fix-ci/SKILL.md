@@ -27,6 +27,8 @@ From `statusCheckRollup` (or `gh pr checks`), collect checks in `FAILURE`, `ERRO
 Per `<check>`: Actions run → `gh run view <run-id> --log-failed` (fallback `--log` if empty). Non-Actions → open `<url>` and read rendered output via `webfetch` if reachable, else record `<url>` for the user. Extract `<error-lines>` (first error/stack/assertion), `<failing-file>`, `<failing-test>`, `<failing-command>`.
 
 ### 6. Triage Failures
+Every `<check>` clearly matches `flaky`, `infra`, or `required-status` per the definitions below → classify and record each as below; summary + stop (suggest re-runs where applicable). Otherwise continue.
+
 Anchor `<pr-intent>` — why the PR exists: title, body, commit messages, and a ticket brief (see Ticket Brief) for all issue/card references in the body, commits, or branch name, scoped to intended behavior. For each scope-relevant target PR decision reference returned by the brief, reuse loaded feedback or retrieve only that decision and the context needed to establish its status via the git host (`git-hosts.md`); unavailable or ambiguous → note the gap. No usable brief → fall back to PR title/body plus any verified decision; note the gap.
 
 Classify each `<check>`:
