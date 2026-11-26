@@ -21,6 +21,8 @@ Invoke `memory-usage` for the **PR's project**, not the skill repository. Read i
 
 Read the body, acceptance criteria, and latest comment page of each directly linked item that can establish purpose, dependency, or release constraints; reuse current in-session evidence covering these fields. Read older comments or attachments when needed to resolve gaps or conflicting decisions. Include references from the PR body, branch name, commits, and review discussions; follow further links when they clarify requirements or dependencies. Search project docs/trackers for missing context when identifiers or the stated purpose suggest related work. Use the matching tracker spec. Reconcile conflicting requirements and separate intended behavior from incidental refactors. Store `<purpose>`, acceptance criteria, dependencies, and source links. Unavailable sources → name the gaps; continue the assessment where evidence suffices, but do not invent requirements.
 
+**Keep-whole fast path:** From the purpose and diff, assess whether the changes form one coupled outcome with no plausible useful boundary for a stack or independent split. If the evidence supports that conclusion and no material purpose or dependency gap remains, recommend **keep one PR** and go to Step 4; report unexamined conversion constraints as such. Size alone is not evidence. An uncertain boundary, possible useful split, or material gap → continue the full assessment.
+
 Inspect project instructions and conventions, repository/module structure, ownership, tests, build configuration, CI workflows, and release/deployment configuration for the affected paths at the recorded PR head/base, not an unrelated checkout. Establish:
 
 - The intended trunk, branch/PR naming and templates, merge method, protection rules, required reviews/checks, and merge queue.
@@ -49,7 +51,7 @@ Report in chat:
 - PR link and assessed head/base SHAs; purpose and linked source evidence.
 - Recommendation, expected benefit, costs, project-specific constraints, and unresolved gaps; cite repository evidence as `path:line`.
 - For a candidate stack, a bottom-to-top table: layer/title, proposed branch and base, concern/files or hunk boundaries, dependencies, checks, and merge/deployment safety. Explain why each boundary helps reviewers.
-- Conversion plan: native stack or ordinary chain, which layer retains the original PR and discussion, new PRs, metadata/base changes, and any proposed history rewrites or closures. Warn that retargeting or rewriting may invalidate reviews or approvals. Identify affected shared branches and a recovery plan.
+- For a candidate stack, a conversion plan: native stack or ordinary chain, which layer retains the original PR and discussion, new PRs, metadata/base changes, and any proposed history rewrites or closures. Warn that retargeting or rewriting may invalidate reviews or approvals. Identify affected shared branches and a recovery plan.
 
 For **keep one PR** or **split independently**, explain why stacking loses and leave the PR unchanged. For **insufficient evidence**, ask for the specific missing information. Do not convert an independent split under stack approval.
 

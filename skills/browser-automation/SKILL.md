@@ -23,8 +23,8 @@ Use the configured snapshot or accessibility tree as the primary page read. Use 
 
 ## Navigation and Actions
 
-- Batch an action and its verification when supported; split dependent actions.
-- Confirm each action from fresh page state. Unexpected state → check for a missed or stale target before inferring site requirements.
+- Batch predictable actions and verify their combined outcome at a meaningful checkpoint. Confirm consequential actions before proceeding; split actions that depend on an unverified result.
+- Use fresh references when state changes invalidate them. Unexpected state → check for a missed or stale target before inferring site requirements.
 - Follow the configured tool's wait, scrolling, tab creation, and cleanup semantics.
 
 ## Forms, Autofill, and Login
