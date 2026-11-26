@@ -57,7 +57,8 @@ Can't fill all five → do the work inline.
 ## Do NOT spawn for
 
 - Anything answerable from context already in this session — unless it clears the model-tier gate.
-- A single file edit, symbol lookup, or known path + line range unless it clears an offload gate.
+- A single symbol lookup or known path + line range.
+- A single file edit unless it clears an offload gate.
 - A bounded next step already answered by the parent's inputs — unless it clears the model-tier gate.
 - Avoiding a thinking step.
 

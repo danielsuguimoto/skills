@@ -50,7 +50,7 @@ Ambiguous → ask the user before posting. Both apply → debug (root cause answ
 
 Gather only evidence needed to answer the question or establish the cause, impact, and reproduction conditions. Start at the reported path; expand to another source only when it can resolve a material unknown. Reuse ticket and session evidence; stop when the finding is supported.
 
-**Cold code scan:** when answering requires multiple searches or reads and a cited brief suffices, prefer a read-only subagent to keep raw traversal out of the parent context. Scope it to the question or failure path, known ticket facts and relevant paths; request a concise brief with `file:line` evidence, counterevidence, and gaps. Skip when current context already answers the question. The parent evaluates the brief, checks decisive evidence when needed, and owns the finding; unavailable or insufficient scan → inspect the missing evidence inline.
+**Cold code scan:** when answering requires multiple searches or reads likely to add distracting intermediate context, and a cited brief suffices, prefer a read-only subagent. Scope it to the question or failure path, known ticket facts and relevant paths; request a concise brief with `file:line` evidence, counterevidence, and gaps. Skip when current context already answers the question. The parent evaluates the brief, checks decisive evidence when needed, and owns the finding; unavailable or insufficient scan → inspect the missing evidence inline.
 
 **ask:** inspect the relevant entry point and callers via code navigation (`code-navigation.md`); use doc lookup for unresolved API/version questions.
 
