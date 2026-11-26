@@ -125,7 +125,7 @@ pre {
 <tr data-template="index-row">
 <td><a href="#scenario-&lt;scenario-id-lower&gt;">&lt;Snn&gt;</a></td>
 <td>&lt;scenario-title&gt;</td>
-<td><ul class="labels"><li>&lt;purpose|regression|data-artifact|critical-edge|reviewer-finding&gt;</li></ul></td>
+<td><ul class="labels"><li>&lt;purpose|regression|data-artifact|edge|reviewer-finding&gt;</li></ul></td>
 <td><span class="status" data-status="&lt;status-key&gt;">&lt;STATUS&gt;</span></td>
 <td>&lt;proof-summary&gt;</td>
 </tr>
@@ -161,7 +161,7 @@ pre {
 </dl>
 <dl class="field-list" data-optional="blocker">
 <dt>Missing prerequisite</dt><dd>&lt;missing-prerequisite&gt;</dd>
-<dt>Recovery</dt><dd>&lt;attempted-recovery-or-none-fit&gt;</dd>
+<dt>Attempts / alternatives</dt><dd>&lt;attempted-paths-and-known-untried-alternatives&gt;</dd>
 <dt>Unblock path</dt><dd>&lt;unblock-path&gt;</dd>
 </dl>
 <dl class="field-list" data-optional="deferred">
@@ -171,8 +171,8 @@ pre {
 </div>
 <div class="pairs">
 <div>
-<div class="assertion" id="assertion-&lt;assertion-id-lower&gt;" data-template="assertion">
-<h3>&lt;Snn.Ann&gt; <span class="status" data-status="&lt;status-key&gt;">&lt;finding&gt;</span></h3>
+<div class="assertion" data-template="assertion">
+<h3>&lt;assertion-description&gt; <span class="status" data-status="&lt;status-key&gt;">&lt;finding&gt;</span></h3>
 <dl class="field-list">
 <dt>Expected</dt><dd>&lt;expected-behavior&gt;</dd>
 <dt>Observed</dt><dd>&lt;observed-behavior-or-unverified&gt;</dd>
@@ -181,27 +181,27 @@ pre {
 <div class="evidence-refs">
 <strong>Evidence:</strong>
 <ul data-template="evidence-refs">
-<li><a href="#evidence-&lt;evidence-id-lower&gt;">&lt;Ennn&gt;</a> — &lt;what-it-proves&gt;</li>
+<li>&lt;what-it-proves&gt; <a href="&lt;relative-artifact-path&gt;" data-optional="artifact-link">Open evidence</a></li>
 </ul>
 </div>
 <p class="gap" data-optional="proof-gap"><strong>Proof gap:</strong> &lt;missing-capture&gt; — &lt;error-or-limitation&gt;</p>
 </div>
 </div>
 <div>
-<figure id="evidence-&lt;evidence-id-lower&gt;" data-template="evidence">
+<figure data-template="evidence">
 <img src="&lt;relative-artifact-path&gt;" alt="&lt;useful-alt-text&gt;">
 <figcaption>
-<strong>&lt;Ennn&gt;</strong> (&lt;type&gt;) — &lt;observed-fact-and-proof-limit&gt;.
+&lt;type&gt; — &lt;observed-fact-and-proof-limit&gt;.
 Action by &lt;driver&gt;; observation supplied/verified by &lt;supplier-verifier&gt;.
-Tested state &lt;tested-state-id&gt;. Supports &lt;assertion-or-check-links&gt;.
+Tested state &lt;tested-state-id&gt;. Supports &lt;assertion-or-check-description&gt;.
 <a href="&lt;relative-artifact-path&gt;" data-optional="artifact-link">Open original</a>
 </figcaption>
 </figure>
-<div class="evidence" id="evidence-&lt;evidence-id-lower&gt;" data-template="evidence-text">
-<p><strong>&lt;Ennn&gt;</strong> (&lt;type&gt;) — &lt;observed-fact-and-proof-limit&gt;.</p>
+<div class="evidence" data-template="evidence-text">
+<p>&lt;type&gt; — &lt;observed-fact-and-proof-limit&gt;.</p>
 <p data-optional="inline-observation">&lt;inline-observation-or-excerpt&gt;</p>
 <details data-optional="output-excerpt"><summary>Captured output</summary><pre>&lt;output-excerpt&gt;</pre></details>
-<p>Action by &lt;driver&gt;; observation supplied/verified by &lt;supplier-verifier&gt;. Tested state &lt;tested-state-id&gt;. Supports &lt;assertion-or-check-links&gt;. <a href="&lt;relative-artifact-path&gt;" data-optional="artifact-link">Open artifact</a></p>
+<p>Action by &lt;driver&gt;; observation supplied/verified by &lt;supplier-verifier&gt;. Tested state &lt;tested-state-id&gt;. Supports &lt;assertion-or-check-description&gt;. <a href="&lt;relative-artifact-path&gt;" data-optional="artifact-link">Open artifact</a></p>
 </div>
 </div>
 </div>
@@ -212,7 +212,7 @@ Tested state &lt;tested-state-id&gt;. Supports &lt;assertion-or-check-links&gt;.
 <div class="check" id="check-&lt;check-id-lower&gt;" data-template="check">
 <h3>&lt;Cnn&gt; <span class="status" data-status="&lt;status-key&gt;">&lt;STATUS&gt;</span></h3>
 <dl class="field-list">
-<dt>Supports</dt><dd>&lt;assertion-id-or-risk&gt;</dd>
+<dt>Supports</dt><dd>&lt;assertion-or-risk&gt;</dd>
 <dt>Entry point</dt><dd>&lt;command-or-entry-point&gt;</dd>
 <dt>Prerequisites</dt><dd>&lt;prerequisites&gt;</dd>
 <dt>Tested state</dt><dd>&lt;tested-state-id&gt;</dd>
@@ -221,12 +221,12 @@ Tested state &lt;tested-state-id&gt;. Supports &lt;assertion-or-check-links&gt;.
 <div class="evidence-refs" data-optional="evidence">
 <strong>Evidence:</strong>
 <ul data-template="check-evidence-refs">
-<li><a href="#evidence-&lt;evidence-id-lower&gt;">&lt;Ennn&gt;</a> — &lt;what-it-proves&gt;</li>
+<li>&lt;what-it-proves&gt; <a href="&lt;relative-artifact-path&gt;" data-optional="artifact-link">Open evidence</a></li>
 </ul>
 </div>
 <dl class="field-list" data-optional="blocker">
 <dt>Missing prerequisite</dt><dd>&lt;missing-prerequisite&gt;</dd>
-<dt>Recovery</dt><dd>&lt;attempted-recovery-or-none-fit&gt;</dd>
+<dt>Attempts / alternatives</dt><dd>&lt;attempted-paths-and-known-untried-alternatives&gt;</dd>
 <dt>Unblock path</dt><dd>&lt;unblock-path&gt;</dd>
 </dl>
 <p class="gap" data-optional="proof-gap"><strong>Proof gap:</strong> &lt;missing-capture&gt; — &lt;error-or-limitation&gt;</p>
