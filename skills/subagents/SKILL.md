@@ -9,9 +9,9 @@ Default to execution in the current session. Delegate a workflow or its steps on
 
 ## Sequential Gate
 
-Keep sequential work in the parent. If B needs A's result, run A then B inline. This gate applies to one blocking handoff as well as a chain of subagents; waiting for a child is not parallel work. Fanning out independent units inside one step is not a sequential handoff — it reaches the Dispatch Rationales directly.
+Keep sequential work in the parent unless a rationale below permits delegation. If B needs A's result, finish A before starting B; waiting for a child is not parallel work. Fanning out independent units inside one step is not a sequential handoff.
 
-Three things cross this gate: an explicit user request to delegate that work, a model-tier offload whose conditions all hold, or a read-only external handoff for a documented capability the parent lacks. Context offloading, role specialization, and foreground execution do not. Apply this gate before the other dispatch rationales; evaluating a model-tier candidate includes its profile lookup.
+An explicit delegation request, qualifying context or model-tier offload, or read-only external handoff for a documented capability the parent lacks may cross this gate. Role specialization and foreground execution alone do not. Evaluating a model-tier candidate includes its profile lookup.
 
 ## Dispatch Rationales
 
@@ -20,22 +20,20 @@ After the sequential gate passes, spawn **only** when at least one holds — the
 | Rationale | When to delegate |
 |-----------|------------------|
 | Parallel time win | **≥3 independent workstreams**, no shared writes. Below 3, coordination overhead eats the gain. |
-| Context offloading | Exceptional read-only research that passes the context-offloading gate below. |
+| Context offloading | A bounded task that passes the context-offloading gate below, including a sequential handoff. |
 | Model-tier offload | Bounded, low-reasoning work that passes the model-tier gate below — may override a sequential dependency. |
 | External capability | Read-only external agent handoff for a documented capability the parent lacks — conditions in External Agent Handoff below. |
 | Explicit user request | User asks to spawn/delegate/parallelize that work. A request to complete a task or use a skill is not delegation permission. |
 
 ### Context-Offloading Gate
 
-Start inline with path listings, targeted searches, and bounded reads. A folder with 10 files is ordinary inline work; file count, repository size, unfamiliarity, and multiple modules do not justify delegation.
+Delegate a bounded task when its raw execution is likely to add distracting intermediate context to the parent, and a concise, evidenced result would suffice for the next decision. This can be a cold scan: use the request and known context to scope it without first reading the same material in the parent. File count, repository size, unfamiliarity, and multiple modules alone do not justify delegation.
 
-Offload only when those probes establish **all** of the following:
+- The task needs evidence or execution beyond what the session already provides and more than a single targeted lookup or trivial edit.
+- The objective, relevant scope, and expected evidence fit a self-contained prompt.
+- The parent can use a concise result with supporting citations or checks, relevant counterevidence, and unresolved gaps instead of the raw output.
 
-- The question requires inspecting **more than 10,000 tokens** of still-unread, task-relevant material. Name the sources and give a size estimate grounded in observed output; count relevant sections, not whole folders or unrelated file contents.
-- Narrower searches or reads cannot answer the question. State why.
-- The parent needs only a cited brief and will not reread the raw material.
-
-Unknown size or uncertain necessity → stay inline. The size floor is necessary, not permission by itself; the sequential gate still applies.
+Constrain any writes to the user's authorized scope; preserve required approvals for destructive or external effects. The parent owns the decision, reviews changes, and verifies decisive evidence with focused reads or checks when needed. If the result is insufficient or delegation is unavailable, finish the missing work inline. Do not expand the task to justify offloading.
 
 ### Model-Tier Gate
 
@@ -59,8 +57,8 @@ Can't fill all five → do the work inline.
 ## Do NOT spawn for
 
 - Anything answerable from context already in this session — unless it clears the model-tier gate.
-- A single file edit, symbol lookup, or known path + line range.
-- A bounded next step where the parent holds all inputs — unless it clears the model-tier gate.
+- A single file edit, symbol lookup, or known path + line range unless it clears an offload gate.
+- A bounded next step already answered by the parent's inputs — unless it clears the model-tier gate.
 - Avoiding a thinking step.
 
 ## Foreground Preference
@@ -86,7 +84,7 @@ Tier comes from the profile, not a model parameter — pick the profile configur
 
 ## Parallel Execution
 
-Keep work inline when streams share file writes, sync cost exceeds time saved, or the work is a bounded single stream. Apply the sequential gate to dependencies.
+For parallelism, keep work inline when streams share file writes or sync cost exceeds time saved. A single stream may still qualify for context offloading. Apply the sequential gate to dependencies.
 
 Shared infrastructure is not the barrier: one database, server, or browser process qualifies when streams use disjoint actors and records, write only records and files assigned to their actor or tenant, and avoid writes to shared mutable state — tabs in one browser context share cookies and storage, so each parallel actor needs a separate context (or profile where the tool has no context support). Doubtful independence stays inline. Before retry, the parent removes or quarantines any partial state a failed stream wrote so siblings are not contaminated.
 
@@ -108,7 +106,7 @@ For parallel fan-out, extend an active ledger; absent one, create it in a native
 
 ## Code Exploration
 
-Read-only reconnaissance; the subagent returns a distilled brief — the parent never reads raw traversal. Specify depth and return shape (brief, file:line citations, diagram, named symbol set). Pick profile by intent: orientation vs. targeted question vs. architectural friction.
+Read-only reconnaissance; the subagent returns a distilled brief, not raw traversal. Specify depth and return shape (brief, file:line citations, relevant counterevidence, gaps). Pick profile by intent: orientation vs. targeted question vs. architectural friction. The parent checks decisive evidence as needed and owns conclusions.
 
 `BLOCKED`/`NO_*`/`UNAVAILABLE` → do the work inline; don't retry.
 
