@@ -9,11 +9,11 @@ Shell-read before turning the request into a spec (reuse session reads): `<proje
 
 Treat ticket systems generically.
 
-**Effort scales with the task.** A localized fix gets a short spec and only the context and items it needs.
+**Effort scales with the task.** Gather only evidence needed to define the requested outcome and a viable approach. A localized fix usually needs one implementation item and one validation item; add more only when distinct outcomes or checks warrant them.
 
 **Surgical scope.** Each item traces to the request, ticket, or a locked user decision. Unrelated findings belong in Notes, not implementation items.
 
-**Smallest diff wins.** Prefer existing surfaces; add new ones only when the request or a locked decision requires them.
+**Simplest solution wins.** Prefer existing surfaces and the least complex change that satisfies the request and explicit constraints.
 
 **Spec boundary — implementation and automated tests only.** Every spec item is a code change or an executable automated check. Manual/exploratory validation, QA walkthroughs, and environment/ops checks belong to review and deploy, outside the spec — never an item, never an interview question.
 
@@ -21,10 +21,10 @@ Treat ticket systems generically.
 
 <spec-template>
 
-## Destination — the spec, decision, or change this effort delivers. One or two lines.
-## Problem Statement — the user-facing problem or opportunity driving the spec.
-## Solution — the intended outcome from the user's perspective. Each locked decision from grilling or repo inspection on one line with its source.
-## Notes — other context, dependencies, or decisions worth keeping. The description renders only the sections above — Implementation and Validation Items sync as checklists and a patches comment (step 10).
+## Destination — the outcome this effort delivers.
+## Problem Statement — the user-facing problem or opportunity.
+## Solution — the simplest viable approach and explicit constraints; distinguish required decisions from suggested mechanics.
+## Notes — include only material context or dependencies. Implementation and Validation items sync as checklists (step 10).
 
 </spec-template>
 
@@ -36,53 +36,42 @@ Treat ticket systems generically.
 
 4. **Gather Context** (standards, repo, docs, skills) — runs before any user question, so the interview never asks what the codebase already answers:
 - **Sync**: fetch per `git-hosts.md`; the checked-out branch behind → fast-forward a clean tree, dirty/diverged → flag staleness — spec items embed `file`/`location` targets that drift on stale code.
-- **Project standards**: relevant `<project-root>/docs/` specs (root and module-specific); active memory provider for standards, architecture, tech stack → `<project-standards>`.
-- **Repo**: entry points, patterns, callers, schema facts, `file:line` citations, validation of `<proposed-technical-direction>`, and a **surface inventory** per layer the change touches (DB, model, policy, service, controller, API, UI, tests, config, docs, ops) — patch, new file, or no change, with concrete files/symbols and the governing in-repo exemplar each patch mirrors → `<repo-context>`. `grep`/`find_file_by_name` for names, code navigation for symbols/references, database tools for schema. Read one or two key files; confirm current behavior; note gaps as observations (not spec items); avoid false certainty. Scale the scan to the change — a localized bug maps the failing path and immediate callers, not a full-layer inventory.
-- **Docs**: API signatures, version-specific behavior, gotchas for libraries/frameworks/Laravel, `<proposed-technical-direction>` → `<doc-context>` (per `<project-root>/docs/doc-lookup.md`).
+- **Project standards**: relevant `<project-root>/docs/` specs and active memory only when needed to decide the change → `<project-standards>`.
+- **Repo**: inspect the affected path, relevant callers and existing patterns; confirm current behavior and validate `<proposed-technical-direction>` → `<repo-context>`. Record concrete targets and `file:line` evidence where useful. Use database tools when schema or live data matters. Expand only to surfaces needed by the request; stop when the outcome and viable approach are grounded.
+- **Docs**: resolve material library/API uncertainty per `<project-root>/docs/doc-lookup.md` → `<doc-context>`.
 - **Skills**: planning touches specific domains (testing, frontend, Livewire) → invoke the relevant skills → `<skill-context>`.
 
-5. **Clarify Requirements with User (MANDATORY)**: Run a clarification interview before shaping by default — the only iteration before shaping; loop until shared understanding. Ask the next question; never restate previous answers. Skipping is the exception; justify it in the spec output.
+5. **Clarify Requirements with User**: Ask only when a material product, scope, or design decision remains unresolved after step 4. Otherwise proceed directly; no skip justification in the spec. Ask the next question; never restate previous answers.
 
-**Grilling scope — code-answerable questions are out of bounds; step 4 already answered them.** Resolve every candidate question against `<repo-context>`, `<project-standards>`, `<doc-context>`, and the ticket before asking — a question the gathered context answers is a process violation, not a question. Ask only what the codebase cannot settle: scope boundaries and out-of-scope, business rules and product behavior choices, trade-offs between valid approaches, naming/placement with no guiding pattern, conflicts between the request and existing invariants. Each question reaching the user names what was checked, explains every option in one line — what it implies or trades off, enough context to decide without opening the code — and flags the recommended option (`(recommended)` on its label), grounded in `<repo-context>`. Validation approach is not a scope question — the spec boundary already fixes it (automated checks per project conventions).
+**Grilling scope — code-answerable questions are out of bounds; step 4 already answered them.** Resolve candidate questions against the gathered context first. Ask only about material scope, behavior, trade-offs, or conflicts the codebase and request cannot settle. Each question names what was checked, explains each option in one line, and flags the recommendation (`(recommended)` on its label), grounded in `<repo-context>`. Validation approach is not a scope question — the spec boundary already fixes it (automated checks per project conventions).
 
-Skip gate (ALL true): single atomic edit or small localized fix, no design decisions · `<proposed-technical-direction>` concrete and unambiguous · no conflicting earlier comments · no open questions about scope, naming, placement, ordering, behavior · repo inspected, direction matches existing patterns · the request defines scope and expected behavior unambiguously (defect reports with expected-vs-actual qualify) or the user explicitly confirmed in this conversation. Skip reason (when used): `Skip reason: <all 6 conditions met because ...>` — skipping without justification is a process violation. Any gate false/uncertain → run the interview; if a grilling/interview skill exists, load it and follow its discipline, passing planning context, `<planning-objective>`, `<operative-constraints>`, `<proposed-technical-direction>`, `<open-questions>`, relevant module paths. Store resolved decisions as `<clarified-requirements>`; reflect them in `<spec-description>`, `<requirement-items>`, `<validation-items>`. Do not proceed to step 6 until all user inputs are captured.
+When a decision needs the user, use the grilling/interview skill if available, passing the relevant planning and repo context. Store resolved decisions as `<clarified-requirements>`; reflect them in the spec. Do not proceed until material decisions are resolved.
 
-6. **Brainstorm Technical Approaches**: complex tasks only (multiple subsystems, multiple valid approaches, no concrete `<proposed-technical-direction>`, or user-flagged). Ask remaining clarifying questions one at a time — same grilling rule as step 5; propose 2-3 approaches grounded in `<repo-context>` as sequential thinking branches — each names the in-repo exemplar it mirrors, or explicitly flags the departure — with trade-offs; lead with a recommendation — the smallest change delivering the request; ask the user to choose → `<technical-approach-decision>`; explicit alignment before shaping. A defect whose fix follows existing patterns is non-complex by default — skip when direction is concrete/unambiguous; user confirmation required only when direction is absent or ambiguous.
+6. **Choose Technical Approach**: prefer the simplest viable approach grounded in `<repo-context>`. Compare alternatives only when a material trade-off affects the outcome or an explicit constraint. Ask the user to choose only when that trade-off requires their decision → `<technical-approach-decision>`.
 
-7. **Build Action Inventory**: list the smallest set of concrete code changes needed to deliver the destination — request-bounded only — from `<repo-context>`'s surface inventory. Small localized changes → enumerate only affected surfaces, collapse the rest to one `no change` line. Per step-4 surface: `no change` or a concrete action (`create`/`modify`/`delete`). Record `surface`, `action`, `target`, `depends-on`, `patch-ready` (`true` when the exact change can be written from `<repo-context>`). Every required action becomes a requirement item in step 8.
+7. **Build Action Inventory**: identify the fewest request-bounded changes needed to deliver the destination, using affected targets from `<repo-context>`. Group closely related edits by deliverable; omit unchanged surfaces and speculative hardening.
 
-8. **Shape the Spec** (internal — never present to the user): turn `<planning-objective>`, `<operative-constraints>`, `<proposed-technical-direction>`, `<clarified-requirements>`, `<technical-approach-decision>`, repo findings, `<project-standards>`, `<doc-context>`, `<skill-context>` into the spec below. All spec output is consumed by an implementation agent — write per `writing-for-agents`: bullets over paragraphs, one fact or decision per line, `file:line` citations, no motivational prose.
+8. **Shape the Spec**: turn `<planning-objective>`, `<operative-constraints>`, `<proposed-technical-direction>`, `<clarified-requirements>`, `<technical-approach-decision>`, repo findings, `<project-standards>`, `<doc-context>`, `<skill-context>` into the spec below. Write per `writing-for-agents`: bullets over paragraphs, one fact or decision per line, `file:line` citations where useful, no motivational prose.
 - `<spec-title>`: short, useful title.
-- `<spec-description>`: rendered spec template (Destination, Problem Statement, Solution, Notes only — no implementation/validation items). One line per fact: destination and why it fixes scope · Problem Statement restates `<source-request>` as the requester framed it · chosen approach and why · key user preferences and constraints · accepted trade-offs. Notes ends with the fixed implementer-scope line: `Implementer scope: apply the Implementation items as written — the change ends where they end; validation is automated, no manual verification is assigned here.`
-- `<requirement-items>`: precise patch descriptions, one per spec step — map each step-7 action and each `<clarified-requirements>` preference to ≥1 item.
-- `<validation-items>`: automated checks only, aligned with project testing conventions (`<project-standards>`, `<doc-context>`, `<skill-context>`) — each an executable command or test assertion naming the requirement item it proves, kept only when it fails if that item is wrong. Manual verification, exploratory QA, and environment/ops checks are excluded — verification outside automation belongs to review. No placeholder labels.
+- `<spec-description>`: concise template; restate `<source-request>` in the requester's terms and name the intended outcome, approach, and material constraints. Omit empty Notes. Suggested mechanics guide implementation; explicit requirements and user decisions bind it.
+- `<requirement-items>`: short, outcome-oriented items for the smallest set of deliverables. Use stable IDs (`S1`, `S2`, ...); group related edits that serve one outcome instead of one item per patch or surface. Name verified files/symbols when useful, not guessed locations. Include a minimal patch only when it clarifies a non-obvious decision.
+- `<validation-items>`: the fewest meaningful automated checks or assertions that demonstrate the requested behavior, aligned with project conventions. Reuse existing checks where suitable; do not prescribe new tests for trivial changes by default. If none is suitable, flag the validation gap for review rather than inventing a check. Manual verification, exploratory QA, and environment/ops checks belong to review or deploy.
 
-**Requirement Item Format**: each `<requirement-item>` is a self-contained block an implementation agent applies as a patch — no outcome-only descriptions. Fields: `id` (stable spec-step-id like `S1` or short slug) · `file` (repo-root-relative path(s); locator rule if multiple candidates) · `symbol` (function/class/method/component, fully-qualified when ambiguous) · `location` (exact insertion/modification point) · `instruction` (one short imperative: `add`/`remove`/`modify`/`replace`) · `patch` (minimal snippet or unified diff; required when target known; keep to the delta).
+Trace each item to the request or an explicit decision; cut unneeded items. Flag an unconfirmed target or material uncertainty for review. Code changes only — runtime operations belong to deploy. The spec lists only what is included.
 
-```
-### S1: <title>
-- file: app/Path/To/File.php
-- symbol: ClassName::methodName
-- location: inside methodName(), before `return $model;`
-- instruction: Throw `ValidationException` when `$model->isLocked()`.
-- patch: <minimal snippet or unified diff>
-```
+9. **User Review** (the only spec presentation): present the full, concise spec exactly once — `<spec-title>`, `<spec-description>`, `<requirement-items>`, `<validation-items>` — and flag any material uncertainty. Check coverage and traceability internally; remove unneeded items before presenting. Ask via the interactive question tool — header `Spec Ready`, options `Sync to Ticket` / `Revise Spec`:
+> Spec ready: `<spec-title>`. Sync the spec, any patches, and any required source-ticket link, or revise the spec?
 
-Rules: one item = one single-purpose patch — split compound changes; broader changes → sub-items (`S1a`, `S1b`). Traceability check: an item naming no request line or locked decision is cut, not kept "for safety". Verify paths/symbols against `<repo-context>`; no guesses — unconfirmable target or a patch shape with no in-repo precedent → flag it in the item for step-9 review. No exploratory steps ("investigate X", "consider Y", "ensure X"). No alternative designs after the user agrees on direction. Code changes only — runtime operations (migrations, seeders, cache clears, queue restarts, user/ops actions) belong to deploy, not the spec. The spec lists only what is included: exclusions decided during grilling appear nowhere — no "out of scope" lines.
-
-9. **User Review** (the only spec presentation): present the full shaped spec exactly once — `<spec-title>`, `<spec-description>`, `<requirement-items>`, `<validation-items>`; no brief version first. In the same gate, reflect the user's inputs: list 3-5 key decisions/constraints and where they appear (cite items); confirm coverage of all concrete actions; trace-check every item against `<source-request>` and locked decisions — name any untraced item for removal — and confirm the spec solves the requester's original problem, not a drifted internal framing; then ask via the interactive question tool — header `Spec Ready`, options `Sync to Ticket` / `Revise Spec`:
-> Spec ready: `<spec-title>`. Implementation: N items. Validation: N items. Sync the spec, patches, and any required source-ticket link, or revise the spec?
-
-Only two outcomes: sync or revise — never offer to apply/implement/execute; user asks to implement → decline, point to the implementation workflow. `Revise Spec` → grill the revision points (step 5), reshape, re-enter this gate; `Sync to Ticket` → step 10. Sync only on that answer. That answer authorizes this spec's Step 10 batch: create or update the resolved spec ticket, add its patches comment or attachment, and link it from the source ticket when applicable. Do not ask again for those writes. A material change to the spec or destination beyond the disclosed sync scope requires renewed approval. Honor tool-enforced permissions.
+Only two outcomes: sync or revise — never offer to apply/implement/execute; user asks to implement → decline, point to the implementation workflow. `Revise Spec` → resolve the revision points (step 5), reshape, re-enter this gate; `Sync to Ticket` → step 10. Sync only on that answer. That answer authorizes this spec's Step 10 batch: create or update the resolved spec ticket, add or supersede any patches comment or attachment, and link it from the source ticket when applicable. Do not ask again for those writes. A material change to the spec or destination beyond the disclosed sync scope requires renewed approval. Honor tool-enforced permissions.
 
 10. **Sync Ticket**: sync via the issue tracker sync tool (`issue-trackers.md`); the synced spec joins the in-session ticket context for downstream reuse. Final output: the ticket URL.
-- `title`: `<spec-title>`; `description`: `<spec-description>` (Destination/Problem/Solution/Notes only — no items, no patch code).
-- `checklists`: two non-empty sections as JSON array matching `{name, items: [{name, completed}]}`:
+- `title`: `<spec-title>`; `description`: `<spec-description>` (Destination/Problem/Solution and optional Notes — no items, no patch code).
+- `checklists`: JSON array matching `{name, items: [{name, completed}]}`; omit Validation when no suitable automated check exists:
   - `{"name": "Implementation", "items": [{"name": "<requirement-item-encoded>", "completed": false}, ...]}`
   - `{"name": "Validation", "items": [{"name": "<validation-item>", "completed": false}, ...]}`
-  - `<requirement-item-encoded>`: `S1: <title> - <file> @ <symbol>::<location> - <instruction>` (no `patch` code — checklists are short tracking items).
+  - `<requirement-item-encoded>`: `S1: <outcome> - <verified targets when useful>` (no `patch` code — checklists are short tracking items).
   - Verify the `checklists` schema against the sync tool's source before calling.
-- `patches comment`: post the full `<requirement-items>` blocks (with `patch` code) as a ticket comment — keeps implementer code out of the card body, which overflows systems with body limits. Skip only when the tracker lacks comments → attach the blocks as a file.
+- `patches comment`: only when a patch clarifies a non-obvious decision, post it with its item ID as a ticket comment; if comments are unavailable, attach it as a file. When updating a ticket with older patches, identify them as superseded in the new comment or attachment, including when the revision has no patches.
 - `refUrl` — resolve deterministically, never by asking; load the resolved ticket's state first; replace/delete an existing ticket only when the user asks:
   - `<spec-ticket-url>` set and open → update it.
   - `<ticket-url>` points at a ticket on the spec tracker itself and open → update it.

@@ -5,7 +5,7 @@ description: "Investigate, diagnose, or answer a ticket without changing code; r
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before investigating the ticket (reuse session reads): `<project-root>/docs/code-navigation.md`, `<project-root>/docs/issue-trackers.md`; debug branch only — `<project-root>/docs/bug-trackers.md`, `<project-root>/docs/database-tools.md`, `<project-root>/docs/doc-lookup.md`, `<project-root>/docs/observability-tools.md`. If a spec is missing, report the gap and use a documented fallback.
+Shell-read before investigating the ticket (reuse session reads): `<project-root>/docs/code-navigation.md`, `<project-root>/docs/issue-trackers.md`; when needed for the evidence — `<project-root>/docs/bug-trackers.md`, `<project-root>/docs/database-tools.md`, `<project-root>/docs/doc-lookup.md`, `<project-root>/docs/observability-tools.md`. If a spec is missing, report the gap and use a documented fallback.
 
 Load ticket context, determine mode (ask or debug), gather evidence, sync the result back. READ-ONLY — no code changes, no commits.
 
@@ -48,9 +48,13 @@ Ambiguous → ask the user before posting. Both apply → debug (root cause answ
 
 **Sync first:** fetch per `git-hosts.md`; the checked-out branch behind → fast-forward a clean tree, dirty/diverged → flag staleness in findings — `file:line` citations on stale code drift.
 
-**ask:** entry points, callers, conventions via `grep`/`find_file_by_name`/code navigation (`code-navigation.md`) → `<repo-context>`; doc lookup for API/version questions (`doc-lookup.md`) → `<doc-context>`.
+Gather only evidence needed to answer the question or establish the cause, impact, and reproduction conditions. Start at the reported path; expand to another source only when it can resolve a material unknown. Reuse ticket and session evidence; stop when the finding is supported.
 
-**debug:** run context-gathering — code navigation for symbols, database tools for data (live DB is ground truth), doc lookup for framework docs. Beyond code and data: error monitoring for matching reports/stack traces (`bug-trackers.md`); monitoring/incident platforms (`observability-tools.md`) for alerts overlapping the timeframe, scope, and symptoms — a correlated incident may be the cause, not just a clue. Scan `<project-root>/docs/` for other configured tools the issue touches. Trace user action → failure; find where actual diverges from expected → `<investigation-findings>`. Independent evidence streams — code, database, error monitoring, observability, docs — may be gathered in parallel: read-only, three or more streams or the user's explicit request, and a suitable subagent profile exists; doubtful independence stays inline. Each returns cited findings for the parent to synthesize — a stream whose results scope another stream runs first. Work the investigation as sequential thinking — branch candidate causes, revise as evidence lands.
+**Cold code scan:** when answering requires multiple searches or reads likely to add distracting intermediate context, and a cited brief suffices, prefer a read-only subagent. Scope it to the question or failure path, known ticket facts and relevant paths; request a concise brief with `file:line` evidence, counterevidence, and gaps. Skip when current context already answers the question. The parent evaluates the brief, checks decisive evidence when needed, and owns the finding; unavailable or insufficient scan → inspect the missing evidence inline.
+
+**ask:** inspect the relevant entry point and callers via code navigation (`code-navigation.md`); use doc lookup for unresolved API/version questions.
+
+**debug:** trace user action → failure and find where actual diverges from expected → `<investigation-findings>`. Use live data when data or schema matters, error monitoring when reports or traces are needed, and observability when an incident is a plausible cause. Use doc lookup for unresolved framework behavior. Independent evidence streams may be gathered in parallel: read-only, three or more needed streams or the user's explicit request, and a suitable subagent profile exists; doubtful independence stays inline. Each returns cited findings for the parent to synthesize — a stream whose results scope another stream runs first. Work the investigation as sequential thinking — branch candidate causes, revise as evidence lands.
 
 ### Production Data for Local Reproduction
 
@@ -66,7 +70,7 @@ Explicitly invoking `triage` authorizes the reversible local fixture imports and
 Two output shapes — nothing else:
 
 - **ask** → the answer. Direct, one or two sentences; a `file:line` citation only when it proves the answer.
-- **debug** → `**Root cause:**` what diverges and why, with `file:line` proof. Then `**Fixes:**` possible fixes, ranked. No implementing.
+- **debug** → `**Root cause:**` what diverges and why, with `file:line` proof. Then `**Fixes:**` the simplest viable fix; include alternatives only when a material trade-off needs a decision. No implementing.
 
 Finish when evidence proves the cause and reproduction conditions and impact are known. Name an unconfirmed detail only when it changes the next action.
 

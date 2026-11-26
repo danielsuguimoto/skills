@@ -14,8 +14,8 @@ Use git host operations (`<project-root>/docs/git-hosts.md`) for branch check an
 2. **Load Planning Context**: When `<ticket-url>` exists:
 1. Reuse complete, current in-session copies — the primary ticket plus its source ticket and other implementation-relevant linked tickets — when they cover bodies, full comment threads, checklists, attachments, and notes this session posted.
 2. Load uncovered tickets inline in the main session via the issue tracker tool (`issue-trackers.md`): list tracker tools → confirm a ticket-load tool exists; missing → `BLOCKED` with `NO_MCP_ACCESS` only while coverage gaps remain. Load the primary ticket, its source ticket (identified by `refUrl`, links, or the body), and other implementation-relevant linked tickets. Read their bodies, full comment threads, checklists, and attachments per spec → `<attachment-insights>`. Limit nested traversal to links that inform the implementation.
-3. Derive requirements from the primary ticket's name, description, comments, checklists, and attachments. Use linked evidence to clarify requirements without expanding scope.
-4. Anchor `<spec-intent>` in the primary ticket's Problem Statement/Solution/Notes and the original problem and decisions in linked sources. Linked source unavailable → note the gap and use the primary ticket's intent. Items are the how; intent arbitrates every later adaptation.
+3. After either reuse or loading, exclude patches superseded by a later spec revision; a supersession without a replacement removes the patch. Derive requirements from the primary ticket's name, description, comments, checklists, and attachments. Use linked evidence to clarify requirements without expanding scope.
+4. Anchor `<spec-intent>` in the original problem, requested behavior, acceptance criteria, and explicit user decisions in the primary ticket and linked sources. Distinguish these requirements from proposed targets, patches, and implementation mechanics, including those in Solution or checklists. Linked source unavailable → note the gap and use the primary ticket's intent.
 
 Returns (distilled): `<ticket-name>`, `<ticket-url>`, `<ticket-id>`, `<ticket-title>`, `<ticket-summary>`, `<ticket-board>`/`<ticket-websiteId>`, `<ticket-list>`/`<ticket-state>`, `<feature-area>`, `<spec-intent>`, `<acceptance-criteria>`, `<related-entities>`, `<blockers>`, `<gaps>`, `<requirement-items>` (parsed, not yet a todo list).
 
@@ -37,33 +37,34 @@ Primary ticket load fails or `BLOCKED` → report and stop. Without a ticket, de
 - Working branch is `master`/`main` only → `git pull origin master`.
 - Confirm clean state before proceeding.
 
-4. **Build Todo List**: from `<requirement-items>`, `<acceptance-criteria>`, checklists.
-- **Inherit plan code-targets.** Parse locator triples and patch blocks from the approved plan or ticket, including the ticket's patches comment when present. Carry known `file`/`symbol`/`location` and `patch` verbatim. Flag items without targets for resolution in Step 5.
+4. **Build Todo List**: derive deliverables from `<spec-intent>`, `<requirement-items>`, `<acceptance-criteria>`, and checklists. Retain the source item IDs for traceability; group related edits serving one outcome. Record proposed targets and patches, including any ticket patches comment, as starting points rather than binding instructions.
 
-**Todo format** — one per acceptance criterion/checklist item: `id` (inherited or `T1`, `T2`, …), `content` (short imperative naming the deliverable), `file` (inherited or `TBD`), `symbol`, `location`, `patch` (from plan if present), `status` (`pending`).
+**Todo format** — `id` (inherited or `T1`, `T2`, …), `content` (short imperative naming the deliverable), `file` (proposed or `TBD`), `symbol`, `location`, `patch` (if useful), `status` (`pending`).
 
-Rules: one item = one deliverable (split compounds); every criterion maps to exactly one item; order by dependency (schema → model → service → UI → tests); no workflow items (context, validation, presentation, commit); mark `in_progress` on start, `completed` once verified — never `in_progress` across context boundaries; missing requirement → add `pending` with justification; re-sync only on drift.
+Rules: every required outcome maps to a deliverable; order by dependency; no workflow items (context, validation, presentation, commit); mark `in_progress` on start, `completed` once verified — never `in_progress` across context boundaries. Missing requirement → add `pending` with justification; revise the list when the approach changes.
 
-5. **Gather Codebase Context**: pass `<feature-area>`, `<related-entities>`, `<acceptance-criteria>`, `<spec-intent>`, module path, inherited code-target triples. Validate each inherited target against current code (file exists, symbol at location, patch applies) and premise (the bug path, invariant, or behavior `<spec-intent>` assumes still holds); report target and premise drift. Resolve `TBD` targets only for non-plan cards. Require a distilled brief: entry points, related modules, callers, conventions, file:line citations → `<context-files>`.
+5. **Gather Codebase Context**: inspect the affected path, relevant callers, conventions, proposed targets, and premise (the bug path, invariant, or behavior `<spec-intent>` assumes). Resolve targets against current code and report material premise drift → `<context-files>`.
 
 `BLOCKED` → `grep` model/route/feature-flag names, `find_file_by_name` for controllers/repositories/resources, code navigation (`code-navigation.md`); read 1-2 key files; resolve `TBD` items → `<context-files>`.
 
+**Evaluate the solution:** compare the proposed mechanics with the current code and the simplest viable alternative. If a simpler approach satisfies every required outcome and explicit user constraint, use it without further approval, even when it changes targets, patches, or removes unnecessary planned steps. Update the todo list and retain a mapping from each required outcome to its implementation or validation. Report substantive deviations and why they preserve intent; do not silently discard requirements or sync the ticket unless asked.
+
 6. **Resolve Open Questions (optional)**: grill the user ONLY when at least one holds — pre-implementation or on Step-7 loop-back:
-- An inherited code-target triple fails Step-5 validation and the right replacement is ambiguous.
+- A target needed by the chosen approach cannot be resolved unambiguously.
 - `<gaps>`/`<blockers>` from Step 2 are non-empty and material.
 - Spec requirements contradict each other — no implementation satisfies all as written.
-- A todo item has multiple reasonable shapes the plan's `patch` doesn't disambiguate.
-- A planned change conflicts with an existing invariant, lifecycle hook, or convention.
-- Premise validation — Step 5 or surfaced mid-edit — shows the spec's assumed bug path, invariant, or expected behavior no longer holds: premise drift, a misdiagnosed root cause, or a superseding change.
+- A material product or design trade-off requires a user decision; implementation shapes alone do not.
+- The chosen change conflicts with an existing invariant, lifecycle hook, or convention and the correct resolution is unclear.
+- Premise validation — Step 5 or surfaced mid-edit — shows the spec's assumed bug path, invariant, or expected behavior no longer holds and the right outcome or resolution is unclear.
 
 None hold → skip to Step 7; don't manufacture questions.
 
 Grilling per `grill-with-codebase`. Record each decision into the affected todo item (`file`/`symbol`/`location`/`patch` or a one-line note). Re-sync the todo list, not the ticket card. Stop when every question resolves; don't re-open settled decisions.
 
-7. **Implement on Working Branch**: focused, minimal changes on the resolved branch. The list bounds the change — improvements, refactors, or hardening beyond what an item requires get flagged in the report, not implemented. Drive off `<todo-list>`: next `pending` → `in_progress` → apply at inherited `file`/`symbol`/`location` (`patch` as starting delta; drift at any point → adapt toward `<spec-intent>`; fresh premise drift surfaced mid-edit → loop back to Step 6) → verify (deliverable observable via focused check, test, or probe demonstrating the criterion) → `completed`. Exactly one `in_progress` at a time. Run focused checks as needed and relevant project checks after implementation.
+7. **Implement on Working Branch**: focused, minimal changes on the resolved branch. `<spec-intent>` bounds the change — unrelated improvements, refactors, or hardening get flagged in the report, not implemented. Drive off `<todo-list>`: next `pending` → `in_progress` → implement the chosen approach (a planned patch is a starting point, not a requirement) → verify the deliverable with a focused check, test, or probe → `completed`. Fresh premise drift mid-edit → reevaluate the approach in Step 5 and reconcile the active todo, then resolve any material open questions in Step 6 before continuing. Exactly one `in_progress` at a time. Run focused checks as needed and relevant project checks after implementation.
 
-**Test items**: scout existing tests, base classes, factories, assertion style; write from inherited `file`/`symbol`/`location`/`patch` + production code under test + Step-5 conventions. Verify via lint + tests.
+**Test items**: use existing test conventions and cover the required behavior; adapt proposed test targets and patches to the chosen approach. Verify via relevant lint and tests.
 
-8. **Audit & Present Implementation**: reconcile the full diff against `<spec-intent>` both ways — every acceptance criterion demonstrated or flagged, and every diff hunk tracing to a todo item or criterion (untraced → revert or flag); a miss → Step 7 (drift → Step 6). Clean → final report per `code-work` → *Output Discipline* — changed files (`path:line`), validation result, status + diff stat (git host change scan; `git-hosts.md`).
+8. **Audit & Present Implementation**: reconcile the full diff against `<spec-intent>` both ways — every required outcome demonstrated or flagged, and every diff hunk tracing to a deliverable (untraced → revert or flag); a miss → Step 7 (drift → Step 5). Report substantive departures from proposed mechanics and why they still satisfy intent. Clean → final report per `code-work` → *Output Discipline* — changed files (`path:line`), validation result, status + diff stat (git host change scan; `git-hosts.md`).
 
 CRITICAL: STOP here. Never commit, push, or request approval — the user ships via commit-and-push / ship-changes.
