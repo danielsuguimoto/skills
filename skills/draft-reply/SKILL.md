@@ -40,10 +40,10 @@ Ambiguous about the reply target → ask the user before drafting. Never guess `
 
 ### Gather Codebase Context (only if needed)
 
-Reuse ticket and current session evidence, including a calling workflow's verified findings. Skip this step when it supports the reply's claims; otherwise gather only the missing evidence:
+Reuse ticket and current session evidence, including a calling workflow's verified findings. For version-sensitive code claims, reuse findings only when their source revision is verified as relevant to the version the reply describes. Otherwise check the source revision and freshness before drafting, fetching the relevant upstream per `git-hosts.md` when needed; stale or unverified evidence → gather current evidence or qualify the claim with `[NEEDS-REVIEW: <what's uncertain>]`. Skip further gathering when the evidence supports the reply's claims; otherwise gather only what is missing:
 
 - **Sync**: when code evidence is needed, fetch per `git-hosts.md`; the checked-out branch behind → flag staleness — `file:line` cites drift on stale code.
-- **Code**: when needed, gather a distilled brief (relevant entry points, callers, conventions, `file:line` citations) via `grep`/`find_file_by_name`/code navigation (`code-navigation.md`); use `<reply-target>`, relevant entities, module path → `<repo-context>`.
+- **Code**: when needed, gather a distilled brief (relevant entry points, callers, conventions, `file:line` citations) via `code-navigation.md`; use `<reply-target>`, relevant entities, module path → `<repo-context>`.
 - **Data**: reply depends on persisted state (counts, status, samples) → live DB via database tools (`database-tools.md`) — ground truth.
 - **Docs**: framework/library/API/version questions → doc lookup (`doc-lookup.md`) → `<doc-context>`.
 
