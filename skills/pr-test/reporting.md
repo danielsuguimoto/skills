@@ -4,10 +4,10 @@ Read before materializing the Step 5 plan. Use [report-template.html](report-tem
 
 ## 1. Initialize the report
 
-After branch alignment and scenario selection, resolve `<report-dir>` to `<project-root>/.devin/pr-test/pr-<pr-number>/` in the tested project, not the skill installation. Use the project's `git-hosts.md` and terminal specifications for repository operations.
+Run one test session per PR at a time; concurrent sessions for the same PR are out of scope. After branch alignment and scenario selection, resolve `<report-dir>` to `<project-root>/.devin/pr-test/pr-<pr-number>/` in the tested project, not the skill installation. Use the project's `git-hosts.md` and terminal specifications for repository operations.
 
 - Verify the resolved destination is ignored and contains no tracked files. If not ignored, ask for an ignored project-local location or permission for one narrow repository-local exclusion. Resolve the actual local exclusion file through repository tooling, preserve existing entries, and leave tracked `.gitignore` untouched. No approval → pause; no silent fallback.
-- A nonempty destination holding only this PR's finished report and evidence files is replaced without asking or archiving. For any other nonempty destination, including one with a missing or unfinished report, a staged report, or other files, obtain explicit approval naming their absolute paths before replacement. Resolve tracked content, symlink escapes, and unknown files first. Clear neither parent directories nor another PR's artifacts.
+- A nonempty destination holding only this PR's finished report and evidence files is replaced without asking or archiving. For any other nonempty destination, including one with a missing or unfinished report, a staged report, or other files such as legacy `notes.md`, obtain explicit approval naming their absolute paths before replacement. Resolve tracked content, symlink escapes, and unknown files first. Clear neither parent directories nor another PR's artifacts.
 - Keep one report writer; parallel test actions return observations to it. Once the destination is safe and authorized, use it for evidence. Declined permission or unresolved safety pauses testing.
 
 **Done when:** an authorized, ignored destination is ready to receive evidence.
