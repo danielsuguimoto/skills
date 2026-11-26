@@ -5,7 +5,7 @@ description: "Apply delegation gates before spawning, large context scans, paral
 
 Default to execution in the current session. Delegate a workflow or its steps only when a dispatch rationale below fires or the user explicitly asks to delegate.
 
-**Ticket Brief exception.** When a workflow calls for a `Ticket Brief`, reuse a current session brief, summary, or ticket content covering the references and scoped answers, with sufficient evidence and decision status for that scope; otherwise delegate only that isolated, read-only inspection. Follow the workflow's scoped evidence, isolation, and blocker rules instead of the sequential, size, and inline-fallback gates below. The parent runs the workflow and never probes raw ticket content to qualify.
+**Ticket Brief.** Reuse current session evidence covering the references, scoped answers, and decision status. Otherwise read a small scoped brief inline or delegate the isolated, read-only inspection when a dispatch rationale below fires. Follow the workflow's evidence and blocker rules; an unavailable worker falls back to inline inspection, not a retry of a returned blocker.
 
 ## Sequential Gate
 

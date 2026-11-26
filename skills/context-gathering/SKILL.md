@@ -23,7 +23,7 @@ Give each question a target and stop when it is answered. Batch independent look
 
 - **Symbols** — routing per `code-work` → *Code Reading* (`code-navigation.md`). Locations and signatures first; bodies only for code you'll change or imitate.
 - **The slice** — follow the change's path: entry point → target → direct callers/collaborators. For a pattern, read the closest similar implementation — one, not a survey. Broad architecture question + graph output exists (`knowledge-graphs.md`) → query the graph instead of browsing source.
-- **Persisted state** — only when touched: schema, row counts, sample rows, EXPLAIN plans for the queries involved (`database-tools.md`). Live DB is ground truth.
+- **Persisted state** — when relevant, inspect only the schema, counts, or samples needed to answer the question (`database-tools.md`). Use EXPLAIN when query cost or index use matters. Live DB is ground truth.
 - **External docs** — only when a library API/version is genuinely uncertain (`doc-lookup.md`); code already in context answers first.
 
 Widen when evidence raises an unanswered question, then return to the list. Non-trivial widening runs as sequential thinking.

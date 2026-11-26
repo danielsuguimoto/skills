@@ -48,7 +48,7 @@ Generate `<pr-title>`, `<issue-summary>`, `<pr-body>`, and (when `auto`) `<ticke
 
 `<pr-title>`: `<prefix>: <message>` — lowercase, under 50 chars. Prefixes: feat, fix, chore, docs, refactor, test, style; prefix = the dominant change type.
 
-`<issue-summary>`: 1-2 sentences explaining the problem the PR solves. For `provided`, use the forwarded `<ticket-brief-result>` if it matches `<ticket-url>`, including a blocker as the final lookup result. Only without a matching result, get a ticket brief (see Ticket Brief) for that reference, scoped to the problem the PR addresses. No usable brief → note the gap outside the PR and infer from `<changes>` without fetching the ticket inline. For `auto` or `skip`, infer from `<changes>` directly. Include only details appropriate for the PR audience. Restate the problem even when linking `<ticket-url>`.
+`<issue-summary>`: 1-2 sentences explaining the problem the PR solves. For `provided`, use the forwarded `<ticket-brief-result>` if it matches `<ticket-url>`, including a blocker as the final lookup result. Only without a matching result, get a ticket brief (see Ticket Brief) for that reference, scoped to the problem the PR addresses. No usable brief → note the gap outside the PR and infer from `<changes>`. For `auto` or `skip`, infer from `<changes>` directly. Include only details appropriate for the PR audience. Restate the problem even when linking `<ticket-url>`.
 
 `<ticket-mode>` = `auto`: reuse `<change-summary>` themes from actual commits/diff. Title ≤70 chars reflecting the delivered outcome; description = what and why; checklists = 2-4 functional sections + final `Validation` section (reviewer-facing: "Verify that...", "Confirm that..."). Create via git host create issue (title, body, assignee `@me`); CLI fallback: pass `<ticket-body>` inline with shell quoting that preserves its contents. No attribution lines. Issue URL → `<ticket-url>`.
 
@@ -58,7 +58,7 @@ Otherwise: `provided` → use it; `skip` → `SKIPPED`.
 
 ### 8. Push Branch
 
-Push with upstream via git host push or `git push -u origin <current-branch>` (`git-hosts.md`). Report `Push: yes/no` (`no` if "Everything up-to-date") → `<push-status>`, `<pushed-line>`.
+When forwarded `<published-head>` and `<push-target>` match current HEAD and `origin`'s `refs/heads/<current-branch>`, verify that ref's current remote tip still equals HEAD and that the local branch tracks it. Both match → skip the redundant push. Otherwise push with upstream via git host push or `git push -u origin <current-branch>` (`git-hosts.md`); never force-push. Report `Push: yes/no` (`no` if skipped or "Everything up-to-date") → `<push-status>`, `<pushed-line>`.
 
 ### 9. Create PR
 
@@ -92,8 +92,8 @@ Collect every unique issue reference: `<ticket-url>` (unless `SKIPPED`) + issue 
 
 ## Ticket Brief
 
-Reuse current session evidence that covers the references, scoped answers, and decision status. Otherwise dispatch one isolated, read-only worker with the references, scope, `<project-root>`, these rules, and the target PR when known. The parent receives the brief only. If the worker or spec is unavailable, report the gap without fetching inline.
+Reuse current session evidence that covers the references, scoped answers, and decision status. Otherwise read inline, or delegate one isolated, read-only inspection when a bounded scan would add distracting context and a cited brief suffices, or the user requests delegation. Give the worker the references, scope, `<project-root>`, these rules, and target PR when known. Worker cannot run → read inline; spec unavailable → report the gap. An evidence blocker returned by a completed lookup is final, not a reason to retry.
 
-Worker: read `<project-root>/docs/issue-trackers.md`. Dedupe by tracker and ID; read title, body, checklists, and requested metadata. Read the latest comment page when scope includes behavior or constraints. Read older comments, attachments, and linked tickets only to close a scope gap or settle an unclear decision; this overrides general tracker traversal. For the target PR, return relevant decision references without fetching its feedback. Follow other PR links only for specific evidence the scope needs. Ignore unrelated bundled content; leave tracker state unchanged.
+Reader: read `<project-root>/docs/issue-trackers.md`. Dedupe by tracker and ID; read title and the body, checklists, or metadata needed for the scope. Read the latest comment page when scope includes behavior or constraints. Read older comments, attachments, and linked tickets only to close a scope gap or settle an unclear decision; this overrides general tracker traversal. For the target PR, return relevant decision references without fetching its feedback. Follow other PR links only for specific evidence the scope needs. Ignore unrelated bundled content; leave tracker state unchanged.
 
 Return cited answers, decision status (confirmed, proposed, or superseded), blockers, and evidence gaps. Cite tickets, comment permalinks, or attachment names and locations; omit raw threads and attachments. Mark answers partial if unseen material could change them. Stop when the scope is supported.
