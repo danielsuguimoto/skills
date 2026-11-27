@@ -23,7 +23,7 @@ Fetch the chosen source branch from the base repository and record its fetched c
 
 ## 3. Merge and resolve
 
-Prepare `<merge-message>` using the repository's commit convention. Start a non-fast-forward merge of `<source-commit>` into the PR branch with that message, leaving the merge pending for review and approval. A merge error unrelated to conflicts → stop and report.
+Prepare `<merge-message>` using the repository's commit convention. Start a non-fast-forward merge of `<source-commit>` into the PR branch with that message and disable automatic committing so even a clean merge stays pending for review and approval. A merge error unrelated to conflicts → stop and report.
 
 If conflicts exist, anchor `<pr-intent>` — why the PR exists: title, body, and, when the PR references issues or cards, a ticket brief (see Ticket Brief) scoped to intended behavior and constraints. For each scope-relevant target PR decision reference returned by the brief, reuse loaded feedback or retrieve only that decision and the context needed to establish its status via the git host (`git-hosts.md`); unavailable or ambiguous → note the gap. No usable brief → fall back to title/body plus any verified decision; note the gap.
 
