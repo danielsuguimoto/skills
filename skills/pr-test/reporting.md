@@ -22,7 +22,7 @@ Run one test session per PR at a time; concurrent sessions for the same PR are o
     <output-slug>.txt
 ```
 
-Keep observations and evidence mappings in the working context; write `index.html` at delivery as the only results ledger. Keep short observations and outputs inline. Do not create notes, per-scenario summaries, JSON manifests, duplicate galleries, thumbnails, or report archives.
+Keep observations and evidence mappings in the working context; write `index.html` at delivery. Keep short observations and outputs inline. Do not create notes, per-scenario summaries, JSON manifests, duplicate galleries, thumbnails, or report archives.
 
 | Item | Identity |
 |---|---|
@@ -74,13 +74,12 @@ If a required agent-driven capture cannot be saved, preserve any behavioral find
 
 On an orderly user stop, apply the main workflow's session-ending rule while preserving established failures and observations.
 
-Reconcile results within the chosen scope before writing:
+Render the results reconciled in Step 7:
 
-- Each required entry path has its own recorded outcome and evidence or reason it was unexercised, including when paths share a scenario.
+- Each required entry path shows its recorded outcome and evidence or why it was unrun, including when paths share a scenario.
 - Each selected assertion has evidence or a recorded blocker/defer reason; required capture gaps are explicit.
 - Deferred IDs retain their reasons; planned count = `PASSED` + `FAILED` + `BLOCKED` + `DEFERRED`.
-- Each planned supporting check has its own report entry: always record its status, plus evidence, a recorded blocker, or an explicit proof gap; reconcile those entries separately from scenario totals.
-- Fill proof gaps within the selected scope; keep deferred work deferred and unchanged blockers blocked — do not rerun them to polish the report. The main workflow owns terminal status and verdict rules.
+- Each planned supporting check shows its status and evidence or why it was unrun, separately from scenario totals.
 
 Record the finish time, then write the report from the reconciled results to a staged `index.staged.html` in the report directory — the same directory, so relative links validate against the final base. Each delivery uses a fresh staged file. A Step 9 continuation repeats this cycle after new evidence and replaces the prior report only through validation and rename. Validate the staged artifact without reopening test scope:
 
