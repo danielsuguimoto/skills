@@ -37,7 +37,7 @@ Treat ticket systems generically.
 4. **Gather Context** (standards, repo, docs, skills) — runs before any user question, so the interview never asks what the codebase already answers:
 - **Sync**: fetch per `git-hosts.md`; the checked-out branch behind → fast-forward a clean tree, dirty/diverged → flag staleness — spec items embed `file`/`location` targets that drift on stale code.
 - **Project standards**: relevant `<project-root>/docs/` specs and active memory only when needed to decide the change → `<project-standards>`.
-- **Repo**: inspect the affected path, relevant callers and existing patterns; confirm current behavior and validate `<proposed-technical-direction>` → `<repo-context>`. Record concrete targets and `file:line` evidence where useful. Use database tools when schema or live data matters. Expand only to surfaces needed by the request; stop when the outcome and viable approach are grounded.
+- **Repo**: inspect the affected path and relevant callers; confirm current behavior and validate `<proposed-technical-direction>` → `<repo-context>`. Verify reuse leads from triage against current code. If reuse is unresolved, check the nearest analogous flow and relevant shared code for the same behavior. Use database tools when schema or live data matters. Stop when the outcome and viable approach are grounded.
 - **Docs**: resolve material library/API uncertainty per `<project-root>/docs/doc-lookup.md` → `<doc-context>`.
 - **Skills**: planning touches specific domains (testing, frontend, Livewire) → invoke the relevant skills → `<skill-context>`.
 
@@ -47,13 +47,13 @@ Treat ticket systems generically.
 
 When a decision needs the user, use the grilling/interview skill if available, passing the relevant planning and repo context. Store resolved decisions as `<clarified-requirements>`; reflect them in the spec. Do not proceed until material decisions are resolved.
 
-6. **Choose Technical Approach**: prefer the simplest viable approach grounded in `<repo-context>`. Compare alternatives only when a material trade-off affects the outcome or an explicit constraint. Ask the user to choose only when that trade-off requires their decision → `<technical-approach-decision>`.
+6. **Choose Technical Approach**: wire the existing implementation into the affected module when its contract and side effects fit. If direct reuse falls short, prefer the smallest compatible change to existing code; propose a new service, class, layer, or file only when existing code cannot safely cover a required behavior. Compare alternatives only when a material trade-off affects the outcome or an explicit constraint. Ask the user to choose only when that trade-off requires their decision → `<technical-approach-decision>`.
 
 7. **Build Action Inventory**: identify the fewest request-bounded changes needed to deliver the destination, using affected targets from `<repo-context>`. Group closely related edits by deliverable; omit unchanged surfaces and speculative hardening.
 
 8. **Shape the Spec**: turn `<planning-objective>`, `<operative-constraints>`, `<proposed-technical-direction>`, `<clarified-requirements>`, `<technical-approach-decision>`, repo findings, `<project-standards>`, `<doc-context>`, `<skill-context>` into the spec below. Write per `writing-for-agents`: bullets over paragraphs, one fact or decision per line, `file:line` citations where useful, no motivational prose.
 - `<spec-title>`: short, useful title.
-- `<spec-description>`: concise template; restate `<source-request>` in the requester's terms and name the intended outcome, approach, and material constraints. Omit empty Notes. Suggested mechanics guide implementation; explicit requirements and user decisions bind it.
+- `<spec-description>`: concise template; restate `<source-request>` in the requester's terms and name the intended outcome, approach, and material constraints. In Solution, cite the existing implementation and wiring point (`file:line`). If proposing new structure, cite the closest candidate or say where you looked, then name the gap that requires it. Omit empty Notes. Suggested mechanics guide implementation; explicit requirements and user decisions bind it.
 - `<requirement-items>`: short, outcome-oriented items for the smallest set of deliverables. Use stable IDs (`S1`, `S2`, ...); group related edits that serve one outcome instead of one item per patch or surface. Name verified files/symbols when useful, not guessed locations. Include a minimal patch only when it clarifies a non-obvious decision.
 - `<validation-items>`: the fewest meaningful automated checks or assertions that demonstrate the requested behavior, aligned with project conventions. Reuse existing checks where suitable; do not prescribe new tests for trivial changes by default. If none is suitable, flag the validation gap for review rather than inventing a check. Manual verification, exploratory QA, and environment/ops checks belong to review or deploy.
 

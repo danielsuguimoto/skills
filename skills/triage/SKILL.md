@@ -70,7 +70,7 @@ Explicitly invoking `triage` authorizes the reversible local fixture imports and
 Two output shapes — nothing else:
 
 - **ask** → the answer. Direct, one or two sentences; a `file:line` citation only when it proves the answer.
-- **debug** → `**Root cause:**` what diverges and why, with `file:line` proof. Then `**Fixes:**` the simplest viable fix; include alternatives only when a material trade-off needs a decision. No implementing.
+- **debug** → `**Root cause:**` what diverges and why, with `file:line` proof. Then `**Fixes:**` the simplest viable fix. For a code fix, check the nearest analogous path and relevant shared code for the same behavior. Cite the reusable symbol and where to wire it in (`file:line`), or state what reuse remains unconfirmed. Include alternatives only when a material trade-off needs a decision. No implementing.
 
 Finish when evidence proves the cause and reproduction conditions and impact are known. Name an unconfirmed detail only when it changes the next action.
 
