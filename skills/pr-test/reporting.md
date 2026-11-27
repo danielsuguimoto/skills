@@ -1,6 +1,6 @@
 # PR test reporting
 
-Read before materializing the Step 5 plan. Use [report-template.html](report-template.html) for the report; [SKILL.md](SKILL.md) owns scenario statuses, verdicts, scope, and recovery limits. This contract changes output, not scenario scope or retry authority.
+Read before materializing the Step 5 plan. Use [report-template.html](report-template.html) for the report. [SKILL.md](SKILL.md) owns scenario statuses, verdicts, scope, and recovery. Follow it for scenario scope and retry authority.
 
 ## 1. Initialize the report
 
