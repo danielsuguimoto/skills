@@ -143,7 +143,7 @@ Report the output directory, requested outputs, and any failures. Summarize repo
 
 ## For --update (repair on change)
 
-A complete fresh extraction on change avoids grafting deltas onto the lossy exported graph; cached semantic results are reused and unchanged runs still stop early. Resolve the original corpus root from the explicit path or reliable session evidence; otherwise ask before detection. A different root is a separate build, never an update of this graph.
+A complete fresh extraction on change avoids grafting deltas onto the lossy exported graph; cached semantic results are reused and unchanged runs still stop early. Identify the original corpus root independently of the requested path: use reliable session evidence or the root in `graphify-out/GRAPH_REPORT.md`'s `Graph Report - <root>` heading when it can be resolved unambiguously against the original build's working directory. If the report is missing, stale, or its relative path cannot be resolved reliably, ask the user for the original root before detection. Compare any requested path to that root after resolving both paths; a different root is a separate build, never an update of this graph.
 
 Run incremental detection. No changed or deleted files → stop. Snapshot the published graph to a run-local `<old-graph>` — on snapshot failure, stop before publishing. Read its node-link `directed` boolean; use it for `IS_DIRECTED` throughout Steps 4–9 unless the user explicitly requests a direction change. Missing or invalid direction → stop and report. Run Steps 2–3 on the full current corpus with the semantic cache. If any required input was skipped or failed, stop before Step 4 and leave the published graph and manifest unchanged. Otherwise enable `ALLOW_UPDATE_SHRINK` and run Steps 4–9; publish a smaller nonempty graph only through the staged export — leave the existing graph intact on failed export. Diff after successful Step 4; on success or failure remove only the run-created `<old-graph>` file.
 
@@ -175,6 +175,6 @@ Fetch a URL, add to the corpus, update the graph:
 
 <!-- script: see references/scripts.md §/graphify add - Fetch URL and add to corpus -->
 
-Set `AUTHOR`/`CONTRIBUTOR` to the user's name when provided. Resolve the existing graph's corpus root from the prior invocation or ask before fetching. Save under `<corpus-root>/raw`, then run `--update` on `<corpus-root>` — do not rebuild from `./raw` alone.
+Set `AUTHOR`/`CONTRIBUTOR` to the user's name when provided. Resolve the existing graph's corpus root as in `--update`, or ask before fetching. Save under `<corpus-root>/raw`, then run `--update` on `<corpus-root>` — do not rebuild from `./raw` alone.
 
 URL types (auto-detected): Twitter/X → oEmbed → `.md` · arXiv → abstract+metadata `.md` · PDF → `.pdf` · images → downloaded, vision extraction next build · any webpage → html2text → markdown.

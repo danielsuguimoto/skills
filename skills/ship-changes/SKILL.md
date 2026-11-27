@@ -19,6 +19,8 @@ Shell-read before shipping end-to-end (reuse session reads): `<project-root>/doc
 
 All git/gh operations follow `git-hosts.md`. Forward git host tool availability to subskills.
 
+If `pr-create` is unavailable, preflight the standalone PR-creation path in [standalone.md](standalone.md#pull-request) before branching or publishing. No configured host operation and no usable documented fallback → stop and report.
+
 ### 1. Interpret Arguments
 
 Explicit ticket URL/reference → `<ticket-url>` · explicit skip → `<ticket-mode>` = `skip` · wording influencing branch name/commit → `<additional-context>` · base branch → `<base>`. Without an explicit ticket or skip, use the unambiguous ticket targeted by the session's current work; ambiguous → ask; no session ticket → `<ticket-mode>` = `skip`. A selected ticket → `<ticket-mode>` = `provided`; `skip` → `<ticket-url>` empty.
