@@ -22,7 +22,7 @@ Base branch → `<base>`; explicit auto-create ticket → `<ticket-mode>` = `aut
 ### 2. Load & Analyze Changes
 
 - **Context.** `git branch --show-current` → `<current-branch>` (`git-hosts.md`). No `<base>` → detect default base per spec fallback. `<resolved-base>` = user `<base>` or detected default (strip `origin/`). Use `<remote-base>` = `origin/<resolved-base>` for all comparisons — the local base is often stale.
-- **Changes.** `git status --short --untracked-files=all` + `git fetch origin <resolved-base>`; diff against `<remote-base>` with **three-dot syntax** (`...`) — mandatory, excludes base-branch-only changes: ahead log, `git diff --stat`, `git diff` → `<changes>`.
+- **Changes.** Rescan worktree and index, listing individual untracked files; fetch `<resolved-base>`. Diff against `<remote-base>` with **three-dot syntax** (`...`) — mandatory, excludes base-branch-only changes: ahead log, `git diff --stat`, `git diff` → `<changes>`.
 
 ### 3. Check Blockers
 

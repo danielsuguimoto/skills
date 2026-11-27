@@ -39,7 +39,7 @@ Build `<change-summary>` from `<included>` (primary) or `<ahead-commits>` (fallb
 
 Derive `<branch-category>` from `<change-summary>`: `feature`, `fix`, `refactor`, `docs`, `test`, `chore`, `perf`, `build`, or `ci`.
 
-If either `pr-create` or `commit-and-push` is unavailable, use the standalone publisher and PR path together. Before branching, resolve the base host/repository and push remote/repository; ambiguous → ask. Verify host support for the head, including cross-fork ownership; unsupported or unavailable → stop. Resolve the full destination ref before publishing.
+If either `pr-create` or `commit-and-push` is unavailable, use the standalone publisher and PR path together. Before branching, resolve the base host/repository and push remote/repository; ambiguous → ask. Verify authenticated PR creation and lookup access and host support for the head, including cross-fork ownership; unsupported or unavailable → stop. Resolve the full destination ref before publishing.
 
 Forward to subskills:
 - `new-branch`: `<additional-context>`, `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<branch-category>`, `<ticket-url>`, `<ticket-mode>`, `<ticket-brief-result>`.
@@ -68,7 +68,7 @@ Set `<published-head>` = `<hash>`. "Nothing to commit or push" → STOP and repo
 
 Both companions installed → invoke `pr-create` with the inputs above plus `<published-head>` and `<push-target>`.
 
-Standalone → select the requested or default base, fetch it from the verified repository, and compare its three-dot diff with HEAD. Rescan individual untracked files; stop for changes outside `<excluded>`, staged exclusions, a base-branch checkout, or an empty diff. Probe PR templates; fill the selected template without changing its structure, or use Ticket, Issue, Description, Checklist. Include the problem, changes, and ticket or `SKIPPED`; title follows the commit convention. Verify `<push-target>` matches the preflight target and its remote ref matches HEAD. Create or find the PR against the verified base and head, pinning the host/repository for lookup; verify the rendered body. Link the PR in each verified, in-scope ticket; ask on ambiguous targets and report failed links.
+Standalone → select the requested or default base, fetch it from the verified repository, and compare its three-dot diff with HEAD. Rescan individual untracked files; stop for changes outside `<excluded>`, staged exclusions, a base-branch checkout, or an empty diff. Probe all repo PR-template locations; fill the selected template without changing its structure, or use Ticket, Issue, Description, Checklist. Include the problem, changes, and ticket or `SKIPPED`; title follows the commit convention. Verify `<push-target>` matches the preflight target and its remote ref matches HEAD. Create or find the PR against the verified base and head, pinning the host/repository for lookup; update a stale body without discarding unrelated content, then verify it. Link the PR in each verified, in-scope ticket; ask on ambiguous targets and report failed links.
 
 Rescan post-commit git state but keep the semantic `<change-summary>`. Output the PR URL. Verify the PR link was posted to every verified, in-scope ticket; if the link step was skipped, run it once now — no duplicate retries.
 
