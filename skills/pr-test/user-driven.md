@@ -1,6 +1,6 @@
 # User-driven PR testing
 
-The user performs all test actions, including UI setup, API requests, worker/job or CLI invocations, and shipped migrations, seeders, operations, and scripts, even when they are prerequisites. The agent provisions missing data through non-UI tooling: baseline seeds/factories and targeted application or database commands. For writes covered by [local test authorization](SKILL.md), the agent executes without asking again. Ask only when the safety boundary or tool requires it. Leave UI and shipped-artifact execution to the user; do not run them as hidden setup.
+The user performs test actions, including UI setup, API requests, worker/job or CLI invocations that exercise assertions, and shipped migrations, seeders, operations, and scripts. The agent owns non-UI prerequisite preparation under [Step 6](SKILL.md#6-prepare-minimal-local-data), including local configuration, service/database provisioning, fixture generation, and temporary helpers. Execute this preparation without asking permission or asking the user to create fixtures. Ask only for the remaining dependencies defined in Step 6 or tool-required permission. Leave UI and shipped-artifact execution to the user.
 
 For each scenario, record exact navigation, field values, clicks or command, expected observation, and any persisted effect to verify. Show a short overview first; give details when the user reaches the scenario. Artifact instructions include the pre-check, command, and post-check. Inspect each artifact's target and pre-state and leave it pending for the user.
 
