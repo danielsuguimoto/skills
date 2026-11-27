@@ -29,19 +29,21 @@ If conflicts exist, anchor `<pr-intent>` — why the PR exists: title, body, and
 
 Investigate each conflict using the merge base, both sides, and the surrounding behavior. Preserve the intent of both changes — judge the PR side against `<pr-intent>`; do not blindly select one side. Resolve and stage each affected path, including deletions and renames. The base removing or replacing behavior `<pr-intent>` assumes is premise drift → a product decision per below, never a silent resolution.
 
-If a conflict requires a product decision or cannot be resolved safely, leave the merge pending and ask the user. Do not abort the merge or discard changes without explicit approval.
+If a conflict requires a product decision or cannot be resolved safely, leave the merge pending and ask the user. Only with explicit approval to abort, run `git merge --abort` and stop without pushing.
 
-## 4. Verify and commit
+## 4. Verify and approve the batch
 
-Confirm `git ls-files -u` is empty, inspect the staged merge for conflict markers and unintended changes, and run relevant checks for the resolved files. Report any checks that fail or cannot run; leave the merge pending until failures are understood.
+Confirm `git ls-files -u` is empty, inspect any staged merge for conflict markers and unintended changes, and run relevant checks for the resolved files. Stop on failed validation; report checks that could not run.
 
-Present the source and PR branches, the verified push destination `<head-repository>:<pr-branch>` (fork heads included), resolved paths, and verification results. Ask (header `Approval`): "Ready to commit and push to `<head-repository>:<pr-branch>`?" Options: `Go Ahead` → `approved`; `Needs Review` → `concerns` (requires feedback). `concerns` → apply the feedback, re-verify, re-present.
+Show the PR URL, source and PR branches, verified push destination `<head-repository>:<pr-branch>` (fork heads included), resolved paths, verification results, and any existing local PR-branch commits the push would publish.
 
-`Go Ahead` authorizes the pending merge commit (if needed) and normal push to the shown destination, as one batch. Do not ask again for either action. Silence or decline stops publication; honor tool-enforced permissions.
+Ask once (header `Approval`): "Approve this batch for <pr-url>: finish the pending merge (if any) and push to <head-repository>:<pr-branch>?" Offer `Go Ahead` and `Needs Review`. Only `Go Ahead` approves. An unanswered or declined gate stops publication.
 
-## 5. Commit and push
+`Go Ahead` authorizes Step 5 for the shown batch: finish the merge if needed, then push without asking again for either action. Keep the approval when switching to a documented fallback; honor tool-enforced permissions and higher-priority safety gates. If the target or batch changes materially, re-verify and return to this gate before publishing. `Needs Review` → refine within scope, re-verify, and present the batch again.
 
-On `approved`: a pending merge → complete it with the repository's commit convention and verify its parents are `<aligned-tip>` and `<source-commit>`; a merge already in the tip → nothing to complete. Re-fetch the PR head first; if it changed since preparation, stop and report rather than overwriting it. Push normally to the verified head repository and PR branch, never force-push. Report the merge commit — or the pre-existing tip — and the pushed ref.
+## 5. Finish and push
+
+On `approved`, re-fetch the PR head first; if it changed since preparation, stop and report. If Step 3 started a merge, confirm `HEAD` is `<aligned-tip>` and `MERGE_HEAD` is `<source-commit>`. Missing or mismatched state → stop and report. Run `git merge --continue` to finish the merge, using the repository's commit message convention. Do not run a separate `git commit`. Before pushing, check `git show -s --format=%P HEAD`: require exactly `<aligned-tip> <source-commit>` in that order. If Step 2 found the source already in the local tip, push that tip without creating a commit. Push normally to the verified head repository and PR branch, never force-push. Report the merge commit or pre-existing tip and the pushed ref.
 
 ## Ticket Brief
 
