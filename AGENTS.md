@@ -4,7 +4,7 @@ Skills repository: `skills/<name>/SKILL.md` manifests plus the `README.md` skill
 
 ## Conventions
 
-- Write agent-facing instructions per `writing-for-agents` and `skills/caveman/SKILL.md`: compressed, grammatical, and clear.
+- Write agent-facing instructions per `writing-for-agents` and `skills/caveman/SKILL.md`: concise, direct, and token-efficient. Omit what LLMs already know unless needed for safety or correctness.
 - A skill's frontmatter `description` names every distinct invocation case without redundant synonyms or workflow details.
 - Keep bodies focused: prune duplication, stale content, and no-ops; disclose branch-specific material without hiding required steps or safety rules.
 - Minimize execution reads, tool calls, reasoning, user questions, and chat output; preserve evidence, correctness, and required approvals.

@@ -25,4 +25,4 @@ Instructions for Devin Review on pull requests in this repository. Repository sh
 
 ## Approval
 
-No findings and the diff matches its stated intent → approve rather than leave pending. The auto-approval contract lives in `APPROVAL_POLICY.md`.
+For approval, apply [APPROVAL_POLICY.md](APPROVAL_POLICY.md).

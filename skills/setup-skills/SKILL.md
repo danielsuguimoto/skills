@@ -114,6 +114,8 @@ Spec files:
 
 `testing.md`: use sections `Startup`, `Test data and actors`, `Browser and environment`, `External services`, and `Supporting checks`. Populate them from `<testing-requirements>` and existing project testing docs. Record access requirements without secrets or credentials.
 
+`issue-trackers.md` and `git-hosts.md`: document available primitive operations, inputs, outputs, and fallbacks. Workflow skills own traversal, branch safety, validation, and approval decisions.
+
 ## Verify and Output
 
 Confirm every generated file exists. Report a summary table: file, tool or reference, configured or not. List files still carrying `<!-- Fill in: ... -->` markers as manual-completion gaps. Do not commit or push.

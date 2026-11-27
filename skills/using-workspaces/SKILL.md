@@ -9,6 +9,8 @@ Shell-read before creating any workspace; may be gitignored — missing → foll
 
 Ensure work happens in an isolated workspace — ordering: configured mechanism → harness capability → spec fallback. Never fight the harness.
 
+When the caller passes `<setup-mode>` = `create-only`, detect or create and verify isolation, then return the absolute path and branch state before Step 2. If isolation fails, stop; do not fall back to in-place setup. The caller resumes at Step 2 inside the verified workspace after its checkout and approval gates pass.
+
 ## Step 0: Detect Existing Isolation
 
 Check whether you're already isolated before creating anything:
@@ -27,13 +29,15 @@ git rev-parse --show-superproject-working-tree 2>/dev/null
 
 VCS checks don't rule out tool-managed isolation: snapshot/copy mechanisms produce plain repos where `GIT_DIR == GIT_COMMON`. Also run the configured mechanism's *detect* operation from `workspace-isolation.md` (marker file, `ancestors`/`list` command, or harness API).
 
-Already isolated → Step 2; report path and branch state. A detached HEAD is a valid externally-managed workspace — a branch is needed only at ship time (`new-branch`/`ship-changes`).
+Already isolated → report path and branch state; `<setup-mode>` = `create-only` → return now, otherwise Step 2. A detached HEAD is a valid externally-managed workspace — a branch is needed only at ship time (`new-branch`/`ship-changes`).
 
-An explicit workspace request or applicable preference for isolation supplies consent. Follow the explicit request over a standing preference. If the user chose to work in place, skip to Step 2. Otherwise ask for consent only if it is missing; declined means work in place and skip to Step 2.
+An explicit workspace request or applicable preference for isolation supplies consent. Follow the explicit request over a standing preference. If the user chose to work in place, skip to Step 2 — under `create-only`, stop instead. Otherwise ask for consent only if it is missing; declined means work in place and skip to Step 2 — under `create-only`, stop instead.
 
 ## Step 1: Create Isolated Workspace
 
 Resolve the base first: a base forwarded by the caller (e.g. `new-workspace` synced already) → use it; otherwise fetch per `git-hosts.md` and use `origin/<default>`. Pass the base to the mechanism wherever it accepts one — a mechanism fixed to the current checkout may snapshot a stale or feature branch; flag that to the user rather than silently accepting it.
+
+Under `create-only`, a mechanism whose create operation requires running project setup → stop and report; creation alone must produce a verifiable isolated workspace. This applies to every variant below.
 
 ### 1a. Configured mechanism (preferred)
 
@@ -48,11 +52,11 @@ Spec names no mechanism but the harness provides one (dedicated tool/command/fla
 Only when neither applies — the fallback in the spec's Tool Details. Around whichever mechanism runs:
 
 - **Directory**: explicit user-declared location wins; else the spec's documented location; else a project-local hidden directory. Project-local → verify ignored first (`git check-ignore -q <dir>`); not ignored → ask for an ignored location or permission to update `.gitignore`. Never commit as workspace setup.
-- **Sandbox**: permission error on creation → tell the user the sandbox blocked it; work in place, run setup there.
+- **Sandbox**: permission error on creation → tell the user the sandbox blocked it; work in place, run setup there — under `create-only`, stop instead.
 
 Spec documents no fallback either → ask which mechanism to use; offer to write it into `workspace-isolation.md`.
 
-After creation, verify the workspace `HEAD` points at the resolved base commit via git host operations (`git-hosts.md`). A detached `HEAD` satisfies readiness — never switch to `master`/`main` or drop a mechanism-installed worktree link to get a checkout (a shared-git worktree may be unable to take one). Mismatch → flag it to the user. A task branch is created only at ship time (`new-branch`/`ship-changes`).
+After creation, verify the workspace `HEAD` points at the resolved base commit via git host operations (`git-hosts.md`). A detached `HEAD` satisfies readiness — never switch to `master`/`main` or drop a mechanism-installed worktree link to get a checkout (a shared-git worktree may be unable to take one). Mismatch → flag it to the user; under `create-only`, stop — never return an unverified workspace. A task branch is created only at ship time (`new-branch`/`ship-changes`).
 
 ## Step 2: Project Setup
 
