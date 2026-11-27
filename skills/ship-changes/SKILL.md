@@ -3,7 +3,7 @@ name: ship-changes
 description: "Ship current work end-to-end — branch, commit, push, open a PR — for explicit shipping requests, not a PR-only request."
 ---
 
-Run the change scan, branch, commit, push, PR creation, and ticket linking in the current session, in order. Invoke installed subskills inline; when a companion is missing, use its section in [standalone.md](standalone.md). A Ticket Brief may run inline or be delegated when the delegation gates permit; delegate another step only on explicit request.
+Run the change scan, branch, commit, push, PR creation, and ticket linking in the current session, in order. Invoke selected installed subskills inline; use [standalone.md](standalone.md) for the fallback paths below. A Ticket Brief may run inline or be delegated when the delegation gates permit; delegate another step only on explicit request.
 
 An explicit shipping request authorizes branch creation, commit, push, and PR creation. Execute them without asking for separate confirmation; honor mandatory safety gates.
 
@@ -19,15 +19,13 @@ Shell-read before shipping end-to-end (reuse session reads): `<project-root>/doc
 
 All git/gh operations follow `git-hosts.md`. Forward git host tool availability to subskills.
 
-If `pr-create` is unavailable, preflight the standalone PR-creation path in [standalone.md](standalone.md#pull-request) before branching or publishing. Resolve the base repository, base remote, and actual push destination; pass the verified destination through branch creation and publication, including when `commit-and-push` is installed. A push destination that cannot be determined or represented → stop before publication. No configured host operation and no usable documented fallback → stop and report.
-
 ### 1. Interpret Arguments
 
 Explicit ticket URL/reference → `<ticket-url>` · explicit skip → `<ticket-mode>` = `skip` · wording influencing branch name/commit → `<additional-context>` · base branch → `<base>`. Without an explicit ticket or skip, use the unambiguous ticket targeted by the session's current work; ambiguous → ask; no session ticket → `<ticket-mode>` = `skip`. A selected ticket → `<ticket-mode>` = `provided`; `skip` → `<ticket-url>` empty.
 
 ### 2. Pre-Scan Changes (Shared Context)
 
-Run the change scan once per the table → `<current-branch>`, `<uncommitted>` (status + file list + diff stat), `<ahead-commits>` (`@{u}..HEAD` log — no upstream, e.g. detached `HEAD` → `origin/<default>..HEAD`; empty if none). If the change scan omits file paths, collect the full changed-file list (untracked included) via the change-scan fallback (`git-hosts.md`).
+Run the change scan once per the table → `<current-branch>`, `<uncommitted>` (status + file list + diff stat), `<ahead-commits>` (`@{u}..HEAD` log — no upstream, e.g. detached `HEAD` → `origin/<default>..HEAD`; empty if none). If the scan omits paths or collapses untracked directories, collect individual changed file paths via the [bundled scan](docs/git-hosts.md), including every untracked file.
 
 When `<ticket-url>` is defined, get a ticket brief (see Ticket Brief) for the ticket title and the problem the changes address. Store the ticket reference and brief or blocker as `<ticket-brief-result>`, even if no usable brief returns. Anchor `<ship-intent>` in the session's work and the brief; no usable brief → fall back to session work and diff, and note the gap. Diff stats and commit messages carry the what; intent supplies the why.
 
@@ -40,6 +38,8 @@ Blocker: `<included>` empty and `<ahead-commits>` empty → STOP: "Nothing to sh
 Build `<change-summary>` from `<included>` (primary) or `<ahead-commits>` (fallback), grounded in `<ship-intent>`: 2-4 logical themes, what and why (not how), considering `<additional-context>`.
 
 Derive `<branch-category>` from `<change-summary>` per [standalone.md](standalone.md#branch).
+
+If either `pr-create` or `commit-and-push` is unavailable, resolve the push destination before publication per [standalone.md](standalone.md#destination). If `pr-create` is unavailable, also preflight its standalone PR-creation path before branching or publishing. A destination that cannot be determined or represented → stop before publication. No configured host operation and no usable documented fallback → stop and report.
 
 Forward to subskills:
 - `new-branch`: `<additional-context>`, `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<branch-category>`, `<ticket-url>`, `<ticket-mode>`, `<ticket-brief-result>`.
@@ -58,7 +58,7 @@ Otherwise invoke `new-branch`, passing `<additional-context>`, `<current-branch>
 
 Refresh the index. Any staged `<excluded>` path → stop before committing or pushing; ask the user to preserve or unstage it. Leave the index untouched.
 
-Invoke `commit-and-push`, passing `<additional-context>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<excluded>` → `<hash>`, `<push-target>`; if unavailable, follow [standalone.md](standalone.md#commit-and-push). Set `<published-head>` = `<hash>`. "Nothing to commit or push" → STOP and report.
+When `pr-create` is unavailable or `commit-and-push` is unavailable, follow [standalone.md](standalone.md#commit-and-push) with the verified destination; the installed publisher has no destination input. Otherwise invoke `commit-and-push`, passing `<additional-context>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<excluded>` → `<hash>`, `<push-target>`. Set `<published-head>` = `<hash>`. "Nothing to commit or push" → STOP and report.
 
 ### 5. Create Pull Request
 
