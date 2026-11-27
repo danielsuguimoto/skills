@@ -23,25 +23,27 @@ Fetch the chosen source branch from the base repository and record its fetched c
 
 ## 3. Merge and resolve
 
-Merge the recorded source commit into the PR branch with `git merge --no-ff --no-commit <source-commit>`, leaving the merge pending for review and approval. A merge error unrelated to conflicts → stop and report.
+Prepare `<merge-message>` using the repository's commit convention. Start a non-fast-forward merge of `<source-commit>` into the PR branch with that message and disable automatic committing so even a clean merge stays pending for review and approval. A merge error unrelated to conflicts → stop and report.
 
 If conflicts exist, anchor `<pr-intent>` — why the PR exists: title, body, and, when the PR references issues or cards, a ticket brief (see Ticket Brief) scoped to intended behavior and constraints. For each scope-relevant target PR decision reference returned by the brief, reuse loaded feedback or retrieve only that decision and the context needed to establish its status via the git host (`git-hosts.md`); unavailable or ambiguous → note the gap. No usable brief → fall back to title/body plus any verified decision; note the gap.
 
 Investigate each conflict using the merge base, both sides, and the surrounding behavior. Preserve the intent of both changes — judge the PR side against `<pr-intent>`; do not blindly select one side. Resolve and stage each affected path, including deletions and renames. The base removing or replacing behavior `<pr-intent>` assumes is premise drift → a product decision per below, never a silent resolution.
 
-If a conflict requires a product decision or cannot be resolved safely, leave the merge pending and ask the user. Do not abort the merge or discard changes without explicit approval.
+If a conflict requires a product decision or cannot be resolved safely, leave the merge pending and ask the user. Only with explicit approval to abort, abort the pending merge and stop without pushing.
 
-## 4. Verify and commit
+## 4. Verify and approve the batch
 
-Confirm `git ls-files -u` is empty, inspect the staged merge for conflict markers and unintended changes, and run relevant checks for the resolved files. Report any checks that fail or cannot run; leave the merge pending until failures are understood.
+Confirm the index has no unmerged entries, inspect any staged merge for conflict markers and unintended changes, and run relevant checks for the resolved files. Report failed or unavailable checks. If validation fails, stop before approval and leave any merge pending.
 
-Present the source and PR branches, the verified push destination `<head-repository>:<pr-branch>` (fork heads included), resolved paths, and verification results. Ask (header `Approval`): "Ready to commit and push to `<head-repository>:<pr-branch>`?" Options: `Go Ahead` → `approved`; `Needs Review` → `concerns` (requires feedback). `concerns` → apply the feedback, re-verify, re-present.
+Show the PR URL, source and PR branches, verified push destination `<head-repository>:<pr-branch>` (fork heads included), resolved paths, verification results, and any existing local PR-branch commits the push would publish.
 
-`Go Ahead` authorizes the pending merge commit (if needed) and normal push to the shown destination, as one batch. Do not ask again for either action. Silence or decline stops publication; honor tool-enforced permissions.
+Ask once (header `Approval`): "Approve this batch for <pr-url>: finish the pending merge (if any) and push to <head-repository>:<pr-branch>?" Offer `Go Ahead` and `Needs Review`. Only `Go Ahead` approves. An unanswered or declined gate stops publication.
 
-## 5. Commit and push
+`Go Ahead` authorizes Step 5 for the shown batch: finish the merge if needed, then push without asking again for either action. Keep the approval when switching to a documented fallback; honor tool-enforced permissions and higher-priority safety gates. If the target or batch changes materially, re-verify and return to this gate before publishing. `Needs Review` → refine within scope, re-verify, and present the batch again.
 
-On `approved`: a pending merge → complete it with the repository's commit convention and verify its parents are `<aligned-tip>` and `<source-commit>`; a merge already in the tip → nothing to complete. Re-fetch the PR head first; if it changed since preparation, stop and report rather than overwriting it. Push normally to the verified head repository and PR branch, never force-push. Report the merge commit — or the pre-existing tip — and the pushed ref.
+## 5. Finish and push
+
+On `approved`, re-fetch the PR head first; if it changed since preparation, stop and report. If Step 3 started a merge, confirm `HEAD` is `<aligned-tip>` and `MERGE_HEAD` is `<source-commit>`. Missing or mismatched state → stop and report. Continue the pending merge with the editor disabled for that command so Git accepts the prepared message. Do not create a separate commit. Continuation fails → report and stop without pushing. Before pushing, require exactly two parents in order: `<aligned-tip>`, `<source-commit>`. If Step 2 found the source already in the local tip, push that tip without creating a commit. Push normally to the verified head repository and PR branch, never force-push. Report the merge commit or pre-existing tip and the pushed ref.
 
 ## Ticket Brief
 
