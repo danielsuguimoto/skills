@@ -1,6 +1,6 @@
 # Agent Guidelines
 
-Skills repository: `skills/<name>/SKILL.md` manifests plus the `README.md` skill index. Consumers are AI agents — a skill's prose is the product. `docs/` and `.devin/` are gitignored local state. No build or test suite; verify by reading.
+Skills repository: `skills/<name>/SKILL.md` manifests plus the `README.md` skill index. Consumers are AI agents — a skill's prose is the product. Root `docs/` and `.devin/` are gitignored local state; explicitly unignored skill-local `docs/` ship with that skill. No build or test suite; verify by reading.
 
 ## Conventions
 

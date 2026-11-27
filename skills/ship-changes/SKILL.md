@@ -9,7 +9,7 @@ An explicit shipping request authorizes branch creation, commit, push, and PR cr
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before shipping end-to-end (reuse session reads): `<project-root>/docs/git-hosts.md`. If a spec is missing, report the gap and use a documented fallback.
+Shell-read before shipping end-to-end (reuse session reads): `<project-root>/docs/git-hosts.md`. If a spec or operation is missing, report the gap and read [the bundled fallback spec](docs/git-hosts.md).
 
 ## Operations
 
@@ -19,7 +19,7 @@ Shell-read before shipping end-to-end (reuse session reads): `<project-root>/doc
 
 All git/gh operations follow `git-hosts.md`. Forward git host tool availability to subskills.
 
-If `pr-create` is unavailable, preflight the standalone PR-creation path in [standalone.md](standalone.md#pull-request) before branching or publishing. No configured host operation and no usable documented fallback → stop and report.
+If `pr-create` is unavailable, preflight the standalone PR-creation path in [standalone.md](standalone.md#pull-request) before branching or publishing. Resolve the base repository, base remote, and actual push destination; pass the verified destination through branch creation and publication, including when `commit-and-push` is installed. A push destination that cannot be determined or represented → stop before publication. No configured host operation and no usable documented fallback → stop and report.
 
 ### 1. Interpret Arguments
 
