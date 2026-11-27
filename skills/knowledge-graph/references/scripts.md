@@ -257,6 +257,7 @@ from graphify.cluster import cluster, score_all
 from graphify.analyze import god_nodes, surprising_connections, suggest_questions
 from graphify.report import generate
 from graphify.export import to_json
+from tempfile import TemporaryDirectory
 from pathlib import Path
 
 extraction = json.loads(Path('graphify-out/.graphify_extract.json').read_text())
@@ -281,7 +282,16 @@ questions = suggest_questions(G, communities, labels)
 # Persist the graph first and only write the report/analysis if it actually
 # persisted - to_json refuses to shrink an existing graph.json (#479), and a
 # report describing a graph we did not write would be a lie (#1392).
-wrote = to_json(G, communities, 'graphify-out/graph.json')
+# On the verified --update path (ALLOW_UPDATE_SHRINK=True) a legitimate shrink
+# is exported to run-local scratch in the same filesystem and atomically
+# replaces graph.json, so to_json cannot reject solely for being smaller.
+if ALLOW_UPDATE_SHRINK:
+    with TemporaryDirectory(dir='graphify-out') as directory:
+        staged = Path(directory) / 'graph.json'
+        wrote = to_json(G, communities, str(staged))
+        if wrote: staged.replace('graphify-out/graph.json')
+else:
+    wrote = to_json(G, communities, 'graphify-out/graph.json')
 if not wrote:
     print('ERROR: refused to shrink graphify-out/graph.json (fewer nodes than the existing graph). Run a full rebuild to be safe.')
     raise SystemExit(1)
@@ -556,7 +566,7 @@ from graphify.detect import save_manifest
 
 # Save manifest for --update
 detect = json.loads(Path('graphify-out/.graphify_detect.json').read_text())
-save_manifest(detect['files'], root='INPUT_PATH')
+save_manifest(detect['files'], root=Path('INPUT_PATH'))
 
 # Update cumulative cost tracker
 extract = json.loads(Path('graphify-out/.graphify_extract.json').read_text())
@@ -582,7 +592,7 @@ cost_path.write_text(json.dumps(cost, indent=2))
 print(f'This run: {input_tok:,} input tokens, {output_tok:,} output tokens')
 print(f'All time: {cost[\"total_input_tokens\"]:,} input, {cost[\"total_output_tokens\"]:,} output ({len(cost[\"runs\"])} runs)')
 "
-rm -f graphify-out/.graphify_detect.json graphify-out/.graphify_extract.json graphify-out/.graphify_ast.json graphify-out/.graphify_semantic.json graphify-out/.graphify_analysis.json graphify-out/.graphify_labels.json graphify-out/.graphify_incremental.json graphify-out/.graphify_transcripts.json graphify-out/.graphify_old.json; find graphify-out -maxdepth 1 -name '.graphify_chunk_*.json' -delete 2>/dev/null
+rm -f graphify-out/.graphify_detect.json graphify-out/.graphify_extract.json graphify-out/.graphify_ast.json graphify-out/.graphify_semantic.json graphify-out/.graphify_analysis.json graphify-out/.graphify_labels.json graphify-out/.graphify_incremental.json graphify-out/.graphify_transcripts.json; find graphify-out -maxdepth 1 -name '.graphify_chunk_*.json' -delete 2>/dev/null
 rm -f graphify-out/.needs_update 2>/dev/null || true
 ```
 
@@ -627,91 +637,37 @@ if new_total > 0:
 "
 ```
 
-## --update - Check if code-only
+## --update - Save old graph for diff
 
-# Checks whether all changed files are code files
-
-```bash
-$(cat graphify-out/.graphify_python) -c "
-import json
-from pathlib import Path
-
-result = json.loads(open('graphify-out/.graphify_incremental.json').read()) if Path('graphify-out/.graphify_incremental.json').exists() else {}
-code_exts = {'.py','.ts','.js','.go','.rs','.java','.cpp','.c','.rb','.swift','.kt','.cs','.scala','.php','.cc','.cxx','.hpp','.h','.kts','.lua','.toc'}
-new_files = result.get('new_files', {})
-all_changed = [f for files in new_files.values() for f in files]
-code_only = all(Path(f).suffix.lower() in code_exts for f in all_changed)
-print('code_only:', code_only)
-"
-```
-
-## --update - Empty extraction for deletions only
-
-# Creates empty extraction file for deletions-only updates
+# Snapshots the published graph to a unique run-local file before the fresh extraction.
+# Record the generated path as <old-graph>; on success or failure remove only
+# that run-created file. If the snapshot fails, stop before publishing.
 
 ```bash
-if [ ! -f graphify-out/.graphify_extract.json ]; then
-    echo '[graphify update] Only deletions -- creating empty extraction for merge.'
-    $(cat graphify-out/.graphify_python) -c "
-import json
-from pathlib import Path
-Path('graphify-out/.graphify_extract.json').write_text(json.dumps({'nodes':[],'edges':[],'hyperedges':[],'input_tokens':0,'output_tokens':0}), encoding='utf-8')
-"
-fi
-```
-
-## --update - Merge new extraction into existing graph
-
-# Merges new extraction into existing graph
-
-```bash
-$(cat graphify-out/.graphify_python) -c "
-import sys, json
-from graphify.build import build_from_json
-from graphify.export import to_json
-from networkx.readwrite import json_graph
-import networkx as nx
-from pathlib import Path
-
-# Load existing graph
-existing_data = json.loads(Path('graphify-out/graph.json').read_text())
-G_existing = json_graph.node_link_graph(existing_data, edges='links')
-
-# Load new extraction
-new_extraction = json.loads(Path('graphify-out/.graphify_extract.json').read_text())
-G_new = build_from_json(new_extraction, directed=IS_DIRECTED)
-
-# Merge: new nodes/edges into existing graph
-G_existing.update(G_new)
-print(f'Merged: {G_existing.number_of_nodes()} nodes, {G_existing.number_of_edges()} edges')
-"
+OLD_GRAPH=$(mktemp graphify-out/.graphify-old.XXXXXX) && cp graphify-out/graph.json "$OLD_GRAPH"
 ```
 
 ## --update - Graph diff
 
-# Compares old and new graphs
+# Compares the saved old graph against the newly published graph.json
 
 ```bash
 $(cat graphify-out/.graphify_python) -c "
 import json
 from graphify.analyze import graph_diff
-from graphify.build import build_from_json
 from networkx.readwrite import json_graph
-import networkx as nx
 from pathlib import Path
 
-old_data = json.loads(Path('graphify-out/.graphify_old.json').read_text()) if Path('graphify-out/.graphify_old.json').exists() else None
-new_extract = json.loads(Path('graphify-out/.graphify_extract.json').read_text())
-G_new = build_from_json(new_extract, directed=IS_DIRECTED)
-
-if old_data:
-    G_old = json_graph.node_link_graph(old_data, edges='links')
-    diff = graph_diff(G_old, G_new)
-    print(diff['summary'])
-    if diff['new_nodes']:
-        print('New nodes:', ', '.join(n['label'] for n in diff['new_nodes'][:5]))
-    if diff['new_edges']:
-        print('New edges:', len(diff['new_edges']))
+old_data = json.loads(Path('OLD_GRAPH').read_text())
+new_data = json.loads(Path('graphify-out/graph.json').read_text())
+G_old = json_graph.node_link_graph(old_data, edges='links')
+G_new = json_graph.node_link_graph(new_data, edges='links')
+diff = graph_diff(G_old, G_new)
+print(diff['summary'])
+if diff['new_nodes']:
+    print('New nodes:', ', '.join(n['label'] for n in diff['new_nodes'][:5]))
+if diff['new_edges']:
+    print('New edges:', len(diff['new_edges']))
 "
 ```
 
@@ -725,10 +681,10 @@ $(cat graphify-out/.graphify_python) -m graphify cluster-only . --no-label --no-
 
 ## /graphify add - Fetch URL and add to corpus
 
-Fetches URL into `./raw`, then updates the graph:
+Fetches URL into `INPUT_PATH/raw` (the resolved corpus root), then updates the graph:
 
 ```bash
-$(cat graphify-out/.graphify_python) -m graphify add "URL" --author "AUTHOR" --contributor "CONTRIBUTOR" --dir ./raw
+$(cat graphify-out/.graphify_python) -m graphify add "URL" --author "AUTHOR" --contributor "CONTRIBUTOR" --dir 'INPUT_PATH/raw'
 ```
 
 ## --watch

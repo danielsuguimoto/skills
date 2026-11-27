@@ -1,11 +1,13 @@
 ---
 name: ship-changes
-description: "Ship current work end-to-end: branch, commit, push, and open a PR. Use for explicit shipping requests, not a PR-only request."
+description: "Ship current work end-to-end — branch, commit, push, open a PR — for explicit shipping requests, not a PR-only request."
 ---
 
 Run the change scan, branch, commit, push, PR creation, and ticket linking in the current session, in order. Invoke subskills inline: load their instructions and execute them here. A Ticket Brief may run inline or be delegated when the delegation gates permit; delegate another step only on explicit request.
 
 An explicit shipping request authorizes branch creation, commit, push, and PR creation. Execute them without asking for separate confirmation; honor mandatory safety gates.
+
+Before any change, verify the workflow companions are installed — `new-branch`, `commit-and-push`, and `pr-create`; if any is missing, ask the user to install it and stop.
 
 ## Required `<project-root>/docs` reads
 
@@ -54,18 +56,16 @@ Otherwise invoke `new-branch`, passing `<additional-context>`, `<current-branch>
 
 `<included>` empty → skip the commit substep; still push when `<ahead-commits>` is non-empty.
 
+Refresh the index. Any staged `<excluded>` path → stop before committing or pushing; ask the user to preserve or unstage it. Leave the index untouched.
+
 Invoke `commit-and-push`, passing `<additional-context>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<excluded>` → `<hash>`, `<push-target>`. Set `<published-head>` = `<hash>`. "Nothing to commit or push" → STOP and report.
 
 ### 5. Create Pull Request
 
-Invoke `pr-create` with the inputs above plus `<published-head>` and `<push-target>`. Rescan post-commit git state but keep the semantic `<change-summary>`. Output the PR URL. Verify the pr-create subskill posted the `<pr-url>` mention in every referenced ticket (its Step 10); skipped → run it now.
+Invoke `pr-create` with the inputs above plus `<published-head>` and `<push-target>`. Rescan post-commit git state but keep the semantic `<change-summary>`. Output the PR URL. Verify the pr-create subskill posted the `<pr-url>` mention in every verified, in-scope ticket reference (its Step 9 link check); skipped → run it once now — no duplicate retries.
 
-**Mandatory:** the pr-create subskill must run its PR-template check (its Step 6) before composing the body — forwarded `<change-summary>` triggers its Step-4 skip path but does NOT exempt the template check. Accept `<pr-template>` = `none` only when the subskill confirms it probed the repo.
+**Mandatory:** the pr-create subskill must run its PR-template check (its Step 5) before composing the body — forwarded `<change-summary>` triggers its Step-4 skip path but does NOT exempt the template check. Accept `<pr-template>` = `none` only when the subskill confirms it probed the repo.
 
 ## Ticket Brief
 
-Reuse current session evidence that covers the references, scoped answers, and decision status. Otherwise read inline, or delegate one isolated, read-only inspection when a bounded scan would add distracting context and a cited brief suffices, or the user requests delegation. Give the worker the references, scope, `<project-root>`, these rules, and target PR when known. Worker cannot run → read inline; spec unavailable → report the gap. An evidence blocker returned by a completed lookup is final, not a reason to retry.
-
-Reader: read `<project-root>/docs/issue-trackers.md`. Dedupe by tracker and ID; read title and the body, checklists, or metadata needed for the scope. Read the latest comment page when scope includes behavior or constraints. Read older comments, attachments, and linked tickets only to close a scope gap or settle an unclear decision; this overrides general tracker traversal. For the target PR, return relevant decision references without fetching its feedback. Follow other PR links only for specific evidence the scope needs. Ignore unrelated bundled content; leave tracker state unchanged.
-
-Return cited answers, decision status (confirmed, proposed, or superseded), blockers, and evidence gaps. Cite tickets, comment permalinks, or attachment names and locations; omit raw threads and attachments. Mark answers partial if unseen material could change them. Stop when the scope is supported.
+Reuse current, scoped evidence; otherwise use Scoped ticket brief in `issue-trackers.md`. If the operation is absent, dedupe by tracker/ID, read only scoped fields, and read the latest comment page for behavior or constraints. Follow older material or other links only to settle a gap; for the target PR return decision references without fetching feedback. Return cited answers, decision status (confirmed/proposed/superseded), gaps and blockers; mark partial answers and leave tracker state unchanged. Read inline, or delegate one bounded read-only brief when it saves distracting context or the user requests it; pass the refs, scope, `<project-root>` and target PR. Worker unavailable → inline; completed lookup blocker → do not retry. Missing spec → report the gap.

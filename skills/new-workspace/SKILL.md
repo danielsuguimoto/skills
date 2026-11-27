@@ -40,15 +40,15 @@ git remote set-head origin --auto 2>/dev/null
 BASE=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null || echo origin/main)
 ```
 
-Then invoke `using-workspaces` and follow it fully — consent is implied; skip its consent question. Pass `origin/<default>` as the creation base and `<workspace-name>` as the name wherever the mechanism accepts them; a mechanism that fixes the base to the current checkout → flag it to the user, don't silently base on it.
+Then invoke `using-workspaces` with `<setup-mode>` = `create-only`, `<workspace-name>`, and the resolved base — consent is implied; skip its consent question. Require verified isolation before continuing; `using-workspaces` owns the base check.
 
-A workspace is ready when its `HEAD` points at the resolved base commit — compare via git host operations (`git-hosts.md`). A detached `HEAD` satisfies this; never require a `master`/`main` checkout or drop a mechanism-installed worktree link to get one. A task branch is created only when the work ships (`new-branch`/`ship-changes`).
-
-Resolved target is a `<pr-ref>` → point the workspace at the PR branch between creation and project setup:
+Resolved target is a `<pr-ref>` → point the workspace at the PR branch between verified creation and project setup:
 
 - A mechanism sharing local branch refs (linked worktree) can't attach the PR head branch while another worktree holds it — check that against the `View PR` payload and the source checkout first; held → report the blocker and stop before readiness or handoff. The configured mechanism still owns the choice (`using-workspaces`) — don't silently switch to an independent-refs one.
-- After creation, run the `Checkout PR` git host operation (`git-hosts.md`) inside the workspace — it attaches the existing PR head branch, not a new task branch. The readiness target becomes `HEAD` on that branch at the PR head commit; verify it before `using-workspaces`' project-setup step so dependencies install from the PR.
-- An untrusted `<pr-ref>` (fork, outside author) → project setup can run PR-authored install hooks as the local user; flag that and confirm with the user before `using-workspaces`' project-setup step runs.
+- After verified creation, run the `Checkout PR` git host operation (`git-hosts.md`) inside the workspace — it attaches the existing PR head branch, not a new task branch. The readiness target becomes `HEAD` on that branch at the PR head commit; verify it before `using-workspaces` Step 2 so dependencies install from the PR. A failed targeted checkout → report the blocker and stop; do not fall back to the base workspace without an explicit prior user choice.
+- An untrusted `<pr-ref>` (fork, outside author) → project setup can run PR-authored install hooks as the local user; flag that and confirm with the user before `using-workspaces` Step 2 runs.
+
+Run `using-workspaces` Step 2 (project setup) inside the verified workspace — for a `<pr-ref>` target only after the PR checkout is verified and any untrusted-PR confirmation is given — then hand off per Step 3.
 
 ## 3. Hand Off
 
@@ -61,8 +61,8 @@ All downstream work happens inside the workspace:
 
 | Situation | Action |
 |-----------|--------|
-| Already inside an isolated workspace | Skip creation and say so. With a `<pr-ref>`, check the worktree and index first — dirty → leave the checkout alone, ask the user to preserve changes, and stop before setup or handoff; clean → run `Checkout PR` and verify readiness. Run `<downstream>` in place only after any required PR checkout succeeds |
+| Already inside an isolated workspace | Reuse the verified workspace without comparing its HEAD to the default base. If targeting a PR, require a clean worktree and index before the common PR checkout and trust gate. Run `<downstream>` in place only after any required PR checkout succeeds |
 | PR fails to load (missing, auth) | Tell the user; ask whether to proceed on the default branch or stop — a PR-targeting `<downstream>` will retry the PR on its own |
 | No downstream request, or context-only input | Standalone mode: set up, report path, stop — subsequent instructions run inside the workspace |
-| Workspace creation fails (sandbox/permissions) | Tell the user; ask whether to run `<downstream>` in place — don't silently proceed |
+| Workspace creation fails (sandbox/permissions) | Tell the user and stop; run `<downstream>` in place only on an explicit user choice — no default fallback |
 | `<downstream>` names an unknown skill | Set up, report, treat the text as a plain task |

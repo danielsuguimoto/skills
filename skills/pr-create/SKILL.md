@@ -5,15 +5,15 @@ description: "Open a pull request for the current branch, standalone or during s
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before creating the PR (reuse session reads): `<project-root>/docs/git-hosts.md`, `<project-root>/docs/issue-trackers.md` (Step 10 only — a ticket to link). If a spec is missing, report the gap and use a documented fallback.
+Shell-read before creating the PR (reuse session reads): `<project-root>/docs/git-hosts.md`, `<project-root>/docs/issue-trackers.md` (Step 9 only — a ticket to link). If a spec is missing, report the gap and use a documented fallback.
 
 ## Operations
 
 MCP tools take business-level inputs (title, body, base, head) — no CLI flags. All git host ops per `git-hosts.md` (detect branch+default base, check uncommitted, fetch base+diff, push, create issue, create/view PR, auth). Ticket comments via issue tracker update-ticket (`issue-trackers.md`).
 
-As a subskill, the invoking skill owns Steps 1-10; on "Nothing to ship.", proceed to Step 3 blockers.
+As a subskill, the invoking skill owns Steps 1-9; on "Nothing to ship.", proceed to Step 3 blockers.
 
-An explicit PR or shipping request authorizes the normal branch push and PR creation. A verified ticket selected for this workflow authorizes posting the PR link there as part of Step 10; create a ticket only in the explicitly selected `auto` mode. Do not ask again for these covered actions. Honor safety gates and tool-enforced permissions.
+An explicit PR or shipping request authorizes the normal branch push and PR creation. A verified ticket selected for this workflow authorizes posting the PR link there as part of Step 9; create a ticket only in the explicitly selected `auto` mode. Do not ask again for these covered actions. Honor safety gates and tool-enforced permissions.
 
 ### 1. Interpret Arguments
 
@@ -32,17 +32,13 @@ Uncommitted changes outside `<excluded>` → STOP (report + list files). A stage
 
 `<change-summary>` forwarded → reuse verbatim, skip re-analysis. Otherwise derive from commits ahead of `<remote-base>`: review messages, group into 2-4 themes, summarize what and why (not how) → `<change-summary>`.
 
-### 5. Resolve Ticket
-
-`<ticket-mode>` already set → don't ask. Otherwise, `question` tool available → ask one question (header `Provide Ticket`, options `Automatically Create` / `Skip`, custom answers enabled); no tool → `<ticket-mode>` = `skip`, `<ticket-url>` = `SKIPPED`. Normalize: `Automatically Create` → `auto`; custom URL → `provided`; `Skip` → `skip`.
-
-### 6. Load PR Template — BLOCKER
+### 5. Load PR Template — BLOCKER
 
 **Mandatory gate — do not compose `<pr-body>` until this completes. Most common failure mode.**
 
-Probe all repo PR-template locations once. Keep the selected template verbatim in `<pr-template>`; set it to `none` only when the completed probe finds none. Step 7 fills it.
+Probe all repo PR-template locations once. Keep the selected template verbatim in `<pr-template>`; set it to `none` only when the completed probe finds none. Step 6 fills it.
 
-### 7. Generate Metadata + Prepare Ticket Reference
+### 6. Generate Metadata + Prepare Ticket Reference
 
 Generate `<pr-title>`, `<issue-summary>`, `<pr-body>`, and (when `auto`) `<ticket-title>`/`<ticket-body>` from `<resolved-base>`, `<ticket-mode>`, `<ticket-url>` (when `provided`), `<additional-context>`, `<pr-template>`.
 
@@ -54,13 +50,13 @@ Generate `<pr-title>`, `<issue-summary>`, `<pr-body>`, and (when `auto`) `<ticke
 
 Otherwise: `provided` → use it; `skip` → `SKIPPED`.
 
-**Compose `<pr-body>` from `<pr-template>`:** ≠ `none` → template verbatim as skeleton; fill placeholders/sections (`## Ticket`, `## Description`, `## Checklist`) from `<changes>` + `<ticket-url>` + `<issue-summary>`; preserve structure, headings, reviewer checkboxes — fill only, don't restructure; do NOT use the Step-9 hardcoded body. `<issue-summary>` must appear in the body: merge into the template's description section, else append a `## Issue` section — the sole permitted structure change. `none` → the Step-9 default structure.
+**Compose `<pr-body>` from `<pr-template>`:** ≠ `none` → template verbatim as skeleton; fill placeholders/sections (`## Ticket`, `## Description`, `## Checklist`) from `<changes>` + `<ticket-url>` + `<issue-summary>`; preserve structure, headings, reviewer checkboxes — fill only, don't restructure; do NOT use the Step-8 hardcoded body. `<issue-summary>` must appear in the body: merge into the template's description section, else append a `## Issue` section — the sole permitted structure change. `none` → the Step-8 default structure.
 
-### 8. Push Branch
+### 7. Push Branch
 
 When forwarded `<published-head>` and `<push-target>` match current HEAD and `origin`'s `refs/heads/<current-branch>`, verify that ref's current remote tip still equals HEAD and that the local branch tracks it. Both match → skip the redundant push. Otherwise push with upstream via git host push or `git push -u origin <current-branch>` (`git-hosts.md`); never force-push. Report `Push: yes/no` (`no` if skipped or "Everything up-to-date") → `<push-status>`, `<pushed-line>`.
 
-### 9. Create PR
+### 8. Create PR
 
 Use `<pr-title>` + `<pr-body>` (already reflects `<pr-template>`). Body when `<pr-template>` = `none`:
 ```markdown
@@ -76,13 +72,13 @@ Use `<pr-title>` + `<pr-body>` (already reflects `<pr-template>`). Body when `<p
 ## Checklist
 <checklist-items>
 ```
-- `<pr-template>` ≠ `none` → the filled template from Step 7. No attribution lines. Preserve markdown newlines (single-line strings render `\n` literally).
+- `<pr-template>` ≠ `none` → the filled template from Step 6. No attribution lines. Preserve markdown newlines (single-line strings render `\n` literally).
 - Create via git host create PR (title, body, base, head, assignee `@me`). CLI fallback: pass `<pr-title>`, `<resolved-base>`, `<current-branch>`, assignee `@me`, and `<pr-body>` inline with shell quoting that preserves its contents.
 - PR exists → git host view PR (pr_ref=`<current-branch>`, fields=`url,number`) or `gh pr view <current-branch> --json url,number`.
 - URL → `<pr-url>`. Verify the rendered body (fields=`body` or `gh pr view <current-branch> --json body | jq -r '.body'`); re-edit if needed.
 - Output the PR URL, created or existing.
 
-### 10. Link PR in Ticket(s)
+### 9. Link PR in Ticket(s)
 
 Skip when `<ticket-url>` = `SKIPPED` AND `<pr-body>` references no issues.
 
@@ -92,8 +88,4 @@ Collect every unique issue reference: `<ticket-url>` (unless `SKIPPED`) + issue 
 
 ## Ticket Brief
 
-Reuse current session evidence that covers the references, scoped answers, and decision status. Otherwise read inline, or delegate one isolated, read-only inspection when a bounded scan would add distracting context and a cited brief suffices, or the user requests delegation. Give the worker the references, scope, `<project-root>`, these rules, and target PR when known. Worker cannot run → read inline; spec unavailable → report the gap. An evidence blocker returned by a completed lookup is final, not a reason to retry.
-
-Reader: read `<project-root>/docs/issue-trackers.md`. Dedupe by tracker and ID; read title and the body, checklists, or metadata needed for the scope. Read the latest comment page when scope includes behavior or constraints. Read older comments, attachments, and linked tickets only to close a scope gap or settle an unclear decision; this overrides general tracker traversal. For the target PR, return relevant decision references without fetching its feedback. Follow other PR links only for specific evidence the scope needs. Ignore unrelated bundled content; leave tracker state unchanged.
-
-Return cited answers, decision status (confirmed, proposed, or superseded), blockers, and evidence gaps. Cite tickets, comment permalinks, or attachment names and locations; omit raw threads and attachments. Mark answers partial if unseen material could change them. Stop when the scope is supported.
+Reuse current, scoped evidence; otherwise use Scoped ticket brief in `issue-trackers.md`. If the operation is absent, dedupe by tracker/ID, read only scoped fields, and read the latest comment page for behavior or constraints. Follow older material or other links only to settle a gap; for the target PR return decision references without fetching feedback. Return cited answers, decision status (confirmed/proposed/superseded), gaps and blockers; mark partial answers and leave tracker state unchanged. Read inline, or delegate one bounded read-only brief when it saves distracting context or the user requests it; pass the refs, scope, `<project-root>` and target PR. Worker unavailable → inline; completed lookup blocker → do not retry. Missing spec → report the gap.

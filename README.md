@@ -2,7 +2,7 @@
 
 Agent skills repository for use with any agentic tool that supports skill manifests — Devin CLI, Claude Code, Cursor, OpenCode, Codex, Gemini CLI, and others.
 
-Each subdirectory under `skills/` is a self-contained skill with a `SKILL.md` manifest describing its name, description, and instructions.
+Each directory under `skills/` ships a `SKILL.md` and its references. Some workflows invoke companion skills.
 
 ## Included skills
 
@@ -26,7 +26,8 @@ Each subdirectory under `skills/` is a self-contained skill with a `SKILL.md` ma
 | new-workspace | Companion skill — set up an isolated workspace first, then run the requested skill or task inside it (e.g. `/new-workspace /implement card`). |
 | pr-create | Create a pull request for the current branch. |
 | pr-fix | Address PR feedback by making fixes and responding directly to review threads. |
-| pr-fix-ci | Fix failing CI checks on a PR — read logs, fix the code, push, verify green. |
+| pr-fix-ci | Fix PR-caused CI failures, validate locally, and push; use pr-watch to wait for CI. |
+| pr-merge-base | Merge the latest master or main branch into a PR branch and resolve conflicts. |
 | pr-watch | Watch a PR's review and CI, routing feedback and failures to the appropriate fix skill until clean. |
 | pr-stack | Assess an existing PR for stacking using its purpose, linked context, project memories, conventions, and deployment; convert only after explicit agreement. |
 | pr-test | Test a PR's changed behavior with the user or agent driving, chosen before setup. Exercise realistic flows, review-driven regressions, and critical edge cases with minimal local data; verify persisted effects and shipped artifacts. After failures or blockers, user-directed unblocks or fixes trigger affected reruns and report updates. Production stays read-only. |
@@ -76,6 +77,8 @@ Install specific skills:
 ```bash
 npx skills add danielsuguimoto/skills --skill caveman --skill code-work
 ```
+
+Install workflow companions together: ship-changes with new-branch, commit-and-push, and pr-create; pr-watch with pr-fix and pr-fix-ci; new-workspace with using-workspaces; post-merge with draft-reply. Install any named downstream skill separately.
 
 Install globally to a specific agent:
 

@@ -8,7 +8,7 @@
 | `--mode deep` | Thorough extraction, richer INFERRED edges |
 | `--directed` | Preserve edge direction (DiGraph) |
 | `--whisper-model <name>` | Whisper model for video transcription (default `base`) |
-| `--update` | Incremental: re-extract new/changed files only |
+| `--update` | Repair on changed/deleted input: fresh full extraction, semantic cache reused |
 | `--cluster-only` | Rerun clustering on existing graph |
 | `--no-viz` | Skip visualization, report + JSON only |
 | `--obsidian` | Generate Obsidian vault (one file per node) |
@@ -17,7 +17,7 @@
 | `--neo4j` / `--neo4j-push [<url>]` | Export Cypher file / push to running Neo4j — omitted URL reuses the session per the rule below |
 | `--mcp` | Start MCP stdio server |
 | `--watch` | Watch folder, auto-rebuild on changes |
-| `add [<url>]` | Fetch URL, save to ./raw, update graph — omitted URL reuses the session per the rule below |
+| `add [<url>]` | Fetch URL, save under the corpus root's `raw/`, update graph — omitted URL reuses the session per the rule below |
 | `query "<q>"` / `path "A" "B"` / `explain "X"` | Query operations (`--dfs` chain tracing, `--budget N` token cap) |
 
 `UPPER_SNAKE` tokens in scripts (`INPUT_PATH`, `LABELS_DICT`, `IS_DIRECTED`, `NEO4J_URI`…) are placeholders — substitute resolved values. For `add`, use the explicit URL first, else the unambiguous source URL from the session's current work; missing or ambiguous → ask. For `--neo4j-push`, use the explicit URL first, else the unambiguous destination URL from the session's current work. If multiple destinations fit, ask before pushing; if none fit, use the documented default in `references/flags.md`. A session URL identifies the target only; it does not authorize an unrequested add or push.
@@ -105,7 +105,7 @@ Clean up: `rm -f graphify-out/.graphify_cached.json graphify-out/.graphify_uncac
 
 ### Step 4 - Build graph, cluster, analyze, generate outputs
 
-`build_from_json()` takes `directed=IS_DIRECTED` — `True` if `--directed` was given, else `False`.
+`build_from_json()` takes `directed=IS_DIRECTED` — `True` if `--directed` was given, else `False`. `ALLOW_UPDATE_SHRINK` defaults to `False`; the `--update` section sets it on the verified update path.
 
 <!-- script: see references/scripts.md §Step 4 - Build graph, cluster, analyze, generate outputs -->
 
@@ -139,31 +139,21 @@ Report the output directory, requested outputs, and any failures. Summarize repo
 
 ---
 
-## For --update (incremental re-extraction)
+## For --update (repair on change)
 
-Use after files were added/modified since the last run; only re-extracts changed files.
+A complete fresh extraction on change avoids grafting deltas onto the lossy exported graph; cached semantic results are reused and unchanged runs still stop early.
+
+Run incremental detection. No changed or deleted files → stop. Snapshot the published graph to a run-local `<old-graph>` — on snapshot failure, stop before publishing. Run Steps 2–3 on the full current corpus with the semantic cache. If any required input was skipped or failed, stop before Step 4 and leave the published graph and manifest unchanged. Otherwise enable `ALLOW_UPDATE_SHRINK` and run Steps 4–9; publish a smaller nonempty graph only through the staged export — leave the existing graph intact on failed export. Diff after successful Step 4; on success or failure remove only the run-created `<old-graph>` file.
 
 <!-- script: see references/scripts.md §--update - Detect incremental changes -->
 
-New files exist → check whether all changed files are code:
+<!-- script: see references/scripts.md §--update - Save old graph for diff -->
 
-<!-- script: see references/scripts.md §--update - Check if code-only -->
+Set `ALLOW_UPDATE_SHRINK` = `True` in Step 4 only on this verified update path — complete extraction with no skipped or failed required inputs plus a verified deletion or changed content; default `False`. On `True`, Step 4 exports to a run-local temp in the same filesystem and atomically replaces `graphify-out/graph.json` on success; the empty-graph guard still applies.
 
-`code_only` True → run Part A only, skip Part B, then Part C + Steps 4-8. False → full Step 3 pipeline (Parts A-C).
-
-No new files (only deletions) → create an empty extraction so merge can prune:
-
-<!-- script: see references/scripts.md §--update - Empty extraction for deletions only -->
-
-Save the old graph for the diff: `cp graphify-out/graph.json graphify-out/.graphify_old.json`
-
-<!-- script: see references/scripts.md §--update - Merge new extraction into existing graph -->
-
-Run Steps 4-8 on the merged graph. After Step 4, compute the graph diff:
+After successful Step 4, diff the saved and published graphs:
 
 <!-- script: see references/scripts.md §--update - Graph diff -->
-
-Clean up: `rm -f graphify-out/.graphify_old.json`
 
 ---
 
@@ -183,6 +173,6 @@ Fetch a URL, add to the corpus, update the graph:
 
 <!-- script: see references/scripts.md §/graphify add - Fetch URL and add to corpus -->
 
-Set `AUTHOR`/`CONTRIBUTOR` to the user's name when provided. After a successful save, run `--update` on `./raw` to merge the file.
+Set `AUTHOR`/`CONTRIBUTOR` to the user's name when provided. Resolve the existing graph's corpus root from the prior invocation or ask before fetching. Save under `<corpus-root>/raw`, then run `--update` on `<corpus-root>` — do not rebuild from `./raw` alone.
 
 URL types (auto-detected): Twitter/X → oEmbed → `.md` · arXiv → abstract+metadata `.md` · PDF → `.pdf` · images → downloaded, vision extraction next build · any webpage → html2text → markdown.
