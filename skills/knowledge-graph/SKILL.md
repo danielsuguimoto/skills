@@ -1,6 +1,6 @@
 ---
 name: knowledge-graph
-description: "Build, update, cluster, add sources to, or watch a persistent knowledge graph; query or explain paths, answer architecture questions, generate wikis/reports, or install commit hooks and always-on context."
+description: "Build, update, cluster, add sources to, or watch a persistent knowledge graph; query paths or architecture, generate wikis/reports, or manage graph hooks and always-on context."
 argument-hint: "[path|query|subcommand]"
 ---
 

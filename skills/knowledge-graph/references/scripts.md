@@ -170,6 +170,20 @@ print(f'Cached {saved} files')
 "
 ```
 
+## Step B3 - Materialize cache hits
+
+```bash
+$(cat graphify-out/.graphify_python) -c "
+import json
+from pathlib import Path
+from graphify.semantic_cleanup import sanitize_semantic_fragment
+
+cached = json.loads(Path('graphify-out/.graphify_cached.json').read_text()) if Path('graphify-out/.graphify_cached.json').exists() else {'nodes':[], 'edges':[], 'hyperedges':[]}
+cached.update(input_tokens=0, output_tokens=0)
+Path('graphify-out/.graphify_semantic.json').write_text(json.dumps(sanitize_semantic_fragment(cached), indent=2))
+"
+```
+
 ## Step B3 - Merge cached + new results
 
 # Merges cached and new semantic results, deduplicates nodes by id, writes to graphify-out/.graphify_semantic.json

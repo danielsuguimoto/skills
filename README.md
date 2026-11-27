@@ -78,7 +78,7 @@ Install specific skills:
 npx skills add danielsuguimoto/skills --skill caveman --skill code-work
 ```
 
-Install workflow companions together: ship-changes with new-branch, commit-and-push, and pr-create; pr-watch with pr-fix and pr-fix-ci; new-workspace with using-workspaces; post-merge with draft-reply. Install any named downstream skill separately.
+Install workflow companions together: pr-watch with pr-fix and pr-fix-ci; new-workspace with using-workspaces; post-merge with draft-reply. Install any named downstream skill separately.
 
 Install globally to a specific agent:
 

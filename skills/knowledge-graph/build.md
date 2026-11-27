@@ -40,7 +40,7 @@ Read the detection result, then act:
 
 - `total_files` 0 → stop: "No supported files found in [path]."
 - `skipped_sensitive` non-empty → mention the count skipped, not the names.
-- `total_words` > 2,000,000 OR `total_files` > 200 → show the warning + top 5 subdirectories by file count, ask which subfolder; wait before proceeding.
+- `total_words` > 2,000,000 OR `total_files` > 200 → show the warning + top 5 subdirectories by file count. For a verified existing-corpus update, ask whether to continue with the full corpus or stop; never replace it with a narrower corpus. Otherwise ask which subfolder; wait before proceeding.
 - Otherwise → Step 2.5 if video files detected, else Step 3.
 
 ### Step 2.5 - Transcribe video/audio (only if video files detected)
@@ -79,7 +79,9 @@ For code files detected, run AST extraction (`knowledge-graphs.md`):
 
 <!-- script: see references/scripts.md §Step B0 - Check extraction cache -->
 
-Process only files in `graphify-out/.graphify_uncached.txt`; all cached → skip to Part C.
+Process only files in `graphify-out/.graphify_uncached.txt`; all cached → skip chunk extraction and cache saves, materialize `.graphify_semantic.json` from this run's cache hits only, then go to Part C. Never include a stale `.graphify_semantic_new.json`:
+
+<!-- script: see references/scripts.md §Step B3 - Materialize cache hits -->
 
 **B1 - Split into chunks:** load `graphify-out/.graphify_uncached.txt`; chunks of 20-25 files; each image its own chunk; group same-directory files together.
 
@@ -105,7 +107,7 @@ Clean up: `rm -f graphify-out/.graphify_cached.json graphify-out/.graphify_uncac
 
 ### Step 4 - Build graph, cluster, analyze, generate outputs
 
-`build_from_json()` takes `directed=IS_DIRECTED` — `True` if `--directed` was given, else `False`. `ALLOW_UPDATE_SHRINK` defaults to `False`; the `--update` section sets it on the verified update path.
+`build_from_json()` takes `directed=IS_DIRECTED` — `True` if `--directed` was given, else `False`, except for updates as specified below. `ALLOW_UPDATE_SHRINK` defaults to `False`; the `--update` section sets it on the verified update path.
 
 <!-- script: see references/scripts.md §Step 4 - Build graph, cluster, analyze, generate outputs -->
 
@@ -141,9 +143,9 @@ Report the output directory, requested outputs, and any failures. Summarize repo
 
 ## For --update (repair on change)
 
-A complete fresh extraction on change avoids grafting deltas onto the lossy exported graph; cached semantic results are reused and unchanged runs still stop early.
+A complete fresh extraction on change avoids grafting deltas onto the lossy exported graph; cached semantic results are reused and unchanged runs still stop early. Resolve the original corpus root from the explicit path or reliable session evidence; otherwise ask before detection. A different root is a separate build, never an update of this graph.
 
-Run incremental detection. No changed or deleted files → stop. Snapshot the published graph to a run-local `<old-graph>` — on snapshot failure, stop before publishing. Run Steps 2–3 on the full current corpus with the semantic cache. If any required input was skipped or failed, stop before Step 4 and leave the published graph and manifest unchanged. Otherwise enable `ALLOW_UPDATE_SHRINK` and run Steps 4–9; publish a smaller nonempty graph only through the staged export — leave the existing graph intact on failed export. Diff after successful Step 4; on success or failure remove only the run-created `<old-graph>` file.
+Run incremental detection. No changed or deleted files → stop. Snapshot the published graph to a run-local `<old-graph>` — on snapshot failure, stop before publishing. Read its node-link `directed` boolean; use it for `IS_DIRECTED` throughout Steps 4–9 unless the user explicitly requests a direction change. Missing or invalid direction → stop and report. Run Steps 2–3 on the full current corpus with the semantic cache. If any required input was skipped or failed, stop before Step 4 and leave the published graph and manifest unchanged. Otherwise enable `ALLOW_UPDATE_SHRINK` and run Steps 4–9; publish a smaller nonempty graph only through the staged export — leave the existing graph intact on failed export. Diff after successful Step 4; on success or failure remove only the run-created `<old-graph>` file.
 
 <!-- script: see references/scripts.md §--update - Detect incremental changes -->
 

@@ -1,6 +1,6 @@
 ---
 name: pr-fix
-description: "Fix PR review feedback — inline threads, review bodies, flat comments — and resolve addressed threads."
+description: "Fix PR review feedback, reply to reviews, or resolve addressed threads."
 ---
 
 ## Required `<project-root>/docs` reads
@@ -18,6 +18,7 @@ Collect nonempty review bodies and flat comments even when no threads exist. Kee
 Anchor `<pr-intent>` — why the PR exists: title, body, commit messages, and a ticket brief (see Ticket Brief) for all issue/card references in the body, commits, or branch name, scoped to intended behavior and constraints. For each scope-relevant target PR decision reference returned by the brief, reuse loaded feedback or retrieve only that decision and the context needed to establish its status via the git host (`git-hosts.md`); unavailable or ambiguous → note the gap. No usable brief → fall back to PR title/body plus any verified decision; note the gap. Feedback identifies claims to investigate; intent arbitrates scope.
 
 ### 3. Align Local Branch
+Use a composite alignment operation only when it guarantees the branch, replay, and preservation rules below; otherwise treat it as absent.
 `<pr-branch>` unavailable → STOP. Inspect the worktree and index; uncommitted or untracked changes → STOP and ask the user to preserve them before continuing. Fetch the PR head and record its commit → `<pr-head-commit>`. Align via `Align PR branch for editing` in `git-hosts.md` → `<active-branch>`; fails → STOP. Spec lacks the operation → the fallback: `git switch <pr-branch>` when it exists and tracks the head repository's `refs/heads/<pr-branch>`; any other same-named branch is a collision → `git switch -c` a distinct branch at `<pr-head-commit>`, never modify it; no same-named branch → git host checkout PR or `gh pr checkout <pr-number>` (fast-forward only, fails on a diverged branch) → `<active-branch>`. After checkout, match a Git remote to the head repository — fork checkouts may add it → `<head-remote>`; no match → STOP. Behind → fast-forward to `<pr-head-commit>` — behind alone never blocks. Ahead → continue; the flow's push publishes them — flag them in the report. Diverged → `git rebase <pr-head-commit>`, linear range only — a merge in the range → STOP; a clean replay (already-upstream commits drop on their own) → continue, flag the replayed commits in the report; conflict → `git rebase --abort`, STOP and report. No code edits until HEAD is on `<active-branch>` and `<pr-head-commit>` is an ancestor of it — `<pr-branch>` stays the remote destination, not a required local name. Never skip checkout — `<pr-ref>` is authoritative.
 
 ### 4. Load Changes
@@ -51,6 +52,7 @@ Ask once: "Approve this batch for <pr-url>: commit the listed fixes (if any), pu
 
 ### 11. Commit and Push (after `approved` or `auto`)
 No fixes to commit and no approved ahead commits needed for evidence → skip to Step 12. If the head moved, retry only for the same approved batch; a material change returns to Step 9 before publication.
+Use a composite push-recovery operation only when it guarantees the replay, revalidation, and retry rules below; otherwise treat it as absent.
 Inspect the worktree and index again, including changes within `<fix-files>`. Unexpected changes → STOP and preserve them. When fixes exist, stage and commit only `<fix-files>` with explicit pathspecs. Push fixes or approved ahead commits needed for evidence via `git push <head-remote> <active-branch>:<pr-branch>`. Rejected non-fast-forward — the head moved since `<pr-head-commit>` → `Recover rejected PR push` in `git-hosts.md`; spec lacks the operation → re-fetch; `git rebase --onto <new-head> <pr-head-commit>` — replays only commits added on top of the recorded head, so replaced PR commits never return; linear range only → a merge → STOP; clean → revalidate on the rebased tree; retry once only if validation passes and the batch is unchanged, then record `<pr-head-commit>`; conflict → `git rebase --abort`, STOP — never force-push. Never use a generic message like "address review feedback" → `<pushed>` (`yes`/`no`).
 
 ### 12. Respond to Threads
@@ -61,7 +63,7 @@ Under the same approval, resolve a listed inline thread after its reply succeeds
 
 ## Ticket Brief
 
-Reuse current, scoped evidence; otherwise use Scoped ticket brief in `issue-trackers.md`. If the operation is absent, dedupe by tracker/ID, read only scoped fields, and read the latest comment page for behavior or constraints. Follow older material or other links only to settle a gap; for the target PR return decision references without fetching feedback. Return cited answers, decision status (confirmed/proposed/superseded), gaps and blockers; mark partial answers and leave tracker state unchanged. Read inline, or delegate one bounded read-only brief when it saves distracting context or the user requests it; pass the refs, scope, `<project-root>` and target PR. Worker unavailable → inline; completed lookup blocker → do not retry. Missing spec → report the gap.
+Reuse current, scoped evidence; otherwise use `issue-trackers.md` to dedupe by tracker/ID, read only scoped fields, and read the latest comment page for behavior or constraints. Follow older material or other links only to settle a gap; for the target PR return decision references without fetching feedback. Return cited answers, decision status (confirmed/proposed/superseded), gaps and blockers; mark partial answers and leave tracker state unchanged. Read inline, or delegate one bounded read-only brief when it saves distracting context or the user requests it; pass the refs, scope, `<project-root>` and target PR. Worker unavailable → inline; completed lookup blocker → do not retry. Missing spec → report the gap.
 
 ## Output
 Report fixes, validation, push status, replies, resolutions, and remaining blockers.
