@@ -1,10 +1,10 @@
 # Agent Guidelines
 
-Skills repository: `skills/<name>/SKILL.md` manifests plus the `README.md` skill index. Consumers are AI agents — a skill's prose is the product. Root `docs/` and `.devin/` are gitignored local state; explicitly unignored skill-local `docs/` ship with that skill. No build or test suite; verify by reading.
+Skills repository: `skills/<name>/SKILL.md` manifests plus the `README.md` skill index. Consumers are AI agents — a skill's prose is the product. `docs/` and `.devin/` are gitignored local state. No build or test suite; verify by reading.
 
 ## Conventions
 
-- Write agent-facing instructions per `writing-for-agents` and `skills/caveman/SKILL.md`: compressed, grammatical, and clear.
+- Write agent-facing instructions per `writing-for-agents` and `skills/caveman/SKILL.md`: concise, direct, and token-efficient. Omit what LLMs already know unless needed for safety or correctness.
 - A skill's frontmatter `description` names every distinct invocation case without redundant synonyms or workflow details.
 - Keep bodies focused: prune duplication, stale content, and no-ops; disclose branch-specific material without hiding required steps or safety rules.
 - Minimize execution reads, tool calls, reasoning, user questions, and chat output; preserve evidence, correctness, and required approvals.

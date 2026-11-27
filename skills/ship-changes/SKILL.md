@@ -3,13 +3,13 @@ name: ship-changes
 description: "Ship current work end-to-end — branch, commit, push, open a PR — for explicit shipping requests, not a PR-only request."
 ---
 
-Run the change scan, branch, commit, push, PR creation, and ticket linking in the current session, in order. Invoke selected installed subskills inline; use [standalone.md](standalone.md) for the fallback paths below. A Ticket Brief may run inline or be delegated when the delegation gates permit; delegate another step only on explicit request.
+Run the change scan, branch, commit, push, PR creation, and ticket linking in the current session, in order. Invoke installed subskills inline; use the standalone steps below when a companion is missing. A Ticket Brief may run inline or be delegated when the delegation gates permit; delegate another step only on explicit request.
 
 An explicit shipping request authorizes branch creation, commit, push, and PR creation. Execute them without asking for separate confirmation; honor mandatory safety gates.
 
 ## Required `<project-root>/docs` reads
 
-Shell-read before shipping end-to-end (reuse session reads): `<project-root>/docs/git-hosts.md`. If a spec or operation is missing, report the gap and read [the bundled fallback spec](docs/git-hosts.md).
+Shell-read before shipping end-to-end (reuse session reads): `<project-root>/docs/git-hosts.md`. Missing spec or operation → report the gap; use available standard Git and host interfaces, or stop if unavailable.
 
 ## Operations
 
@@ -25,7 +25,7 @@ Explicit ticket URL/reference → `<ticket-url>` · explicit skip → `<ticket-m
 
 ### 2. Pre-Scan Changes (Shared Context)
 
-Run the change scan once per the table → `<current-branch>`, `<uncommitted>` (status + file list + diff stat), `<ahead-commits>` (`@{u}..HEAD` log — no upstream, e.g. detached `HEAD` → `origin/<default>..HEAD`; empty if none). If the scan omits paths or collapses untracked directories, collect individual changed file paths via the [bundled scan](docs/git-hosts.md), including every untracked file.
+Run the change scan once per the table → `<current-branch>`, `<uncommitted>` (status + file list + diff stat), `<ahead-commits>` (`@{u}..HEAD` log — no upstream, e.g. detached `HEAD` → `origin/<default>..HEAD`; empty if none). Collect individual changed file paths, including untracked files, when the scan omits paths or collapses directories.
 
 When `<ticket-url>` is defined, get a ticket brief (see Ticket Brief) for the ticket title and the problem the changes address. Store the ticket reference and brief or blocker as `<ticket-brief-result>`, even if no usable brief returns. Anchor `<ship-intent>` in the session's work and the brief; no usable brief → fall back to session work and diff, and note the gap. Diff stats and commit messages carry the what; intent supplies the why.
 
@@ -37,9 +37,9 @@ Blocker: `<included>` empty and `<ahead-commits>` empty → STOP: "Nothing to sh
 
 Build `<change-summary>` from `<included>` (primary) or `<ahead-commits>` (fallback), grounded in `<ship-intent>`: 2-4 logical themes, what and why (not how), considering `<additional-context>`.
 
-Derive `<branch-category>` from `<change-summary>` per [standalone.md](standalone.md#branch).
+Derive `<branch-category>` from `<change-summary>`: `feature`, `fix`, `refactor`, `docs`, `test`, `chore`, `perf`, `build`, or `ci`.
 
-If either `pr-create` or `commit-and-push` is unavailable, resolve the push destination before publication per [standalone.md](standalone.md#destination). If `pr-create` is unavailable, also preflight its standalone PR-creation path before branching or publishing. A destination that cannot be determined or represented → stop before publication. No configured host operation and no usable documented fallback → stop and report.
+If either `pr-create` or `commit-and-push` is unavailable, use the standalone publisher and PR path together. Before branching, resolve the base host/repository and push remote/repository; ambiguous → ask. Verify host support for the head, including cross-fork ownership; unsupported or unavailable → stop. Resolve the full destination ref before publishing.
 
 Forward to subskills:
 - `new-branch`: `<additional-context>`, `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<branch-category>`, `<ticket-url>`, `<ticket-mode>`, `<ticket-brief-result>`.
@@ -50,7 +50,7 @@ Forward to subskills:
 
 Skip when `<current-branch>` is NOT the detected default (per `git-hosts.md` fallback) AND is already ticket-related → `<new-branch>` = `<current-branch>`.
 
-Otherwise invoke `new-branch`, passing `<additional-context>`, `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<branch-category>`, `<ticket-url>`, `<ticket-mode>`, `<ticket-brief-result>` → `<new-branch>`; if unavailable, follow [standalone.md](standalone.md#branch). "Nothing to branch from" or "Branching skipped" → STOP and report.
+Otherwise invoke `new-branch`, passing `<additional-context>`, `<current-branch>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<branch-category>`, `<ticket-url>`, `<ticket-mode>`, `<ticket-brief-result>` → `<new-branch>`. Missing companion → create `<branch-category>/<slug>` at the current checkout without tracking the base; slug is 2–4 kebab-case words from the ticket title or summary. Existing work branch → skip; name collision → try `-2` once. "Nothing to branch from" or "Branching skipped" → STOP and report.
 
 ### 4. Commit and Push
 
@@ -58,13 +58,21 @@ Otherwise invoke `new-branch`, passing `<additional-context>`, `<current-branch>
 
 Refresh the index. Any staged `<excluded>` path → stop before committing or pushing; ask the user to preserve or unstage it. Leave the index untouched.
 
-When `pr-create` is unavailable or `commit-and-push` is unavailable, follow [standalone.md](standalone.md#commit-and-push) with the verified destination; the installed publisher has no destination input. Otherwise invoke `commit-and-push`, passing `<additional-context>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<excluded>` → `<hash>`, `<push-target>`. Set `<published-head>` = `<hash>`. "Nothing to commit or push" → STOP and report.
+Both companions installed → invoke `commit-and-push`, passing `<additional-context>`, `<uncommitted>`, `<ahead-commits>`, `<change-summary>`, `<excluded>` → `<hash>`, `<push-target>`.
+
+Standalone → stage and commit only `<included>` paths; message `<prefix>: <message>`, lowercase, under 50 characters. Skip the commit when `<included>` is empty. Record the verified remote ref's tip, then push to that exact remote and ref; set upstream only when absent, preserving existing tracking. Rejected non-fast-forward → fetch that ref, replay only commits above the recorded tip, and retry once; missing tip, merge commits, conflict, or other failure → stop; abort a conflicting rebase. Never force-push. Return HEAD as `<hash>` and the actual remote and full ref as `<push-target>`.
+
+Set `<published-head>` = `<hash>`. "Nothing to commit or push" → STOP and report.
 
 ### 5. Create Pull Request
 
-Invoke `pr-create` with the inputs above plus `<published-head>` and `<push-target>`; if unavailable, follow [standalone.md](standalone.md#pull-request). Rescan post-commit git state but keep the semantic `<change-summary>`. Output the PR URL. Verify the PR link was posted to every verified, in-scope ticket; if the link step was skipped, run it once now — no duplicate retries.
+Both companions installed → invoke `pr-create` with the inputs above plus `<published-head>` and `<push-target>`.
 
-**Mandatory:** probe the PR template before composing the body, including on the standalone path. Accept `<pr-template>` = `none` only after the probe completes.
+Standalone → select the requested or default base, fetch it from the verified repository, and compare its three-dot diff with HEAD. Rescan individual untracked files; stop for changes outside `<excluded>`, staged exclusions, a base-branch checkout, or an empty diff. Probe PR templates; fill the selected template without changing its structure, or use Ticket, Issue, Description, Checklist. Include the problem, changes, and ticket or `SKIPPED`; title follows the commit convention. Verify `<push-target>` matches the preflight target and its remote ref matches HEAD. Create or find the PR against the verified base and head, pinning the host/repository for lookup; verify the rendered body. Link the PR in each verified, in-scope ticket; ask on ambiguous targets and report failed links.
+
+Rescan post-commit git state but keep the semantic `<change-summary>`. Output the PR URL. Verify the PR link was posted to every verified, in-scope ticket; if the link step was skipped, run it once now — no duplicate retries.
+
+**Mandatory:** probe the PR template before composing the body. Accept `<pr-template>` = `none` only after the probe completes.
 
 ## Ticket Brief
 
